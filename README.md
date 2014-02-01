@@ -1,4 +1,4 @@
-![brainslug]()
+![brainslug](https://raw2.github.com/adrobisch/brainslug/master/doc/brainslug_big.png)
 
 brainslug
 =========
