@@ -6,6 +6,7 @@ import brainslug.flow.model.expression.Expression;
 import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
 import brainslug.flow.model.marker.IntermediateEvent;
+import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.EndEvent;
 import org.activiti.bpmn.model.Process;
@@ -18,7 +19,7 @@ public class BpmnModelTransformer {
 
   List<SequenceFlow> sequenceFlows = new ArrayList<SequenceFlow>();
 
-  public BpmnModel transform(FlowBuilder flowBuilder) {
+  public BpmnModel toBpmnModel(FlowBuilder flowBuilder) {
     Process process = new Process();
     process.setId(flowBuilder.getDefinition().getId().toString());
     process.setName(flowBuilder.getDefinition().getName());
@@ -30,6 +31,15 @@ public class BpmnModelTransformer {
     addFlows(process);
 
     return model;
+  }
+
+  public String toBpmnXml(FlowBuilder flowBuilder) {
+      BpmnXMLConverter bpmnXMLConverter = new BpmnXMLConverter();
+      try {
+        return new String(bpmnXMLConverter.convertToXML(toBpmnModel(flowBuilder)), "UTF-8");
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
   }
 
   private void addFlows(Process process) {

@@ -1,11 +1,13 @@
 package brainslug.bpmn;
 
 import brainslug.flow.model.FlowBuilder;
-import brainslug.flow.model.marker.IntermediateEvent;
+import brainslug.flow.model.FlowDefinition;
+import com.sun.swing.internal.plaf.metal.resources.metal;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.*;
@@ -16,7 +18,7 @@ import static brainslug.util.FlowElementAssert.assertThat;
 public class BpmnModelTransformerTest {
 
   @Test
-  public void shouldTransformProcess() {
+  public void shouldTransformEmptyFlow() {
     // GIVEN:
     FlowBuilder emptyFlow = new BpmnFlowBuilder() {
       @Override
@@ -30,7 +32,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(emptyFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(emptyFlow);
     // THEN:
     assertThat(bpmnModel.getProcesses()).hasSize(1);
     Process process = bpmnModel.getProcesses().get(0);
@@ -52,7 +54,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(startEventFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -72,7 +74,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(startEventFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -92,7 +94,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(startEventFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -107,7 +109,7 @@ public class BpmnModelTransformerTest {
   @Test
   public void shouldTransformTask() {
     // GIVEN:
-    FlowBuilder startEventFlow = new BpmnFlowBuilder() {
+    FlowBuilder taskFlow = new BpmnFlowBuilder() {
       @Override
       public void define() {
         start(serviceTask(id("task")).display("Task"));
@@ -116,7 +118,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(startEventFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(taskFlow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -137,7 +139,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(startEventFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -167,7 +169,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(choiceFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(choiceFlow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -191,7 +193,7 @@ public class BpmnModelTransformerTest {
   @Test
   public void shouldTransformParallelAndJoin() {
     // GIVEN:
-    FlowBuilder choiceFlow = new BpmnFlowBuilder() {
+    FlowBuilder flow = new BpmnFlowBuilder() {
       @Override
       public void define() {
         start(event(id("start")))
@@ -205,7 +207,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(choiceFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(flow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -229,7 +231,7 @@ public class BpmnModelTransformerTest {
   @Test
   public void shouldTransformMerge() {
     // GIVEN:
-    FlowBuilder choiceFlow = new BpmnFlowBuilder() {
+    FlowBuilder flow = new BpmnFlowBuilder() {
       @Override
       public void define() {
         start(event(id("start")))
@@ -245,7 +247,7 @@ public class BpmnModelTransformerTest {
 
     BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
     // WHEN:
-    BpmnModel bpmnModel = modelTransformer.transform(choiceFlow);
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(flow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
 
@@ -259,6 +261,29 @@ public class BpmnModelTransformerTest {
     assertThat(process.getFlowElements()).hasFlowElement(ExclusiveGateway.class, "merge", "");
     assertThat(process.getFlowElements()).hasSequenceFlow("task1", "merge");
     assertThat(process.getFlowElements()).hasSequenceFlow("task2", "merge");
+  }
+
+  @Test
+  public void shouldTransformToBpmnXmlString() throws IOException {
+    // given:
+    BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
+    FlowBuilder emptyFlow = new BpmnFlowBuilder() {
+      @Override
+      public void define() {}
+
+      @Override
+      public String getId() {
+        return "emptyFlow";
+      }
+    };
+    // when:
+    String bpmnXml = bpmnModelTransformer.toBpmnXml(emptyFlow);
+    // then:
+    assertThat(bpmnXml).isEqualTo(emptyFlowContent());
+  }
+
+  private String emptyFlowContent() throws IOException {
+    return IOUtils.toString(getClass().getClassLoader().getResourceAsStream("emptyFlow.bpmn"), "UTF-8");
   }
 
   private void writeBpmnXml(BpmnModel bpmnModel)  {
