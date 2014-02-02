@@ -67,5 +67,6 @@ License
 =======
 
 brainslug is published under the terms of the LGPL 3.0 License.
+
 ![lgplv3](https://raw2.github.com/adrobisch/brainslug/master/doc/lgplv3.png)
 
