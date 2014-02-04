@@ -12,6 +12,32 @@ Features
 * BPMN 2.0 export using the Activiti Model
 * Flow Renderer based on the BPMN symbols
 
+Download
+========
+
+The current snapshot version is available in the cloudbees repository:
+
+```xml
+  <dependencies>
+  ...
+    <dependency>
+      <groupId>de.androbit</groupId>
+      <artifactId>brainslug-model</artifactId>
+      <version>0.6-SNAPSHOT</version>    
+    </dependency>
+  ...
+  </dependencies>
+  
+  <repositories>
+  ...
+    <repository>
+      <id>brainslug-snapshots</id>
+      <url>http://repository-drobisch.forge.cloudbees.com/snapshot/</url>
+    </repository>
+  ...
+  </repositories>
+```
+
 Example
 =======
 
