@@ -1,15 +1,16 @@
-![brainslug](https://raw2.github.com/adrobisch/brainslug/master/doc/brainslug_big.png)
+![brainslug](doc/brainslug_big.png)
 
 brainslug
 =========
 
-brainslug is a control flow abstraction library. It enables you to model your application flow as a graph of typed nodes, which can be transformed to different representations or be executed within a customisable environment.
+brainslug is a control flow abstraction library. It enables you to model your application flow as a graph of typed nodes,
+which can be transformed to different representations or be executed within a customisable environment.
 
 Features
 ========
 
 * Builder DSL for flow definitions
-* BPMN 2.0 export using the Activiti Model
+* [BPMN 2.0 XML](http://www.omg.org/spec/BPMN/2.0/) export using the [Activiti](https://github.com/Activiti/Activiti) Model
 * Flow Renderer based on the BPMN symbols
 
 Download
@@ -41,7 +42,7 @@ The current snapshot version is available in the cloudbees repository:
 Example
 =======
 
-The main model class is the *FlowBuilder*. A new Flow Definition is specified in its *define* method:
+The main [model](model) class is the *FlowBuilder*. A new Flow Definition is specified in its *define* method:
 
 ```java
     new FlowBuilder() {
@@ -54,11 +55,12 @@ The main model class is the *FlowBuilder*. A new Flow Definition is specified in
       }
     };
 ```
-This will define the following flow:
 
-![task_flow](https://raw2.github.com/adrobisch/brainslug/master/doc/task_flow.png)
+The [renderer](renderer) will produce the following flow image:
 
-Which might be transformed into:
+![task_flow](doc/task_flow.png)
+
+The definition might be transformed using [the BPMN module](bpmn) into:
 
 ```xml
   <?xml version="1.0" encoding="UTF-8"?>
@@ -78,21 +80,37 @@ Which might be transformed into:
   </definitions>
 ```
 
-Execution
-=========
-
-A simple experimental execution module is available and allows an in memory execution based on a token flow model stored in HashMaps.
-You might as well take the output of the transformer to use it an BPMN based engine.
-
 Documentation
 =============
 
+Check the documentation of the modules:
+
+ * [Model](model)
+ * [Execution](execution)
+ * [Renderer](renderer)
+ * [BPMN transformer](bpmn)
+
 A detailed documentation on the concepts and the current execution options will soon be available in the github wiki pages.
+
+Roadmap
+=======
+
+These features might or might not be implemented:
+
+* Static and dynamic flow definitions
+* persistent and non-persistent instances
+* Spring Data TokenStore
+* Alternative Event Dispatcher
+* intent-based REST API orchestration
+* Token Migration
+* GraphML export and import
+* BPMN import
 
 License
 =======
 
-brainslug is published under the terms of the LGPL 3.0 License.
+brainslug is published under the terms of the LGPL 3.0 License, which is [Apache 2.0 compatible](http://www.apache.org/licenses/GPL-compatibility.html).
+See the [LICENSE](LICENSE) file.
 
-![lgplv3](https://raw2.github.com/adrobisch/brainslug/master/doc/lgplv3.png)
+![lgplv3](doc/lgplv3.png)
 
