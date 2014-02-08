@@ -11,4 +11,4 @@ Example
     String bpmnXml = bpmnModelTransformer.toBpmnXml(flowBuilder);
 ```
 
-also check [BpmnModelTransformerTest](src/main/test/java/brainslug/bpmn/BpmnModelTransformerTest.java).
+also check [BpmnModelTransformerTest](src/test/java/brainslug/bpmn/BpmnModelTransformerTest.java).
