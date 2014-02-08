@@ -7,9 +7,16 @@ abstract public class AbstractTaskDefinition<T extends AbstractTaskDefinition> e
   private Class<?> delegateClass;
   private boolean async;
   private Mixable mixable;
+  private MethodCallDefinition methodCall;
 
   public AbstractTaskDefinition delegate(Class<?> delegateClass) {
     this.delegateClass = delegateClass;
+
+    return self();
+  }
+
+  public AbstractTaskDefinition call(MethodCallDefinition methodCall) {
+    this.methodCall = methodCall;
 
     return self();
   }
@@ -28,6 +35,10 @@ abstract public class AbstractTaskDefinition<T extends AbstractTaskDefinition> e
 
   public Class<?> getDelegateClass() {
     return delegateClass;
+  }
+
+  public MethodCallDefinition getMethodCall() {
+    return methodCall;
   }
 
   public Mixable getMixable() {
