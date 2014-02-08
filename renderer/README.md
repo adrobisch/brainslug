@@ -12,4 +12,4 @@ Example
     renderer.render(flowBuilder, outputStream, Format.PNG);
 ```
 
-also check [JGraphRendererTest](src/main/test/java/brainslug/flow/renderer/JGraphRendererTest.java).
+also check [JGraphRendererTest](src/test/java/brainslug/flow/renderer/JGraphRendererTest.java).
