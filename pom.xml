@@ -8,6 +8,8 @@
     <artifactId>brainslug</artifactId>
     <version>0.6-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>brainslug root pom</name>
+    <description>brainslug is a control flow abstraction and workflow library</description>
 
     <modules>
       <module>model</module>
@@ -15,6 +17,28 @@
       <module>bpmn</module>
       <module>renderer</module>
     </modules>
+
+    <licenses>
+        <license>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE Version 3</name>
+            <url>https://www.gnu.org/licenses/lgpl.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/adrobisch/brainslug.git</connection>
+        <developerConnection>scm:git:git@github.com:adrobisch/brainslug.git</developerConnection>
+        <url>http://github.com/adrobisch/brainslug</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>adrobisch</id>
+            <name>Andreas Drobisch</name>
+            <email>andreas@drobisch.com</email>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
@@ -37,6 +61,10 @@
         </dependency>
     </dependencies>
 
+    <properties>
+        <gpg.passphrase>passphrase</gpg.passphrase>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -46,6 +74,14 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -68,5 +104,51 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <configuration>
+                            <passphrase>${gpg.passphrase}</passphrase>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus snapshot repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus release repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
 </project>
