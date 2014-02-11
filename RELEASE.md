@@ -2,35 +2,35 @@ Preparation
 ===========
 Check your credentials in ~/.m2/settings.xml:
 
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
-	<servers>
-		<server>
-			<id>sonatype-nexus-snapshots</id>
-			<username>myusername</username>
-			<password>mypassword</password>
-		</server>
-		<server>
-			<id>sonatype-nexus-staging</id>
-			<username>myusername</username>
-			<password>mypassword</password>
-		</server>
-	</servers>
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          http://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <servers>
+        <server>
+          <id>sonatype-nexus-snapshots</id>
+          <username>myusername</username>
+          <password>mypassword</password>
+        </server>
+        <server>
+          <id>sonatype-nexus-staging</id>
+          <username>myusername</username>
+          <password>mypassword</password>
+        </server>
+      </servers>
 
-	<profiles>
-		<profile>
-			<id>sign</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<gpg.passphrase>mypassphrase</gpg.passphrase>
-			</properties>
-		</profile>
-	</profiles>
-</settings>
+      <profiles>
+        <profile>
+          <id>sign</id>
+          <activation>
+            <activeByDefault>true</activeByDefault>
+          </activation>
+          <properties>
+            <gpg.passphrase>mypassphrase</gpg.passphrase>
+          </properties>
+        </profile>
+      </profiles>
+    </settings>
 
 Cutting a release
 =================
