@@ -18,7 +18,7 @@ Features
 Download
 ========
 
-The current snapshot version is available in the cloudbees repository:
+The current version `0.6` is available in the maven central repository:
 
 ```xml
   <dependencies>
@@ -26,25 +26,21 @@ The current snapshot version is available in the cloudbees repository:
     <dependency>
       <groupId>de.androbit</groupId>
       <artifactId>brainslug-model</artifactId>
-      <version>0.6-SNAPSHOT</version>    
+      <version>0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>de.androbit</groupId>
+      <artifactId>brainslug-execution</artifactId>
+      <version>0.6</version>
     </dependency>
   ...
   </dependencies>
-  
-  <repositories>
-  ...
-    <repository>
-      <id>brainslug-snapshots</id>
-      <url>http://repository-drobisch.forge.cloudbees.com/snapshot/</url>
-    </repository>
-  ...
-  </repositories>
 ```
 
 Example
 =======
 
-The main [model](model) class is the *FlowBuilder*. A new Flow Definition is specified in its *define* method:
+The main [model](model) class is `brainslug.flow.model.FlowBuilder`. A new Flow Definition is specified in its `define` method:
 
 ```java
     new FlowBuilder() {
