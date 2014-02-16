@@ -6,7 +6,7 @@ brainslug
 brainslug is a control flow abstraction library. It enables you to model your application flow as a graph of typed nodes,
 which can be transformed to different representations or be executed within a customisable environment.
 
-![Build Status](https://travis-ci.org/adrobisch/brainslug.png?branch=master)
+<a href="https://travis-ci.org/adrobisch/brainslug"><img src="https://travis-ci.org/adrobisch/brainslug.png?branch=master" /></a>
 
 Features
 ========
