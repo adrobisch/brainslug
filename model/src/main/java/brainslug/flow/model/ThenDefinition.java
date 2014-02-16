@@ -12,17 +12,17 @@ public class ThenDefinition extends FlowPathDefinition<ThenDefinition> {
   }
 
   public ChoiceDefinition or() {
-    return getStartNode();
+    return getChoiceNode();
   }
 
   public ThenDefinition otherwise() {
     ThenDefinition otherwise = new ThenDefinition(new EqualDefinition<Boolean, Boolean>(true, true), definition, getStartNode());
-    getStartNode().setOtherwisePath(otherwise);
+    getChoiceNode().setOtherwisePath(otherwise);
     return otherwise;
   }
 
-  protected ChoiceDefinition getStartNode() {
-    return (ChoiceDefinition) this.startNode;
+  protected ChoiceDefinition getChoiceNode() {
+    return (ChoiceDefinition) getStartNode();
   }
 
   public EqualDefinition getPredicateDefinition() {

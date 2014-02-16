@@ -20,7 +20,7 @@ public class FlowBuilderTest {
 
       @Override
       public void define() {
-        start(event(id(StartEvent))).end(event(id(StartEvent)));
+        start(event(id(StartEvent))).waitFor(event(id(StartEvent))).end(event(id(End)));
       }
     };
     flowBuilder.define();

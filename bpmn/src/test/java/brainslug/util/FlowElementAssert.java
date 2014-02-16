@@ -78,7 +78,7 @@ public class FlowElementAssert extends IterableAssert<FlowElement> {
         return this;
       }
     }
-    throw new AssertionError("sequence flow with source: " + expectedSourceRef + " and target: " + expectedTargetRef + "not found");
+    throw new AssertionError("sequence flow with source: " + expectedSourceRef + " and target: " + expectedTargetRef + " not found");
   }
 
   public FlowElementAssert hasConditionExpression(int index, String expectedConditionExpression) {

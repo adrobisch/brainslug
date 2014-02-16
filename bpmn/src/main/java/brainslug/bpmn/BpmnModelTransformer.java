@@ -103,16 +103,22 @@ public class BpmnModelTransformer {
 
     for (ThenDefinition then : choice.getThenPaths()) {
       SequenceFlow flow = addIncomingSequenceFlowToFirstPathNode(gateway, then);
-      if (then.getPredicateDefinition().getActual() instanceof Expression) {
-        flow.setConditionExpression((String) ((Expression) then.getPredicateDefinition().getActual()).getValue());
-      }
+      flow.setConditionExpression(getExpressionString(then));
     }
+  }
+
+  private String getExpressionString(ThenDefinition then) {
+    if (then.getPredicateDefinition().getActual() instanceof Expression) {
+      Expression expression = (Expression) then.getPredicateDefinition().getActual();
+      return expression.toString();
+    }
+    throw new UnsupportedOperationException("can only get expression string for Expression predicate");
   }
 
   private SequenceFlow addIncomingSequenceFlowToFirstPathNode(FlowElement flowElement, FlowPathDefinition<?> then) {
     SequenceFlow flow = createSequenceFlow(
       flowElement.getId(),
-      then.getPathNodes().getFirst().getId().toString()
+      then.getPathNodes().get(1).getId().toString()
     );
     sequenceFlows.add(flow);
     return flow;
@@ -199,6 +205,8 @@ public class BpmnModelTransformer {
     ServiceTask serviceTask = new ServiceTask();
     serviceTask.setId(task.getId().toString());
     serviceTask.setName(task.getDisplayName());
+    serviceTask.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_CLASS);
+    serviceTask.setImplementation(task.getDelegateClass().getName());
     if (task.isAsync()) {
       serviceTask.setAsynchronous(true);
     }
@@ -209,6 +217,9 @@ public class BpmnModelTransformer {
     UserTask userTask = new UserTask();
     userTask.setId(task.getId().toString());
     userTask.setName(task.getDisplayName());
+    if (task instanceof UserTaskDefinition) {
+      userTask.setAssignee(((UserTaskDefinition) task).getAssignee());
+    }
     return userTask;
   }
 

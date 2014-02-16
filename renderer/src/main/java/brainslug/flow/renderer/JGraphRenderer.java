@@ -72,7 +72,7 @@ public class JGraphRenderer implements Renderer {
     String label = edge.getDisplayName();
     if (edge.getSource() instanceof ChoiceDefinition) {
       for (ThenDefinition then : ((ChoiceDefinition) edge.getSource()).getThenPaths()) {
-        if (then.getPathNodes().getFirst().equals(edge.getTarget())) {
+        if (then.getPathNodes().get(1).equals(edge.getTarget())) {
           return then.getPredicateDefinition().getActual().toString();
         }
       }

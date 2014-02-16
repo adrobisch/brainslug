@@ -7,12 +7,11 @@ import java.util.LinkedList;
 
 public class FlowPathDefinition<T extends FlowPathDefinition> {
   final FlowDefinition definition;
-  FlowNodeDefinition startNode;
   LinkedList<FlowNodeDefinition> pathNodes = new LinkedList<FlowNodeDefinition>();
 
   public FlowPathDefinition(FlowDefinition definition, FlowNodeDefinition startNode) {
     this.definition = definition;
-    this.startNode = startNode;
+    pathNodes.add(startNode);
     startNode.setFlowPathDefinition(this);
   }
 
@@ -36,31 +35,34 @@ public class FlowPathDefinition<T extends FlowPathDefinition> {
   }
 
   public T end(FlowNodeDefinition<EventDefinition> eventDefinition) {
+    if (definition.contains(eventDefinition)) {
+      addToPath(eventDefinition);
+      connect(pathNodes.getLast(), definition.getNode(eventDefinition.getId()));
+      return then();
+    }
+
     eventDefinition.with(new EndEvent());
     appendNode(eventDefinition);
     return then();
   }
 
   private <T extends FlowNodeDefinition> T appendNode(T flowNodeDefinition) {
-    if (definition.getNodes().contains(flowNodeDefinition)) {
+    if (definition.contains(flowNodeDefinition)) {
       throw new IllegalStateException("Node already exists");
     }
 
-    definition.addNode(flowNodeDefinition);
-    connectToStartOrPath(flowNodeDefinition);
+    connect(pathNodes.getLast(), flowNodeDefinition);
 
-    flowNodeDefinition.setFlowPathDefinition(this);
-    pathNodes.add(flowNodeDefinition);
+    addToPath(flowNodeDefinition);
+    definition.addNode(flowNodeDefinition);
+
 
     return flowNodeDefinition;
   }
 
-  private <T extends FlowNodeDefinition> void connectToStartOrPath(T flowNodeDefinition) {
-    if(pathNodes.isEmpty()) {
-      connect(startNode, flowNodeDefinition);
-    } else {
-      connect(pathNodes.getLast(), flowNodeDefinition);
-    }
+  private <T extends FlowNodeDefinition> void addToPath(T flowNodeDefinition) {
+    pathNodes.add(flowNodeDefinition);
+    flowNodeDefinition.setFlowPathDefinition(this);
   }
 
   private <T extends FlowNodeDefinition> void connect(FlowNodeDefinition previousNode, T flowNodeDefinition) {
@@ -74,5 +76,9 @@ public class FlowPathDefinition<T extends FlowPathDefinition> {
 
   public LinkedList<FlowNodeDefinition> getPathNodes() {
     return pathNodes;
+  }
+
+  public FlowNodeDefinition getStartNode() {
+    return pathNodes.getFirst();
   }
 }

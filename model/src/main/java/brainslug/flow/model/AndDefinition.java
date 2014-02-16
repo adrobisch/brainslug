@@ -6,6 +6,6 @@ public class AndDefinition extends FlowPathDefinition<AndDefinition> {
   }
 
   public AndDefinition and() {
-    return ((ParallelDefinition) this.startNode).fork();
+    return ((ParallelDefinition) getStartNode()).fork();
   }
 }

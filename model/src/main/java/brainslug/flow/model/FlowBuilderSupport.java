@@ -87,11 +87,15 @@ public class FlowBuilderSupport {
     return new PredicateBuilder<Expression>(new Expression<T>(expression));
   }
 
-  public MethodCallDefinition service(Class<?> clazz) {
-    return new MethodCallDefinition(clazz);
+  public ServiceCallDefinition service(Class<?> clazz) {
+    return new ServiceCallDefinition(clazz);
   }
 
-  public PredicateBuilder<MethodCallDefinition> resultOf(MethodCallDefinition methodCall) {
-    return new PredicateBuilder<MethodCallDefinition>(methodCall);
+  public HandlerCallDefinition handler(Object callee) {
+    return new HandlerCallDefinition(callee);
+  }
+
+  public PredicateBuilder<CallDefinition> resultOf(CallDefinition methodCall) {
+    return new PredicateBuilder<CallDefinition>(methodCall);
   }
 }

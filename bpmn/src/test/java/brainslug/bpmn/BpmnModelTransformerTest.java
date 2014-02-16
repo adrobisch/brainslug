@@ -1,8 +1,6 @@
 package brainslug.bpmn;
 
 import brainslug.flow.model.FlowBuilder;
-import brainslug.flow.model.FlowDefinition;
-import com.sun.swing.internal.plaf.metal.resources.metal;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
@@ -11,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.ArrayList;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static brainslug.util.FlowElementAssert.assertThat;
@@ -107,12 +106,12 @@ public class BpmnModelTransformerTest {
   }
 
   @Test
-  public void shouldTransformTask() {
+  public void shouldTransformServiceTask() {
     // GIVEN:
     FlowBuilder taskFlow = new BpmnFlowBuilder() {
       @Override
       public void define() {
-        start(serviceTask(id("task")).display("Task"));
+        start(serviceTask(id("task")).delegate(Object.class).display("Task"));
       }
     };
 
@@ -121,10 +120,40 @@ public class BpmnModelTransformerTest {
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(taskFlow);
     // THEN:
     Process process = bpmnModel.getProcesses().get(0);
+    ArrayList<FlowElement> flowElements = new ArrayList<FlowElement>(process.getFlowElements());
 
     assertThat(process.getFlowElements()).hasSize(1);
     assertThat(process.getFlowElements()).hasFlowElementsWithType(Task.class, 1);
     assertThat(process.getFlowElements()).hasFlowElement(ServiceTask.class, "task", "Task");
+
+    ServiceTask serviceTask = (ServiceTask) flowElements.get(0);
+    assertThat(serviceTask.getImplementation()).isEqualTo("java.lang.Object");
+    assertThat(serviceTask.getImplementationType()).isEqualTo("class");
+  }
+
+  @Test
+  public void shouldTransformUserTask() {
+    // GIVEN:
+    FlowBuilder taskFlow = new BpmnFlowBuilder() {
+      @Override
+      public void define() {
+        start(userTask(id("task")).assignee("slug").display("User Task"));
+      }
+    };
+
+    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    // WHEN:
+    BpmnModel bpmnModel = modelTransformer.toBpmnModel(taskFlow);
+    // THEN:
+    Process process = bpmnModel.getProcesses().get(0);
+    ArrayList<FlowElement> flowElements = new ArrayList<FlowElement>(process.getFlowElements());
+
+    assertThat(process.getFlowElements()).hasSize(1);
+    assertThat(process.getFlowElements()).hasFlowElementsWithType(Task.class, 1);
+    assertThat(process.getFlowElements()).hasFlowElement(UserTask.class, "task", "User Task");
+
+    UserTask userTask = (UserTask) flowElements.get(0);
+    assertThat(userTask.getAssignee()).isEqualTo("slug");
   }
 
   @Test
@@ -151,14 +180,14 @@ public class BpmnModelTransformerTest {
   }
 
   @Test
-  public void shouldTransformChoiceAndMerge() {
+  public void shouldTransformChoiceWithJuelAndMerge() {
     // GIVEN:
     FlowBuilder choiceFlow = new BpmnFlowBuilder() {
       @Override
       public void define() {
         start(event(id("start")))
             .choice(id("choice")).display("Foo or Bar")
-            .when(expression("foo").isTrue()).then()
+            .when(juel("foo == '42'").isTrue()).then()
             .execute(userTask(id("task1")).display("Task 1"))
               .or()
             .when(expression("bar").isTrue()).then()
@@ -183,7 +212,7 @@ public class BpmnModelTransformerTest {
     assertThat(process.getFlowElements()).hasFlowElement(ExclusiveGateway.class, "choice", "Foo or Bar");
 
     assertThat(process.getFlowElements()).hasSequenceFlow("start", "choice");
-    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task1", "foo");
+    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task1", "${foo == '42'}");
     assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task2", "bar");
     assertThat(process.getFlowElements()).hasSequenceFlow("task1", "merge");
     assertThat(process.getFlowElements()).hasSequenceFlow("task2", "merge");

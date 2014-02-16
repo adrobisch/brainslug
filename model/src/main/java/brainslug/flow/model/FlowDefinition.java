@@ -26,7 +26,7 @@ public class FlowDefinition {
     return flowNodeDefinition;
   }
 
-  public FlowNodeDefinition<?> getNode(Identifier id) {
+  public FlowNodeDefinition getNode(Identifier id) {
     for (FlowNodeDefinition node: nodes) {
       if(node.getId().equals(id)) {
         return node;
@@ -45,6 +45,10 @@ public class FlowDefinition {
 
   public List<FlowNodeDefinition> getNodes() {
     return nodes;
+  }
+
+  public boolean contains(FlowNodeDefinition<?> flowNodeDefinition) {
+    return getNodes().contains(flowNodeDefinition);
   }
 
   public FlowDefinition name(String name) {

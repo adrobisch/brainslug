@@ -7,27 +7,27 @@ abstract public class AbstractTaskDefinition<T extends AbstractTaskDefinition> e
   private Class<?> delegateClass;
   private boolean async;
   private Mixable mixable;
-  private MethodCallDefinition methodCall;
+  private CallDefinition methodCall;
 
-  public AbstractTaskDefinition delegate(Class<?> delegateClass) {
+  public T delegate(Class<?> delegateClass) {
     this.delegateClass = delegateClass;
 
     return self();
   }
 
-  public AbstractTaskDefinition call(MethodCallDefinition methodCall) {
+  public T call(CallDefinition methodCall) {
     this.methodCall = methodCall;
 
     return self();
   }
 
-  public AbstractTaskDefinition async(boolean async) {
+  public T async(boolean async) {
     this.async = async;
 
     return self();
   }
 
-  public AbstractTaskDefinition marker(Mixable mixable) {
+  public T marker(Mixable mixable) {
     this.mixable = mixable;
 
     return self();
@@ -37,7 +37,7 @@ abstract public class AbstractTaskDefinition<T extends AbstractTaskDefinition> e
     return delegateClass;
   }
 
-  public MethodCallDefinition getMethodCall() {
+  public CallDefinition getMethodCall() {
     return methodCall;
   }
 
