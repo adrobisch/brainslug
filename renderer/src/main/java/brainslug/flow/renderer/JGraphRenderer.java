@@ -54,7 +54,7 @@ public class JGraphRenderer implements Renderer {
       vertices.put(node.getId().toString(), vertex);
       collectNodeEdges(edges, node);
 
-      graph.setCellStyle(Shapes.getShape(node),new Object[] {vertex});
+      graph.setCellStyle(Shapes.getShape(node), new Object[] {vertex});
     }
 
     addEdgesToGraph(edges, vertices, graph);

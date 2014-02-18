@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNodeExectuor<T>, TokenStoreAware {
-  private TokenStore tokenStore;
+  protected TokenStore tokenStore;
 
   @Override
   public List<FlowNodeDefinition> execute(T node, ExecutionContext context) {

@@ -9,6 +9,7 @@ import brainslug.flow.model.ServiceCallDefinition;
 import brainslug.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition> {
@@ -51,9 +52,21 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
   private void invokeServiceMethodWithContext(ExecutionContext context, Object serviceInstance, Method executeMethod) {
     try {
       executeMethod.setAccessible(true);
-      executeMethod.invoke(serviceInstance, context);
+      executeMethod.invoke(serviceInstance, executionArguments(context, executeMethod).toArray());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private List<Object> executionArguments(ExecutionContext context, Method executeMethod) {
+    List<Object> arguments = new ArrayList<Object>();
+    for (Class<?> parameterType : executeMethod.getParameterTypes()) {
+      if (parameterType.isAssignableFrom(ExecutionContext.class)) {
+        arguments.add(context);
+      } else {
+        arguments.add(context.getBrainslugContext().getRegistry().getService(parameterType));
+      }
+    }
+    return arguments;
   }
 }

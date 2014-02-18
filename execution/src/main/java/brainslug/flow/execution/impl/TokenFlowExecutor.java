@@ -39,6 +39,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     for (FlowNodeDefinition nextNode : next) {
 
       if (event.getInstanceId() != null) {
+        // TODO: AddToken should be a event which is processed by a token store related listener
         tokenStore.addToken(event.getInstanceId(), nextNode.getId(), new Token(node.getId()));
       }
 
@@ -68,7 +69,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor());
-    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor(tokenStore));
+    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor());
     nodeExecutors.put(TaskDefinition.class, new TaskNodeExecutor());
   }
 
