@@ -20,16 +20,17 @@ public class JGraphRenderer implements Renderer {
 
   public static final int INTER_RANK_CELL_SPACING = 75;
 
-  private final GraphFactory graphFactory;
+  private final Skin skin;
   double scale = 1.0f;
   int padding = 20;
 
-  public JGraphRenderer(GraphFactory graphFactory) {
-    this.graphFactory = graphFactory;
+  public JGraphRenderer(Skin skin) {
+    this.skin = skin;
   }
 
   private mxGraph createGraph(FlowBuilder flowBuilder) {
-    mxGraph graph = graphFactory.createGraph();
+    mxGraph graph = skin.apply(new mxGraph());
+
     graph.getModel().beginUpdate();
     try {
       convertFlowToGraph(flowBuilder, graph);
@@ -48,13 +49,13 @@ public class JGraphRenderer implements Renderer {
     Map<String, Object> vertices = new HashMap<String, Object>();
 
     for (FlowNodeDefinition<?> node : flowBuilder.getDefinition().getNodes()) {
-      mxRectangle size = graphFactory.getNodeSize(node);
+      mxRectangle size = skin.getNodeSize(node);
       Object vertex = graph.insertVertex(graph.getDefaultParent(), node.getId().toString(),
           node.getDisplayName(), 0, 0, size.getWidth(), size.getHeight());
       vertices.put(node.getId().toString(), vertex);
       collectNodeEdges(edges, node);
 
-      graph.setCellStyle(Shapes.getShape(node), new Object[] {vertex});
+      graph.setCellStyle(skin.getShape(node), new Object[] {vertex});
     }
 
     addEdgesToGraph(edges, vertices, graph);

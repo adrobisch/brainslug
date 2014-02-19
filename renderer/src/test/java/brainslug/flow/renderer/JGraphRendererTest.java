@@ -12,7 +12,6 @@ import org.mockito.stubbing.Answer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Objects;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -23,7 +22,7 @@ public class JGraphRendererTest {
   @Test
   public void writesPng() throws IOException {
     // GIVEN:
-    JGraphRenderer renderer = new JGraphRenderer(new GraphFactory());
+    JGraphRenderer renderer = new JGraphRenderer(new Skin());
     FileOutputStream outputStream = mock(FileOutputStream.class);
     // WHEN:
     renderer.render(simpleFlow(), outputStream, Format.PNG);
@@ -34,7 +33,7 @@ public class JGraphRendererTest {
   @Test
   public void writesJpg() throws IOException {
     // GIVEN:
-    JGraphRenderer renderer = new JGraphRenderer(new GraphFactory());
+    JGraphRenderer renderer = new JGraphRenderer(new Skin());
     FileOutputStream outputStream = mock(FileOutputStream.class);
     // WHEN:
     renderer.render(simpleFlow(), outputStream, Format.JPG);
@@ -267,7 +266,7 @@ public class JGraphRendererTest {
   }
 
   private class RendererWithMocks {
-    private GraphFactory graphFactory;
+    private Skin skin;
     private mxGraph graph;
     private JGraphRenderer renderer;
     private FileOutputStream outputStream;
@@ -277,7 +276,7 @@ public class JGraphRendererTest {
     }
 
     public RendererWithMocks create() {
-      graphFactory = mock(GraphFactory.class);
+      skin = mock(Skin.class);
       graph = mock(mxGraph.class);
       mxIGraphModel model = mock(mxIGraphModel.class);
       mxGraphView view = mock(mxGraphView.class);
@@ -291,10 +290,10 @@ public class JGraphRendererTest {
           return invocation.getArguments()[1];
         }
       });
-      when(graphFactory.createGraph()).thenReturn(graph);
-      when(graphFactory.getNodeSize(any(FlowNodeDefinition.class))).thenReturn(new mxRectangle(0,0,30,30));
+      when(skin.apply(any(mxGraph.class))).thenReturn(graph);
+      when(skin.getNodeSize(any(FlowNodeDefinition.class))).thenReturn(new mxRectangle(0,0,30,30));
 
-      renderer = new JGraphRenderer(graphFactory);
+      renderer = new JGraphRenderer(skin);
       outputStream = mock(FileOutputStream.class);
 
       return this;

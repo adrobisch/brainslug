@@ -17,6 +17,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>de.androbit</groupId>
+            <artifactId>brainslug-renderer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.activiti</groupId>
             <artifactId>activiti-bpmn-converter</artifactId>
             <version>5.14</version>
