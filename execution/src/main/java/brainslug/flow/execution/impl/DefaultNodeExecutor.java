@@ -1,38 +1,33 @@
 package brainslug.flow.execution.impl;
 
+import brainslug.flow.event.EventPath;
+import brainslug.flow.event.RemoveTokenEvent;
 import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.execution.FlowNodeExectuor;
-import brainslug.flow.execution.TokenStore;
-import brainslug.flow.execution.TokenStoreAware;
 import brainslug.flow.model.FlowEdgeDefinition;
 import brainslug.flow.model.FlowNodeDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNodeExectuor<T>, TokenStoreAware {
-  protected TokenStore tokenStore;
+import static brainslug.flow.event.EventPathFactory.topic;
+
+public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNodeExectuor<T> {
 
   @Override
-  public List<FlowNodeDefinition> execute(T node, ExecutionContext context) {
+  public List<FlowNodeDefinition> execute(T node, ExecutionContext execution) {
+    pushRemoveTokenEvent(execution);
     return takeAll(node);
   }
 
-  @Override
-  public void preExecute(ExecutionContext context) {
-  }
-
-  @Override
-  public void postExecute(ExecutionContext context) {
-    removeSourceTokenFromStore(context);
-  }
-
-  private void removeSourceTokenFromStore(ExecutionContext context) {
-    if (context.getTrigger().getInstanceId() != null) {
-      tokenStore.removeToken(context.getTrigger().getInstanceId(),
-        context.getTrigger().getNodeId(),
-        context.getTrigger().getSourceNodeId());
-    }
+  protected void pushRemoveTokenEvent(ExecutionContext execution) {
+    execution.getBrainslugContext().getEventDispatcher().push(EventPath.TOKENSTORE_PATH,
+      new RemoveTokenEvent()
+        .nodeId(execution.getTrigger().getNodeId())
+        .sourceNodeId(execution.getTrigger().getSourceNodeId())
+        .instanceId(execution.getTrigger().getInstanceId())
+        .definitionId(execution.getTrigger().getDefinitionId())
+    );
   }
 
   protected List<FlowNodeDefinition> takeAll(FlowNodeDefinition<?> node) {
@@ -49,8 +44,4 @@ public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNo
     return new ArrayList<FlowNodeDefinition>();
   }
 
-  @Override
-  public void setTokenStore(TokenStore tokenStore) {
-    this.tokenStore = tokenStore;
-  }
 }

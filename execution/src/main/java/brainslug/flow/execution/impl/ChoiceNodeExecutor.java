@@ -11,10 +11,12 @@ import java.util.List;
 public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceDefinition> {
 
   @Override
-  public List<FlowNodeDefinition> execute(ChoiceDefinition choiceDefinition, ExecutionContext context) {
+  public List<FlowNodeDefinition> execute(ChoiceDefinition choiceDefinition, ExecutionContext execution) {
+    pushRemoveTokenEvent(execution);
+
     List<FlowNodeDefinition> next = new ArrayList<FlowNodeDefinition>();
     for (ThenDefinition thenPath : choiceDefinition.getThenPaths()) {
-      if (context.getBrainslugContext().getPredicateEvaluator().evaluate(thenPath.getPredicateDefinition())) {
+      if (execution.getBrainslugContext().getPredicateEvaluator().evaluate(thenPath.getPredicateDefinition())) {
         next.add(thenPath.getPathNodes().get(1));
         return next;
       }

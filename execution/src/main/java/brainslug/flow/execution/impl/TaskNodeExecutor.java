@@ -14,16 +14,18 @@ import java.util.List;
 
 public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition> {
   @Override
-  public List<FlowNodeDefinition> execute(AbstractTaskDefinition taskDefinition, ExecutionContext context) {
+  public List<FlowNodeDefinition> execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
+    pushRemoveTokenEvent(execution);
+
     if (taskDefinition.getDelegateClass() != null) {
-      Object delegateInstance = context.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
-      executeDelegate(delegateInstance, context);
+      Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
+      executeDelegate(delegateInstance, execution);
     }
     else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
-      executeDelegate(((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee(), context);
+      executeDelegate(((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee(), execution);
     }
     else if (taskDefinition.getMethodCall() instanceof ServiceCallDefinition) {
-      executeMethodCall(taskDefinition, (ServiceCallDefinition) taskDefinition.getMethodCall(), context);
+      executeMethodCall(taskDefinition, (ServiceCallDefinition) taskDefinition.getMethodCall(), execution);
     }
 
     return takeAll(taskDefinition);

@@ -1,9 +1,11 @@
 package brainslug.flow.context;
 
 import brainslug.flow.event.EventDispatcher;
+import brainslug.flow.event.EventPath;
 import brainslug.flow.event.FlowEvent;
 import brainslug.flow.event.SynchronousEventDispatcher;
 import brainslug.flow.execution.FlowExecutor;
+import brainslug.flow.execution.TokenStore;
 import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
 import brainslug.flow.execution.impl.HashMapTokenStore;
 import brainslug.flow.execution.impl.TokenFlowExecutor;
@@ -12,10 +14,16 @@ import brainslug.flow.model.FlowDefinitions;
 import brainslug.flow.model.Identifier;
 import brainslug.util.UuidGenerator;
 
+import java.util.concurrent.CountDownLatch;
+
+import static brainslug.flow.event.EventPathFactory.topic;
+
 public class BrainslugContext {
+
   FlowDefinitions flowDefinitions = new FlowDefinitions();
   EventDispatcher eventDispatcher;
   FlowExecutor flowExecutor;
+  TokenStore tokenStore;
   PredicateEvaluator predicateEvaluator;
   IdGenerator idGenerator;
 
@@ -23,10 +31,18 @@ public class BrainslugContext {
 
   public BrainslugContext() {
     withDispatcher(new SynchronousEventDispatcher());
-    withExecutor(new TokenFlowExecutor(new HashMapTokenStore()));
+    withTokenStore(new HashMapTokenStore());
+    withExecutor(new TokenFlowExecutor(tokenStore));
     withRegistry(new HashMapRegistry());
     withPredicateEvaluator(new DefaultPredicateEvaluator(this));
     withIdGenerator(new UuidGenerator());
+  }
+
+  public BrainslugContext withTokenStore(TokenStore tokenStore) {
+    this.tokenStore = tokenStore;
+    eventDispatcher.removeSubscriber(tokenStore);
+    eventDispatcher.addSubscriber(EventPath.TOKENSTORE_PATH, tokenStore);
+    return this;
   }
 
   public BrainslugContext withExecutor(FlowExecutor newFlowExecutor) {
@@ -38,7 +54,7 @@ public class BrainslugContext {
   private void setupFlowExecutor(FlowExecutor newFlowExecutor) {
     this.flowExecutor = newFlowExecutor;
     flowExecutor.setContext(this);
-    eventDispatcher.addSubscriber(newFlowExecutor);
+    eventDispatcher.addSubscriber(EventPath.TRIGGER_PATH, newFlowExecutor);
   }
 
   public BrainslugContext withDispatcher(EventDispatcher eventDispatcher) {
@@ -71,7 +87,7 @@ public class BrainslugContext {
   }
 
   public void trigger(FlowEvent event) {
-    eventDispatcher.push(event);
+    eventDispatcher.push(EventPath.TRIGGER_PATH, event);
     eventDispatcher.dispatch();
   }
 

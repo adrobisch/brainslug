@@ -2,23 +2,13 @@ package brainslug.flow.event;
 
 import brainslug.flow.model.Identifier;
 
-public class TriggerEvent extends FlowEvent {
+public class TriggerEvent extends FlowEvent<TriggerEvent> {
 
-  private Identifier<?> nodeId;
   private Identifier<?> sourceNodeId;
-
-  public TriggerEvent nodeId(Identifier<?> nodeId) {
-    this.nodeId = nodeId;
-    return this;
-  }
 
   public TriggerEvent sourceNodeId(Identifier<?> sourceNodeId) {
     this.sourceNodeId = sourceNodeId;
     return this;
-  }
-
-  public Identifier<?> getNodeId() {
-    return nodeId;
   }
 
   public Identifier<?> getSourceNodeId() {

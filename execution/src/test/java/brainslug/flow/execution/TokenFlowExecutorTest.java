@@ -9,6 +9,7 @@ import brainslug.flow.model.Identifier;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import static brainslug.flow.event.EventPathFactory.topic;
 import static brainslug.flow.model.EnumIdentifier.id;
 import static brainslug.util.ID.*;
 import static org.mockito.Mockito.inOrder;
@@ -38,7 +39,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(subscriber);
+    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(CHOICEID));
     // then:
@@ -69,7 +70,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(subscriber);
+    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(PARALLELID));
     // then:
@@ -107,7 +108,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(subscriber);
+    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(MERGEID));
     // then:
@@ -146,7 +147,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(subscriber);
+    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
     // when:
     Identifier instanceId = context.startFlow(new EnumIdentifier(JOINID), new EnumIdentifier(START));
 
@@ -187,7 +188,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(subscriber);
+    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(CHOICEID));
     // then:

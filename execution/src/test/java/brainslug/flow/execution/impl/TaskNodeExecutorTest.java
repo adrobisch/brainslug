@@ -1,6 +1,8 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.AbstractExecutionTest;
+import brainslug.flow.event.EventPath;
+import brainslug.flow.event.FlowEvent;
 import brainslug.flow.event.Subscriber;
 import brainslug.flow.event.TriggerEvent;
 import brainslug.flow.execution.Execute;
@@ -10,13 +12,15 @@ import brainslug.flow.model.FlowBuilder;
 import brainslug.flow.model.FlowDefinition;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import static brainslug.flow.event.EventPathFactory.topic;
 import static brainslug.flow.model.EnumIdentifier.id;
 import static brainslug.util.ID.*;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
@@ -34,7 +38,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     context.addFlowDefinition(serviceCallFlow);
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(subscriber);
+    context.getEventDispatcher().addSubscriber(EventPath.TRIGGER_PATH, subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(serviceCallFlow.getId()));
 

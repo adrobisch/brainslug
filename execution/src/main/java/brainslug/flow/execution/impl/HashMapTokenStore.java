@@ -1,5 +1,7 @@
 package brainslug.flow.execution.impl;
 
+import brainslug.flow.event.FlowEvent;
+import brainslug.flow.event.RemoveTokenEvent;
 import brainslug.flow.execution.Token;
 import brainslug.flow.execution.TokenStore;
 import brainslug.flow.model.Identifier;
@@ -45,6 +47,13 @@ public class HashMapTokenStore implements TokenStore {
   public void createInstance(Identifier instanceId) {
     if (instanceTokenMaps.get(instanceId) == null) {
       instanceTokenMaps.put(instanceId, new TokenMap());
+    }
+  }
+
+  @Override
+  public void notify(FlowEvent event) {
+    if (event instanceof RemoveTokenEvent && event.getInstanceId() != null) {
+      removeToken(event.getInstanceId(), event.getNodeId(), ((RemoveTokenEvent) event).getSourceNodeId());
     }
   }
 

@@ -3,11 +3,12 @@ package brainslug.flow.event;
 import brainslug.flow.model.EnumIdentifier;
 import brainslug.flow.model.Identifier;
 
-public class FlowEvent {
+public class FlowEvent<T extends FlowEvent> {
 
   protected Identifier id;
   protected Identifier definitionId;
   protected Identifier instanceId;
+  protected Identifier nodeId;
 
   public Identifier getId() {
     return id;
@@ -21,27 +22,36 @@ public class FlowEvent {
     return instanceId;
   }
 
-  public FlowEvent id(Identifier id) {
-    this.id = id;
-    return this;
+  public Identifier getNodeId() {
+    return nodeId;
   }
 
-  public FlowEvent definitionId(Enum id) {
+  T self() {
+    return (T) this;
+  }
+
+  public T id(Identifier id) {
+    this.id = id;
+    return self();
+  }
+
+  public T definitionId(Enum id) {
     return definitionId(new EnumIdentifier(id));
   }
 
-  public FlowEvent definitionId(Identifier definitionId) {
+  public T definitionId(Identifier definitionId) {
     this.definitionId = definitionId;
-    return this;
+    return self();
   }
 
-  public FlowEvent instanceId(Enum id) {
-    return instanceId(new EnumIdentifier(id));
-  }
-
-  public FlowEvent instanceId(Identifier definitionId) {
+  public T instanceId(Identifier definitionId) {
     this.instanceId = definitionId;
-    return this;
+    return self();
+  }
+
+  public T nodeId(Identifier nodeId) {
+    this.nodeId = nodeId;
+    return self();
   }
 
   @Override

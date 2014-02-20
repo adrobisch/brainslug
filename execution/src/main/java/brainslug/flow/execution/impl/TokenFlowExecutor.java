@@ -26,9 +26,7 @@ public class TokenFlowExecutor implements FlowExecutor {
 
       DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerEvent, context);
 
-      nodeExecutor.preExecute(executionContext);
       List<FlowNodeDefinition> next = nodeExecutor.execute(node, executionContext);
-      nodeExecutor.postExecute(executionContext);
 
       triggerNext(triggerEvent, node, next);
     }
@@ -49,7 +47,7 @@ public class TokenFlowExecutor implements FlowExecutor {
         .definitionId(event.getDefinitionId())
         .instanceId(event.getInstanceId());
 
-      context.getEventDispatcher().push(triggerEvent);
+      context.trigger(triggerEvent);
     }
   }
 
@@ -69,12 +67,13 @@ public class TokenFlowExecutor implements FlowExecutor {
     nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor());
-    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor());
+    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor(tokenStore));
     nodeExecutors.put(TaskDefinition.class, new TaskNodeExecutor());
   }
 
   @Override
   public void notify(FlowEvent event) {
+    System.out.println(event);
     eventHandlers.get(event.getClass()).handle(event);
   }
 
@@ -110,8 +109,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     tokenStore.createInstance(instanceId);
     tokenStore.addToken(instanceId, nodeId, new Token(nodeId));
 
-    context.getEventDispatcher().push(new TriggerEvent().sourceNodeId(node.getId()).nodeId(node.getId()).definitionId(definitionId).instanceId(instanceId));
-    context.getEventDispatcher().dispatch();
+    context.trigger(new TriggerEvent().sourceNodeId(node.getId()).nodeId(node.getId()).definitionId(definitionId).instanceId(instanceId));
 
     return instanceId;
   }
