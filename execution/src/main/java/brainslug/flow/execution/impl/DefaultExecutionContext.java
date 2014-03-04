@@ -1,21 +1,20 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.event.TriggerEvent;
+import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.execution.ExecutionContext;
-import brainslug.flow.model.Identifier;
 
 public class DefaultExecutionContext implements ExecutionContext {
 
-  TriggerEvent trigger;
+  TriggerContext trigger;
   BrainslugContext brainslugContext;
 
-  public DefaultExecutionContext(TriggerEvent trigger, BrainslugContext brainslugContext) {
+  public DefaultExecutionContext(TriggerContext trigger, BrainslugContext brainslugContext) {
     this.trigger = trigger;
     this.brainslugContext = brainslugContext;
   }
 
-  public TriggerEvent getTrigger() {
+  public TriggerContext getTrigger() {
     return trigger;
   }
 

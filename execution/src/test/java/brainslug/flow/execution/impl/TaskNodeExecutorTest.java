@@ -1,9 +1,9 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.AbstractExecutionTest;
-import brainslug.flow.event.EventPath;
-import brainslug.flow.event.Subscriber;
-import brainslug.flow.event.TriggerEvent;
+import brainslug.flow.listener.EventType;
+import brainslug.flow.listener.Listener;
+import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.execution.Execute;
 import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.execution.TaskHandler;
@@ -15,7 +15,6 @@ import org.mockito.InOrder;
 import static brainslug.flow.model.EnumIdentifier.id;
 import static brainslug.util.ID.*;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class TaskNodeExecutorTest extends AbstractExecutionTest {
@@ -33,18 +32,18 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
     context.addFlowDefinition(serviceCallFlow);
 
-    Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(EventPath.TRIGGER_PATH, subscriber);
+    Listener listener = mock(Listener.class);
+    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(serviceCallFlow.getId()));
+    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(serviceCallFlow.getId()));
 
     // then:
     verify(testService).getString();
 
-    InOrder eventOrder = inOrder(subscriber);
-    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(START)).definitionId(serviceCallFlow.getId()));
-    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(TASK)).sourceNodeId(id(START)).definitionId(serviceCallFlow.getId()));
-    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(END)).sourceNodeId(id(TASK)).definitionId(serviceCallFlow.getId()));
+    InOrder eventOrder = inOrder(listener);
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(serviceCallFlow.getId()));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(START)).definitionId(serviceCallFlow.getId()));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(END)).sourceNodeId(id(TASK)).definitionId(serviceCallFlow.getId()));
     eventOrder.verifyNoMoreInteractions();
   }
 
@@ -67,7 +66,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
     context.addFlowDefinition(handlerFlow);
     // when:
-    context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(handlerFlow.getId()));
+    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(handlerFlow.getId()));
   }
 
 }

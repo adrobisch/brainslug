@@ -1,14 +1,19 @@
-package brainslug.flow.event;
+package brainslug.flow.listener;
 
 import brainslug.flow.model.EnumIdentifier;
 import brainslug.flow.model.Identifier;
 
-public class FlowEvent<T extends FlowEvent> {
+public class TriggerContext<T extends TriggerContext> {
 
   protected Identifier id;
   protected Identifier definitionId;
   protected Identifier instanceId;
   protected Identifier nodeId;
+  protected Identifier<?> sourceNodeId;
+
+  public Identifier<?> getSourceNodeId() {
+    return sourceNodeId;
+  }
 
   public Identifier getId() {
     return id;
@@ -54,17 +59,25 @@ public class FlowEvent<T extends FlowEvent> {
     return self();
   }
 
+  public T sourceNodeId(Identifier sourceNodeId) {
+    this.sourceNodeId = sourceNodeId;
+    return self();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    FlowEvent flowEvent = (FlowEvent) o;
+    TriggerContext triggerContext = (TriggerContext) o;
 
-    if (definitionId != null ? !definitionId.equals(flowEvent.definitionId) : flowEvent.definitionId != null)
+    if (definitionId != null ? !definitionId.equals(triggerContext.definitionId) : triggerContext.definitionId != null)
       return false;
-    if (id != null ? !id.equals(flowEvent.id) : flowEvent.id != null) return false;
-    if (instanceId != null ? !instanceId.equals(flowEvent.instanceId) : flowEvent.instanceId != null) return false;
+    if (id != null ? !id.equals(triggerContext.id) : triggerContext.id != null) return false;
+    if (instanceId != null ? !instanceId.equals(triggerContext.instanceId) : triggerContext.instanceId != null) return false;
+    if (nodeId != null ? !nodeId.equals(triggerContext.nodeId) : triggerContext.nodeId != null) return false;
+    if (sourceNodeId != null ? !sourceNodeId.equals(triggerContext.sourceNodeId) : triggerContext.sourceNodeId != null)
+      return false;
 
     return true;
   }
@@ -74,15 +87,19 @@ public class FlowEvent<T extends FlowEvent> {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + (definitionId != null ? definitionId.hashCode() : 0);
     result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
+    result = 31 * result + (nodeId != null ? nodeId.hashCode() : 0);
+    result = 31 * result + (sourceNodeId != null ? sourceNodeId.hashCode() : 0);
     return result;
   }
 
   @Override
   public String toString() {
-    return "FlowEvent{" +
+    return "TriggerContext{" +
       "id=" + id +
       ", definitionId=" + definitionId +
       ", instanceId=" + instanceId +
+      ", nodeId=" + nodeId +
+      ", sourceNodeId=" + sourceNodeId +
       '}';
   }
 }

@@ -1,7 +1,5 @@
 package brainslug.flow.execution.impl;
 
-import brainslug.flow.event.FlowEvent;
-import brainslug.flow.event.RemoveTokenEvent;
 import brainslug.flow.execution.Token;
 import brainslug.flow.execution.TokenStore;
 import brainslug.flow.model.Identifier;
@@ -35,10 +33,10 @@ public class HashMapTokenStore implements TokenStore {
   }
 
   @Override
-  public void removeToken(Identifier instanceId, Identifier nodeId, Identifier sourceNodeId) {
+  public void removeToken(Identifier instanceId, Identifier nodeId, Token token) {
     Map<Identifier, List<Token>> sourceNodeMap = sourceNodeMap(requireTokenMap(instanceId).get(nodeId));
-    if (sourceNodeMap.get(sourceNodeId).size() > 0) {
-      Token firstTokenFromSource = sourceNodeMap.get(sourceNodeId).get(0);
+    if (sourceNodeMap.get(token.getSourceNode()).size() > 0) {
+      Token firstTokenFromSource = sourceNodeMap.get(token.getSourceNode()).get(0);
       requireTokenMap(instanceId).get(nodeId).remove(firstTokenFromSource);
     }
   }
@@ -47,13 +45,6 @@ public class HashMapTokenStore implements TokenStore {
   public void createInstance(Identifier instanceId) {
     if (instanceTokenMaps.get(instanceId) == null) {
       instanceTokenMaps.put(instanceId, new TokenMap());
-    }
-  }
-
-  @Override
-  public void notify(FlowEvent event) {
-    if (event instanceof RemoveTokenEvent && event.getInstanceId() != null) {
-      removeToken(event.getInstanceId(), event.getNodeId(), ((RemoveTokenEvent) event).getSourceNodeId());
     }
   }
 

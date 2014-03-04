@@ -1,9 +1,9 @@
 package brainslug.flow.execution;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.event.TriggerEvent;
+import brainslug.flow.listener.TriggerContext;
 
 public interface ExecutionContext {
   BrainslugContext getBrainslugContext();
-  TriggerEvent getTrigger();
+  TriggerContext getTrigger();
 }

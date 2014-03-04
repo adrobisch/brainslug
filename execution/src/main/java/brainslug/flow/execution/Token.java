@@ -3,13 +3,13 @@ package brainslug.flow.execution;
 import brainslug.flow.model.Identifier;
 
 public class Token {
-  Identifier<String> sourceNode;
+  Identifier sourceNode;
 
-  public Token(Identifier<String> sourceNode) {
+  public Token(Identifier sourceNode) {
     this.sourceNode = sourceNode;
   }
 
-  public Identifier<String> getSourceNode() {
+  public Identifier getSourceNode() {
     return sourceNode;
   }
 

@@ -19,13 +19,13 @@ public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNo
 
   protected void removeTriggerToken(ExecutionContext execution) {
     if (execution.getTrigger().getInstanceId() != null) {
-      tokenStore.removeToken(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId(), execution.getTrigger().getSourceNodeId());
+      tokenStore.removeToken(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId(), new Token(execution.getTrigger().getSourceNodeId()));
     }
   }
 
   protected void removeTokens(ExecutionContext execution, List<Token> tokens) {
     for (Token token : tokens) {
-      tokenStore.removeToken(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId(), token.getSourceNode());
+      tokenStore.removeToken(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId(), token);
     }
   }
 

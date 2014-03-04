@@ -1,8 +1,8 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.event.FlowEvent;
-import brainslug.flow.event.TriggerEvent;
+import brainslug.flow.listener.EventType;
+import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.execution.*;
 import brainslug.flow.model.*;
 import org.slf4j.Logger;
@@ -20,50 +20,11 @@ public class TokenFlowExecutor implements FlowExecutor {
   protected TokenStore tokenStore;
 
   Map<Class<? extends FlowNodeDefinition>, FlowNodeExectuor> nodeExecutors = new HashMap<Class<? extends FlowNodeDefinition>, FlowNodeExectuor>();
-  Map<Class<? extends FlowEvent>, EventHandler> eventHandlers = new HashMap<Class<? extends FlowEvent>, EventHandler>();
-
-  protected EventHandler<TriggerEvent> triggerNodeHandler = new EventHandler<TriggerEvent>() {
-    @Override
-    public void handle(TriggerEvent triggerEvent) {
-      FlowNodeDefinition node = getNode(triggerEvent.getDefinitionId(), triggerEvent.getNodeId());
-      FlowNodeExectuor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
-
-      DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerEvent, context);
-
-      List<FlowNodeDefinition> next = nodeExecutor.execute(node, executionContext);
-
-      triggerNext(triggerEvent, node, next);
-    }
-
-  };
-
-  protected void triggerNext(TriggerEvent event, FlowNodeDefinition<?> node, List<FlowNodeDefinition> next) {
-    for (FlowNodeDefinition nextNode : next) {
-
-      if (event.getInstanceId() != null) {
-        // TODO: AddToken should be a event which is processed by a token store related listener
-        tokenStore.addToken(event.getInstanceId(), nextNode.getId(), new Token(node.getId()));
-      }
-
-      FlowEvent triggerEvent = new TriggerEvent()
-        .nodeId(nextNode.getId())
-        .sourceNodeId(node.getId())
-        .definitionId(event.getDefinitionId())
-        .instanceId(event.getInstanceId());
-
-      context.trigger(triggerEvent);
-    }
-  }
 
   public TokenFlowExecutor(TokenStore tokenStore) {
     this.tokenStore = tokenStore;
 
     addNodeExecutorMappings();
-    addEventHandlers();
-  }
-
-  private void addEventHandlers() {
-    eventHandlers.put(TriggerEvent.class, triggerNodeHandler);
   }
 
   void addNodeExecutorMappings() {
@@ -73,12 +34,6 @@ public class TokenFlowExecutor implements FlowExecutor {
     nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor());
     nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor(tokenStore));
     nodeExecutors.put(TaskDefinition.class, new TaskNodeExecutor());
-  }
-
-  @Override
-  public void notify(FlowEvent event) {
-    log.debug("executing {}", event);
-    eventHandlers.get(event.getClass()).handle(event);
   }
 
   FlowNodeDefinition<?> getNode(Identifier definitionId, Identifier nodeId) {
@@ -113,12 +68,41 @@ public class TokenFlowExecutor implements FlowExecutor {
     tokenStore.createInstance(instanceId);
     tokenStore.addToken(instanceId, nodeId, new Token(nodeId));
 
-    context.trigger(new TriggerEvent().sourceNodeId(node.getId()).nodeId(node.getId()).definitionId(definitionId).instanceId(instanceId));
+    context.trigger(new TriggerContext().sourceNodeId(node.getId()).nodeId(node.getId()).definitionId(definitionId).instanceId(instanceId));
 
     return instanceId;
   }
 
-  interface EventHandler<T extends FlowEvent> {
-    public void handle(T event);
+  @Override
+  public void trigger(TriggerContext triggerContext) {
+    log.debug("triggering {}", triggerContext);
+
+    FlowNodeDefinition node = getNode(triggerContext.getDefinitionId(), triggerContext.getNodeId());
+    FlowNodeExectuor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
+
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerContext, context);
+
+    context.getListenerManager().notifyListeners(EventType.BEFORE_EXECUTION, triggerContext);
+    List<FlowNodeDefinition> next = nodeExecutor.execute(node, executionContext);
+    context.getListenerManager().notifyListeners(EventType.AFTER_EXECUTION, triggerContext);
+
+    triggerNext(triggerContext, node, next);
+  }
+
+  protected void triggerNext(TriggerContext event, FlowNodeDefinition<?> node, List<FlowNodeDefinition> next) {
+    for (FlowNodeDefinition nextNode : next) {
+
+      if (event.getInstanceId() != null) {
+        tokenStore.addToken(event.getInstanceId(), nextNode.getId(), new Token(node.getId()));
+      }
+
+      TriggerContext triggerEvent = new TriggerContext()
+        .nodeId(nextNode.getId())
+        .sourceNodeId(node.getId())
+        .definitionId(event.getDefinitionId())
+        .instanceId(event.getInstanceId());
+
+      context.trigger(triggerEvent);
+    }
   }
 }

@@ -1,9 +1,8 @@
 package brainslug.flow.context;
 
-import brainslug.flow.event.EventDispatcher;
-import brainslug.flow.event.EventPath;
-import brainslug.flow.event.FlowEvent;
-import brainslug.flow.event.SynchronousEventDispatcher;
+import brainslug.flow.listener.DefaultListenerManager;
+import brainslug.flow.listener.ListenerManager;
+import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.execution.FlowExecutor;
 import brainslug.flow.execution.TokenStore;
 import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
@@ -17,7 +16,7 @@ import brainslug.util.UuidGenerator;
 public class BrainslugContext {
 
   FlowDefinitions flowDefinitions = new FlowDefinitions();
-  EventDispatcher eventDispatcher;
+  ListenerManager listenerManager;
   FlowExecutor flowExecutor;
   TokenStore tokenStore;
   PredicateEvaluator predicateEvaluator;
@@ -26,7 +25,7 @@ public class BrainslugContext {
   Registry registry;
 
   public BrainslugContext() {
-    withDispatcher(new SynchronousEventDispatcher());
+    withDispatcher(new DefaultListenerManager());
     withTokenStore(new HashMapTokenStore());
     withExecutor(new TokenFlowExecutor(tokenStore));
     withRegistry(new HashMapRegistry());
@@ -36,13 +35,10 @@ public class BrainslugContext {
 
   public BrainslugContext withTokenStore(TokenStore tokenStore) {
     this.tokenStore = tokenStore;
-    eventDispatcher.removeSubscriber(tokenStore);
-    eventDispatcher.addSubscriber(EventPath.TOKENSTORE_PATH, tokenStore);
     return this;
   }
 
   public BrainslugContext withExecutor(FlowExecutor newFlowExecutor) {
-    eventDispatcher.removeSubscriber(flowExecutor);
     setupFlowExecutor(newFlowExecutor);
     return this;
   }
@@ -50,11 +46,10 @@ public class BrainslugContext {
   private void setupFlowExecutor(FlowExecutor newFlowExecutor) {
     this.flowExecutor = newFlowExecutor;
     flowExecutor.setContext(this);
-    eventDispatcher.addSubscriber(EventPath.TRIGGER_PATH, newFlowExecutor);
   }
 
-  public BrainslugContext withDispatcher(EventDispatcher eventDispatcher) {
-    this.eventDispatcher = eventDispatcher;
+  public BrainslugContext withDispatcher(ListenerManager listenerManager) {
+    this.listenerManager = listenerManager;
     return this;
   }
 
@@ -82,17 +77,16 @@ public class BrainslugContext {
     return flowDefinitions;
   }
 
-  public void trigger(FlowEvent event) {
-    eventDispatcher.push(EventPath.TRIGGER_PATH, event);
-    eventDispatcher.dispatch();
+  public void trigger(TriggerContext context) {
+    flowExecutor.trigger(context);
   }
 
   public Identifier startFlow(Identifier definitionId, Identifier nodeId) {
     return flowExecutor.startFlow(definitionId, nodeId);
   }
 
-  public EventDispatcher getEventDispatcher() {
-    return eventDispatcher;
+  public ListenerManager getListenerManager() {
+    return listenerManager;
   }
 
   public Registry getRegistry() {
