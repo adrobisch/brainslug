@@ -5,12 +5,16 @@ import brainslug.flow.event.FlowEvent;
 import brainslug.flow.event.TriggerEvent;
 import brainslug.flow.execution.*;
 import brainslug.flow.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TokenFlowExecutor implements FlowExecutor {
+
+  private Logger log = LoggerFactory.getLogger(TokenFlowExecutor.class);
 
   protected BrainslugContext context;
   protected TokenStore tokenStore;
@@ -73,7 +77,7 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   @Override
   public void notify(FlowEvent event) {
-    System.out.println(event);
+    log.debug("executing {}", event);
     eventHandlers.get(event.getClass()).handle(event);
   }
 

@@ -12,7 +12,7 @@ public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceDefinition> {
 
   @Override
   public List<FlowNodeDefinition> execute(ChoiceDefinition choiceDefinition, ExecutionContext execution) {
-    pushRemoveTokenEvent(execution);
+    removeTriggerToken(execution);
 
     List<FlowNodeDefinition> next = new ArrayList<FlowNodeDefinition>();
     for (ThenDefinition thenPath : choiceDefinition.getThenPaths()) {

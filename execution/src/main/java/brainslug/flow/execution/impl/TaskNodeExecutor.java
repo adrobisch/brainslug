@@ -15,7 +15,7 @@ import java.util.List;
 public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition> {
   @Override
   public List<FlowNodeDefinition> execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
-    pushRemoveTokenEvent(execution);
+    removeTriggerToken(execution);
 
     if (taskDefinition.getDelegateClass() != null) {
       Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());

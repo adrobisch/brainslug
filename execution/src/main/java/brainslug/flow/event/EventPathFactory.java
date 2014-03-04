@@ -1,7 +1,7 @@
 package brainslug.flow.event;
 
 public class EventPathFactory {
-  public static EventPath topic(String topic) {
-    return new TopicEventPath(topic);
+  public static EventPath path(String path) {
+    return new TopicEventPath(path);
   }
 }

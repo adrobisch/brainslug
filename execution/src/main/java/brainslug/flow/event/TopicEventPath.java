@@ -27,4 +27,11 @@ public class TopicEventPath implements EventPath {
   public int hashCode() {
     return topic != null ? topic.hashCode() : 0;
   }
+
+  @Override
+  public String toString() {
+    return "TopicEventPath{" +
+        "path='" + topic + '\'' +
+        '}';
+  }
 }

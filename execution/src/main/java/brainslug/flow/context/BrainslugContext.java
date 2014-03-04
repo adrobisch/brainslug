@@ -14,10 +14,6 @@ import brainslug.flow.model.FlowDefinitions;
 import brainslug.flow.model.Identifier;
 import brainslug.util.UuidGenerator;
 
-import java.util.concurrent.CountDownLatch;
-
-import static brainslug.flow.event.EventPathFactory.topic;
-
 public class BrainslugContext {
 
   FlowDefinitions flowDefinitions = new FlowDefinitions();

@@ -39,8 +39,8 @@ public class TriggerEvent extends FlowEvent<TriggerEvent> {
 
   @Override
   public String toString() {
-    return "TriggerEvent{" +
-      "nodeId=" + nodeId +
+    return "TriggerEvent{ class: " + getClass().getName() +
+      ", nodeId=" + nodeId +
       ", sourceNodeId=" + sourceNodeId +
       '}';
   }

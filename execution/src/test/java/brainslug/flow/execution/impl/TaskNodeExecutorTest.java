@@ -2,7 +2,6 @@ package brainslug.flow.execution.impl;
 
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.event.EventPath;
-import brainslug.flow.event.FlowEvent;
 import brainslug.flow.event.Subscriber;
 import brainslug.flow.event.TriggerEvent;
 import brainslug.flow.execution.Execute;
@@ -12,10 +11,7 @@ import brainslug.flow.model.FlowBuilder;
 import brainslug.flow.model.FlowDefinition;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import static brainslug.flow.event.EventPathFactory.topic;
 import static brainslug.flow.model.EnumIdentifier.id;
 import static brainslug.util.ID.*;
 import static org.fest.assertions.api.Assertions.assertThat;

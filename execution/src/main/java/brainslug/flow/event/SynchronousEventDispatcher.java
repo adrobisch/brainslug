@@ -1,12 +1,16 @@
 package brainslug.flow.event;
 
 import brainslug.flow.context.BrainslugContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class SynchronousEventDispatcher implements EventDispatcher {
+
+  Logger log = LoggerFactory.getLogger(SynchronousEventDispatcher.class);
 
   BrainslugContext context;
   Map<EventPath, Set<Subscriber>> subscribers = new HashMap<EventPath, Set<Subscriber>>();
@@ -15,16 +19,17 @@ public class SynchronousEventDispatcher implements EventDispatcher {
 
   @Override
   public void push(EventPath path, FlowEvent event) {
+    log.debug("enqueuing {}", event);
     queue.push(new QueuedEvent(event, path));
   }
 
   @Override
-  public void dispatch() {
+  synchronized public void dispatch() {
     if (dispatchInProgress()) {
       return;
     }
     while (!queue.isEmpty()) {
-      QueuedEvent event = queue.pop();
+      QueuedEvent event = queue.pollLast();
       notifySubscribers(event);
     }
     countDownLatch.countDown();
@@ -39,7 +44,7 @@ public class SynchronousEventDispatcher implements EventDispatcher {
   }
 
   private void notifySubscribers(QueuedEvent event) {
-    System.out.println(event);
+    log.debug("notify subscribers: {}", event);
 
     if (subscribers.get(event.getEventPath()) == null) {
       throw new IllegalStateException("trying to notify empty set of subscribers");

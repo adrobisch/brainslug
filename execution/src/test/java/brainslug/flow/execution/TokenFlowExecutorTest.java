@@ -9,7 +9,7 @@ import brainslug.flow.model.Identifier;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import static brainslug.flow.event.EventPathFactory.topic;
+import static brainslug.flow.event.EventPathFactory.path;
 import static brainslug.flow.model.EnumIdentifier.id;
 import static brainslug.util.ID.*;
 import static org.mockito.Mockito.inOrder;
@@ -39,7 +39,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
+    context.getEventDispatcher().addSubscriber(path("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(CHOICEID));
     // then:
@@ -70,15 +70,15 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
+    context.getEventDispatcher().addSubscriber(path("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(PARALLELID));
     // then:
     InOrder eventOrder = inOrder(subscriber);
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(START)).definitionId(PARALLELID));
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(PARALLEL)).sourceNodeId(id(START)).definitionId(PARALLELID));
-    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(TASK2)).sourceNodeId(id(PARALLEL)).definitionId(PARALLELID));
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(TASK)).sourceNodeId(id(PARALLEL)).definitionId(PARALLELID));
+    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(TASK2)).sourceNodeId(id(PARALLEL)).definitionId(PARALLELID));
     eventOrder.verifyNoMoreInteractions();
   }
 
@@ -108,7 +108,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
+    context.getEventDispatcher().addSubscriber(path("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(MERGEID));
     // then:
@@ -147,7 +147,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
+    context.getEventDispatcher().addSubscriber(path("trigger"), subscriber);
     // when:
     Identifier instanceId = context.startFlow(new EnumIdentifier(JOINID), new EnumIdentifier(START));
 
@@ -155,10 +155,10 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     InOrder eventOrder = inOrder(subscriber);
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(START)).sourceNodeId(id(START)).definitionId(JOINID).instanceId(instanceId));
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(PARALLEL)).sourceNodeId(id(START)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(TASK2)).sourceNodeId(id(PARALLEL)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(JOIN)).sourceNodeId(id(TASK2)).definitionId(JOINID).instanceId(instanceId));
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(TASK)).sourceNodeId(id(PARALLEL)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(TASK2)).sourceNodeId(id(PARALLEL)).definitionId(JOINID).instanceId(instanceId));
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(JOIN)).sourceNodeId(id(TASK)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(JOIN)).sourceNodeId(id(TASK2)).definitionId(JOINID).instanceId(instanceId));
     eventOrder.verify(subscriber).notify(new TriggerEvent().nodeId(id(END)).sourceNodeId(id(JOIN)).definitionId(JOINID).instanceId(instanceId));
 
     eventOrder.verifyNoMoreInteractions();
@@ -188,7 +188,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     Subscriber subscriber = mock(Subscriber.class);
-    context.getEventDispatcher().addSubscriber(topic("trigger"), subscriber);
+    context.getEventDispatcher().addSubscriber(path("trigger"), subscriber);
     // when:
     context.trigger(new TriggerEvent().nodeId(id(START)).definitionId(CHOICEID));
     // then:
