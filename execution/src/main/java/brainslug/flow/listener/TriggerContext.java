@@ -3,6 +3,9 @@ package brainslug.flow.listener;
 import brainslug.flow.model.EnumIdentifier;
 import brainslug.flow.model.Identifier;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TriggerContext<T extends TriggerContext> {
 
   protected Identifier id;
@@ -10,6 +13,8 @@ public class TriggerContext<T extends TriggerContext> {
   protected Identifier instanceId;
   protected Identifier nodeId;
   protected Identifier<?> sourceNodeId;
+
+  protected Map<Object, Object> properties;
 
   public Identifier<?> getSourceNodeId() {
     return sourceNodeId;
@@ -62,6 +67,35 @@ public class TriggerContext<T extends TriggerContext> {
   public T sourceNodeId(Identifier sourceNodeId) {
     this.sourceNodeId = sourceNodeId;
     return self();
+  }
+
+  public void setProperty(Object key, Object value) {
+    if (properties == null) {
+      properties = new HashMap<Object, Object>();
+    }
+    properties.put(key, value);
+  }
+
+  public <T> T getProperty(Object key, Class<T> type) {
+    return (T) properties.get(key);
+  }
+
+  public <T> T getProperty(Class<T> type) {
+    T result = null;
+    int typeCount = 0;
+    for (Object object : properties.values()) {
+
+      if(object.getClass().isAssignableFrom(type)) {
+        result = (T) object;
+        typeCount ++;
+      }
+    }
+    if (typeCount == 0) {
+      throw new IllegalArgumentException(String.format("no property of type %s exists", type));
+    }else if(typeCount > 1) {
+      throw new IllegalArgumentException(String.format("multiple properties of type %s exist", type));
+    }
+    return result;
   }
 
   @Override
