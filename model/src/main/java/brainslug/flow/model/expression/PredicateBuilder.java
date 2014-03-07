@@ -8,8 +8,8 @@ public class PredicateBuilder<T> {
     this.value = value;
   }
 
-  public <A> EqualDefinition<T, Constant<A>> isEqualTo(final A expectedValue) {
-    return new EqualDefinition<T, Constant<A>>(value, new Constant<A>(expectedValue));
+  public <A> EqualDefinition<T, Expression<A>> isEqualTo(final A expectedValue) {
+    return new EqualDefinition<T, Expression<A>>(value, new Expression<A>(expectedValue));
   }
 
   public TrueDefinition<T> isTrue() {

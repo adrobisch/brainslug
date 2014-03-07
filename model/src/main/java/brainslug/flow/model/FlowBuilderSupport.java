@@ -1,8 +1,8 @@
 package brainslug.flow.model;
 
 import brainslug.flow.model.expression.PredicateBuilder;
-import brainslug.flow.model.expression.Constant;
 import brainslug.flow.model.expression.Expression;
+import brainslug.flow.model.expression.Property;
 import brainslug.flow.model.marker.StartEvent;
 
 import java.util.Arrays;
@@ -79,12 +79,16 @@ public class FlowBuilderSupport {
     return new EventDefinition().id(id).display(id.toString());
   }
 
-  public <T> PredicateBuilder<Constant<T>> constant(T value) {
-    return new PredicateBuilder<Constant<T>>(new Constant<T>(value));
-  }
-
   public <T> PredicateBuilder<Expression> expression(T expression) {
     return new PredicateBuilder<Expression>(new Expression<T>(expression));
+  }
+
+  public <T> PredicateBuilder<Expression> constant(T expression) {
+    return expression(expression);
+  }
+
+  public <T extends Identifier> PredicateBuilder<Property> property(T expression) {
+    return new PredicateBuilder<Property>(new Property(expression));
   }
 
   public ServiceCallDefinition service(Class<?> clazz) {

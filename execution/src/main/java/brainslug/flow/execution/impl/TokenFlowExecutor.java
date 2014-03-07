@@ -1,9 +1,9 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.execution.*;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.TriggerContext;
-import brainslug.flow.execution.*;
 import brainslug.flow.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +100,8 @@ public class TokenFlowExecutor implements FlowExecutor {
         .nodeId(nextNode.getId())
         .sourceNodeId(node.getId())
         .definitionId(event.getDefinitionId())
-        .instanceId(event.getInstanceId());
+        .instanceId(event.getInstanceId())
+        .properties(event.getProperties());
 
       context.trigger(triggerEvent);
     }

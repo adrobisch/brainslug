@@ -110,7 +110,7 @@ public class BpmnModelTransformer {
   private String getExpressionString(ThenDefinition then) {
     if (then.getPredicateDefinition().getActual() instanceof Expression) {
       Expression expression = (Expression) then.getPredicateDefinition().getActual();
-      return expression.toString();
+      return expression.getString();
     }
     throw new UnsupportedOperationException("can only get expression string for Expression predicate");
   }

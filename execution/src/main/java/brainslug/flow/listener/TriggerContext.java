@@ -16,7 +16,7 @@ public class TriggerContext<T extends TriggerContext> {
 
   protected Map<Object, Object> properties;
 
-  public Identifier<?> getSourceNodeId() {
+  public Identifier getSourceNodeId() {
     return sourceNodeId;
   }
 
@@ -69,21 +69,33 @@ public class TriggerContext<T extends TriggerContext> {
     return self();
   }
 
+  public T properties(Map<Object, Object> properties) {
+    this.properties = properties;
+    return self();
+  }
+
+  public T property(Object value) {
+    setProperty(value.getClass().getName(), value);
+    return self();
+  }
+
+  public T property(Object key, Object value) {
+    setProperty(key, value);
+    return self();
+  }
+
   public void setProperty(Object key, Object value) {
-    if (properties == null) {
-      properties = new HashMap<Object, Object>();
-    }
-    properties.put(key, value);
+    getProperties().put(key, value);
   }
 
   public <T> T getProperty(Object key, Class<T> type) {
-    return (T) properties.get(key);
+    return (T) getProperties().get(key);
   }
 
   public <T> T getProperty(Class<T> type) {
     T result = null;
     int typeCount = 0;
-    for (Object object : properties.values()) {
+    for (Object object : getProperties().values()) {
 
       if(object.getClass().isAssignableFrom(type)) {
         result = (T) object;
@@ -96,6 +108,13 @@ public class TriggerContext<T extends TriggerContext> {
       throw new IllegalArgumentException(String.format("multiple properties of type %s exist", type));
     }
     return result;
+  }
+
+  public Map<Object, Object> getProperties() {
+    if (properties == null) {
+      properties = new HashMap<Object, Object>();
+    }
+    return properties;
   }
 
   @Override
@@ -129,11 +148,12 @@ public class TriggerContext<T extends TriggerContext> {
   @Override
   public String toString() {
     return "TriggerContext{" +
-      "id=" + id +
-      ", definitionId=" + definitionId +
-      ", instanceId=" + instanceId +
-      ", nodeId=" + nodeId +
-      ", sourceNodeId=" + sourceNodeId +
-      '}';
+        "id=" + id +
+        ", definitionId=" + definitionId +
+        ", instanceId=" + instanceId +
+        ", nodeId=" + nodeId +
+        ", sourceNodeId=" + sourceNodeId +
+        ", properties=" + properties +
+        '}';
   }
 }

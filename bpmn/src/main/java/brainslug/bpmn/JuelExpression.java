@@ -8,7 +8,7 @@ public class JuelExpression extends Expression<String> {
   }
 
   @Override
-  public String toString() {
+  public String getString() {
     return String.format("${%s}", getValue());
   }
 }

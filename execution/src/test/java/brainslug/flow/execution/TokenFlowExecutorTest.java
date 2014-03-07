@@ -1,7 +1,6 @@
 package brainslug.flow.execution;
 
 import brainslug.AbstractExecutionTest;
-import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
 import brainslug.flow.listener.TriggerContext;
@@ -11,49 +10,12 @@ import brainslug.flow.model.Identifier;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import java.rmi.registry.Registry;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicMarkableReference;
-
 import static brainslug.flow.model.EnumIdentifier.id;
 import static brainslug.util.ID.*;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 public class TokenFlowExecutorTest extends AbstractExecutionTest {
-
-  @Test
-  public void shouldExecuteChoice() {
-    // given:
-    context.addFlowDefinition(new FlowBuilder() {
-      String x = "test";
-
-      @Override
-      public void define() {
-        start(event(id(START))).choice(id(CHOICE))
-          .when(constant(x).isEqualTo("test")).execute(task(id(TASK)))
-          .or()
-          .when(constant(x).isEqualTo("test2")).execute(task(id(TASK2)));
-      }
-
-      @Override
-      public String getId() {
-        return CHOICEID.name();
-      }
-
-    }.getDefinition());
-
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
-    // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID));
-    // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(null).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID));
-    eventOrder.verifyNoMoreInteractions();
-  }
 
   @Test
   public void shouldExecuteParallel() {
@@ -115,7 +77,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     Listener listener = mock(Listener.class);
     context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(MERGEID));
+    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(MERGEID).property(new String("bla")));
     // then:
     InOrder eventOrder = inOrder(listener);
     eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(MERGEID));

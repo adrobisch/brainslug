@@ -29,7 +29,7 @@ public class BrainslugContext {
     withTokenStore(new HashMapTokenStore());
     withExecutor(new TokenFlowExecutor(tokenStore));
     withRegistry(new HashMapRegistry());
-    withPredicateEvaluator(new DefaultPredicateEvaluator(this));
+    withPredicateEvaluator(new DefaultPredicateEvaluator());
     withIdGenerator(new UuidGenerator());
   }
 

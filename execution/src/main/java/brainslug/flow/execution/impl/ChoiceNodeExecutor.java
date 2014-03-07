@@ -16,7 +16,7 @@ public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceDefinition> {
 
     List<FlowNodeDefinition> next = new ArrayList<FlowNodeDefinition>();
     for (ThenDefinition thenPath : choiceDefinition.getThenPaths()) {
-      if (execution.getBrainslugContext().getPredicateEvaluator().evaluate(thenPath.getPredicateDefinition())) {
+      if (execution.getBrainslugContext().getPredicateEvaluator().evaluate(thenPath.getPredicateDefinition(), execution)) {
         next.add(thenPath.getPathNodes().get(1));
         return next;
       }

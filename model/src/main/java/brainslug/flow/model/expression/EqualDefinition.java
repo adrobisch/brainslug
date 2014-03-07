@@ -9,10 +9,6 @@ public class EqualDefinition<V, E> {
     this.actual = actual;
   }
 
-  public E getExpected() {
-    return expected;
-  }
-
   public V getActual() {
     return actual;
   }
