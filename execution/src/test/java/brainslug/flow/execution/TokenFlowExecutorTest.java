@@ -7,6 +7,7 @@ import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.model.EnumIdentifier;
 import brainslug.flow.model.FlowBuilder;
 import brainslug.flow.model.Identifier;
+import brainslug.flow.model.StringIdentifier;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -25,7 +26,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
       public void define() {
         start(event(id(START))).parallel(id(PARALLEL))
           .execute(task(id(TASK)))
-          .and()
+            .and()
           .execute(task(id(TASK2)));
       }
 
@@ -99,7 +100,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
         start(event(id(START)))
           .parallel(id(PARALLEL))
           .execute(task(id(TASK)))
-          .and()
+            .and()
           .execute(task(id(TASK2)));
 
         join(id(JOIN), id(TASK), id(TASK2))
@@ -143,7 +144,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
           .when(resultOf(service(TestService.class).method("getString"))
             .isEqualTo("a String"))
           .execute(task(id(TASK)))
-          .or()
+            .or()
           .when(constant(x).isEqualTo("test2")).execute(task(id(TASK2)));
       }
 
@@ -165,6 +166,26 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID));
 
     eventOrder.verifyNoMoreInteractions();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shoudOnlyStartFlowWithStartEvent() {
+    // given:
+    context.addFlowDefinition(new FlowBuilder() {
+
+      @Override
+      public void define() {
+        start(event(id("start"))).end(event(id("end")));
+      }
+
+      @Override
+      public String getId() {
+        return "startEventTest";
+      }
+    }.getDefinition());
+
+    // when:
+    context.startFlow(StringIdentifier.id("startEventTest"), StringIdentifier.id("end"));
   }
 
 }

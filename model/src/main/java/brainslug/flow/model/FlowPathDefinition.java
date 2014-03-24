@@ -56,7 +56,6 @@ public class FlowPathDefinition<T extends FlowPathDefinition> {
     addToPath(flowNodeDefinition);
     definition.addNode(flowNodeDefinition);
 
-
     return flowNodeDefinition;
   }
 

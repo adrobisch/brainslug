@@ -81,8 +81,8 @@ public class BrainslugContext {
     flowExecutor.trigger(context);
   }
 
-  public Identifier startFlow(Identifier definitionId, Identifier nodeId) {
-    return flowExecutor.startFlow(definitionId, nodeId);
+  public Identifier startFlow(Identifier definitionId, Identifier startNodeId) {
+    return flowExecutor.startFlow(definitionId, startNodeId);
   }
 
   public ListenerManager getListenerManager() {

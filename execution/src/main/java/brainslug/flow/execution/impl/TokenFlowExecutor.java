@@ -5,6 +5,7 @@ import brainslug.flow.execution.*;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.model.*;
+import brainslug.flow.model.marker.StartEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   void addNodeExecutorMappings() {
-    nodeExecutors.put(EventDefinition.class, new DefaultNodeExecutor());
+    nodeExecutors.put(EventDefinition.class, new EventNodeExecutor());
     nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor());
@@ -62,7 +63,7 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   @Override
   public Identifier startFlow(Identifier definitionId, Identifier nodeId) {
-    FlowNodeDefinition<?> node = getNode(definitionId, nodeId);
+    FlowNodeDefinition<?> node = getStartNodeDefinition(definitionId, nodeId);
     Identifier instanceId = context.getIdGenerator().generateId();
 
     tokenStore.createInstance(instanceId);
@@ -71,6 +72,16 @@ public class TokenFlowExecutor implements FlowExecutor {
     context.trigger(new TriggerContext().sourceNodeId(node.getId()).nodeId(node.getId()).definitionId(definitionId).instanceId(instanceId));
 
     return instanceId;
+  }
+
+  private FlowNodeDefinition<?> getStartNodeDefinition(Identifier definitionId, Identifier nodeId) {
+    FlowNodeDefinition<?> node = getNode(definitionId, nodeId);
+
+    if (!node.hasMixin(StartEvent.class)) {
+      throw new IllegalArgumentException("flow must be started with start event");
+    }
+
+    return node;
   }
 
   @Override

@@ -20,11 +20,9 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
     if (taskDefinition.getDelegateClass() != null) {
       Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
       executeDelegate(delegateInstance, execution);
-    }
-    else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
+    } else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
       executeDelegate(((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee(), execution);
-    }
-    else if (taskDefinition.getMethodCall() instanceof ServiceCallDefinition) {
+    } else if (taskDefinition.getMethodCall() instanceof ServiceCallDefinition) {
       executeMethodCall(taskDefinition, (ServiceCallDefinition) taskDefinition.getMethodCall(), execution);
     }
 
