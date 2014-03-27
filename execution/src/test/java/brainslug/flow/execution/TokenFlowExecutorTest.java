@@ -7,12 +7,11 @@ import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.model.EnumIdentifier;
 import brainslug.flow.model.FlowBuilder;
 import brainslug.flow.model.Identifier;
-import brainslug.flow.model.StringIdentifier;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import static brainslug.flow.model.EnumIdentifier.id;
-import static brainslug.util.ID.*;
+import static brainslug.util.IdUtil.id;
+import static brainslug.util.TestId.*;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -185,13 +184,13 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     }.getDefinition());
 
     // when:
-    context.startFlow(StringIdentifier.id("startEventTest"), StringIdentifier.id("end"));
+    context.startFlow(id("startEventTest"), id("end"));
   }
 
   @Test
   public void shouldWaitForTriggerAtIntermediateEvent() {
     // given:
-    final StringIdentifier definitionId = StringIdentifier.id("intermediateEventTest");
+    final Identifier definitionId = id("intermediateEventTest");
 
     context.addFlowDefinition(new FlowBuilder() {
 
@@ -206,7 +205,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
       @Override
       public String getId() {
-        return definitionId.getId();
+        return definitionId.stringValue();
       }
     }.getDefinition());
 

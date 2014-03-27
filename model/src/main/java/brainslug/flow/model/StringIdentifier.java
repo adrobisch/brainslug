@@ -8,13 +8,14 @@ public class StringIdentifier implements Identifier<String> {
     this.id = id;
   }
 
-  public static StringIdentifier id(String id) {
-    return new StringIdentifier(id);
-  }
-
   @Override
   public String getId() {
       return this.id;
+  }
+
+  @Override
+  public String stringValue() {
+    return id;
   }
 
   @Override

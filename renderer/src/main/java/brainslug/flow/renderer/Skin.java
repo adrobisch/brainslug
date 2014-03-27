@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-public class Skin {
+abstract public class Skin {
 
   private List<ShapeInfo> shapes = new ArrayList<ShapeInfo>();
   int defaultNodeSize = 30;

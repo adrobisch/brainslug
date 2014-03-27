@@ -13,7 +13,6 @@ import org.mockito.stubbing.Answer;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +21,7 @@ public class JGraphRendererTest {
   @Test
   public void writesPng() throws IOException {
     // GIVEN:
-    JGraphRenderer renderer = new JGraphRenderer(new Skin());
+    JGraphRenderer renderer = new JGraphRenderer(new DefaultSkin());
     FileOutputStream outputStream = mock(FileOutputStream.class);
     // WHEN:
     renderer.render(simpleFlow(), outputStream, Format.PNG);
@@ -33,7 +32,7 @@ public class JGraphRendererTest {
   @Test
   public void writesJpg() throws IOException {
     // GIVEN:
-    JGraphRenderer renderer = new JGraphRenderer(new Skin());
+    JGraphRenderer renderer = new JGraphRenderer(new DefaultSkin());
     FileOutputStream outputStream = mock(FileOutputStream.class);
     // WHEN:
     renderer.render(simpleFlow(), outputStream, Format.JPG);

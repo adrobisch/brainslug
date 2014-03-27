@@ -8,10 +8,10 @@ import brainslug.flow.model.FlowBuilder;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import static brainslug.flow.model.EnumIdentifier.id;
-import static brainslug.util.ID.*;
-import static brainslug.util.ID.CHOICE;
-import static brainslug.util.ID.CHOICEID;
+import static brainslug.util.IdUtil.id;
+import static brainslug.util.TestId.*;
+import static brainslug.util.TestId.CHOICE;
+import static brainslug.util.TestId.CHOICEID;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 

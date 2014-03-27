@@ -2,7 +2,6 @@ package brainslug.bpmn;
 
 import brainslug.flow.renderer.Format;
 import brainslug.flow.renderer.JGraphRenderer;
-import brainslug.flow.renderer.Skin;
 
 import java.io.File;
 import java.io.FileNotFoundException;

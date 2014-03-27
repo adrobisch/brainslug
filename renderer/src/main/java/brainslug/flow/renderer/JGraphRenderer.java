@@ -8,7 +8,9 @@ import com.mxgraph.view.mxGraph;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -103,15 +105,39 @@ public class JGraphRenderer implements Renderer {
     BufferedImage img = mxCellRenderer.createBufferedImage(
         graph, graph.getChildCells(graph.getModel().getRoot()), scale, null,
         false, bounds);
-    save(img, format.name().toLowerCase(), outputStream);
+    save(img, format, outputStream);
   }
 
-  private void save(BufferedImage image, String format, OutputStream outputStream) {
+  private void save(BufferedImage image, Format format, OutputStream outputStream) {
     try {
-      ImageIO.write(image, format, outputStream);
+      ImageIO.write(prepareImage(image, format), format.name().toLowerCase(), outputStream);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * The openjdk 7 up to update 51 can't write images with type other than
+   * {@value BufferedImage#TYPE_3BYTE_BGR}
+   *
+   * see http://stackoverflow.com/questions/3432388/imageio-not-able-to-write-a-jpeg-file
+   *
+   * @param image to be converted
+   * @return image with type {@value BufferedImage#TYPE_3BYTE_BGR}
+   */
+  private RenderedImage prepareImage(BufferedImage image, Format format) {
+    if (format == Format.JPG) {
+      return convertType(image);
+    }
+    return image;
+  }
+
+  private RenderedImage convertType(BufferedImage source) {
+    BufferedImage convertedImage = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+    convertedImage.getGraphics().setColor(Color.white);
+    convertedImage.getGraphics().fillRect(0, 0, source.getWidth(), source.getHeight());
+    convertedImage.getGraphics().drawImage(source, 0, 0, null);
+    return convertedImage;
   }
 
 }

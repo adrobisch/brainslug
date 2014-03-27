@@ -1,6 +1,6 @@
 package brainslug.util;
 
-public enum ID {
+public enum TestId {
   SEQUENCEID,
   CHOICEID,
   MERGEID,

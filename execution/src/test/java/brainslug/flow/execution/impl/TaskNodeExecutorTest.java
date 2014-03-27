@@ -12,8 +12,8 @@ import brainslug.flow.model.FlowDefinition;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import static brainslug.flow.model.EnumIdentifier.id;
-import static brainslug.util.ID.*;
+import static brainslug.util.IdUtil.id;
+import static brainslug.util.TestId.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 

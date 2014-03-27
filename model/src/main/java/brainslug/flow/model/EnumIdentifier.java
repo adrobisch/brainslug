@@ -8,13 +8,14 @@ public class EnumIdentifier implements Identifier<Enum> {
     this.id = id;
   }
 
-  public static EnumIdentifier id(Enum id) {
-    return new EnumIdentifier(id);
-  }
-
   @Override
   public Enum getId() {
       return this.id;
+  }
+
+  @Override
+  public String stringValue() {
+    return id.name();
   }
 
   @Override
