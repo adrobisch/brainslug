@@ -9,6 +9,7 @@ public enum ID {
   START,
   TASK,
   TASK2,
+  INTERMEDIATE,
   CHOICE,
   JOIN,
   MERGE,

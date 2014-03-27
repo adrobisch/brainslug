@@ -5,6 +5,7 @@ import brainslug.flow.execution.*;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.model.*;
+import brainslug.flow.model.marker.IntermediateEvent;
 import brainslug.flow.model.marker.StartEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   void addNodeExecutorMappings() {
-    nodeExecutors.put(EventDefinition.class, new EventNodeExecutor());
+    nodeExecutors.put(EventDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor());
@@ -45,7 +46,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     return node;
   }
 
-  <T extends FlowNodeDefinition> FlowNodeExectuor<T> getNodeExecutor(T nodeDefinition) {
+  protected <T extends FlowNodeDefinition> FlowNodeExectuor<T> getNodeExecutor(T nodeDefinition) {
     FlowNodeExectuor<T> nodeExecutor = nodeExecutors.get(nodeDefinition.getClass());
     if (nodeExecutor == null) {
       throw new IllegalArgumentException(String.format("no executor found for node definition %s", nodeDefinition));
@@ -102,19 +103,32 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   protected void triggerNext(TriggerContext event, FlowNodeDefinition<?> node, List<FlowNodeDefinition> next) {
     for (FlowNodeDefinition nextNode : next) {
-
-      if (event.getInstanceId() != null) {
-        tokenStore.addToken(event.getInstanceId(), nextNode.getId(), new Token(node.getId()));
+      addToken(event, node, nextNode);
+      if (!waitingForExternalTrigger(nextNode)) {
+        context.trigger(createTriggerContextForNextNode(event, node, nextNode));
       }
+    }
+  }
 
-      TriggerContext triggerEvent = new TriggerContext()
-        .nodeId(nextNode.getId())
-        .sourceNodeId(node.getId())
-        .definitionId(event.getDefinitionId())
-        .instanceId(event.getInstanceId())
-        .properties(event.getProperties());
+  private boolean waitingForExternalTrigger(FlowNodeDefinition nextNode) {
+    if (nextNode.hasMixin(IntermediateEvent.class)) {
+      return true;
+    }
+    return false;
+  }
 
-      context.trigger(triggerEvent);
+  private TriggerContext createTriggerContextForNextNode(TriggerContext<?> event, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
+    return new TriggerContext()
+          .nodeId(nextNode.getId())
+          .sourceNodeId(node.getId())
+          .definitionId(event.getDefinitionId())
+          .instanceId(event.getInstanceId())
+          .properties(event.getProperties());
+  }
+
+  private void addToken(TriggerContext event, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
+    if (event.getInstanceId() != null) {
+      tokenStore.addToken(event.getInstanceId(), nextNode.getId(), new Token(node.getId()));
     }
   }
 }

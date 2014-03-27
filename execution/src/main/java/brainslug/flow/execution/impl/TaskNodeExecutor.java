@@ -23,19 +23,19 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
     } else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
       executeDelegate(((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee(), execution);
     } else if (taskDefinition.getMethodCall() instanceof ServiceCallDefinition) {
-      executeMethodCall(taskDefinition, (ServiceCallDefinition) taskDefinition.getMethodCall(), execution);
+      executeServiceMethodCall(taskDefinition, (ServiceCallDefinition) taskDefinition.getMethodCall(), execution);
     }
 
     return takeAll(taskDefinition);
   }
 
-  private void executeMethodCall(AbstractTaskDefinition taskDefinition, ServiceCallDefinition serviceCall, ExecutionContext context) {
+  protected void executeServiceMethodCall(AbstractTaskDefinition taskDefinition, ServiceCallDefinition serviceCall, ExecutionContext context) {
     Class<?> serviceClass = serviceCall.getServiceClass();
     Object serviceInstance = context.getBrainslugContext().getRegistry().getService(serviceClass);
-    invokeServiceWithArguments(taskDefinition, serviceClass, serviceCall.getMethodName(), serviceInstance);
+    invokeServiceMethodWithArguments(taskDefinition, serviceClass, serviceCall.getMethodName(), serviceInstance);
   }
 
-  private void invokeServiceWithArguments(AbstractTaskDefinition taskDefinition, Class<?> serviceClass, String methodName, Object serviceInstance) {
+  protected void invokeServiceMethodWithArguments(AbstractTaskDefinition taskDefinition, Class<?> serviceClass, String methodName, Object serviceInstance) {
     try {
       Method serviceMethod = serviceClass.getMethod(methodName);
       serviceMethod.invoke(serviceInstance, taskDefinition.getMethodCall().getArguments().toArray());
@@ -44,12 +44,12 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
     }
   }
 
-  private void executeDelegate(Object delegateInstance, ExecutionContext context) {
+  protected void executeDelegate(Object delegateInstance, ExecutionContext context) {
     Method executeMethod = ReflectionUtil.getFirstMethodAnnotatedWith(delegateInstance.getClass(), Execute.class);
     invokeServiceMethodWithContext(context, delegateInstance, executeMethod);
   }
 
-  private void invokeServiceMethodWithContext(ExecutionContext context, Object serviceInstance, Method executeMethod) {
+  protected void invokeServiceMethodWithContext(ExecutionContext context, Object serviceInstance, Method executeMethod) {
     try {
       executeMethod.setAccessible(true);
       executeMethod.invoke(serviceInstance, executionArguments(context, executeMethod).toArray());
@@ -58,7 +58,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
     }
   }
 
-  private List<Object> executionArguments(ExecutionContext context, Method executeMethod) {
+  protected List<Object> executionArguments(ExecutionContext context, Method executeMethod) {
     List<Object> arguments = new ArrayList<Object>();
     for (Class<?> parameterType : executeMethod.getParameterTypes()) {
       if (parameterType.isAssignableFrom(ExecutionContext.class)) {

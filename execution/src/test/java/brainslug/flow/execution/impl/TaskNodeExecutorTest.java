@@ -19,13 +19,15 @@ import static org.mockito.Mockito.*;
 
 public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
-  public void supportsMethodCallDefinition() {
+  public void supportsServiceMethodCallDefinition() {
     // given:
     FlowDefinition serviceCallFlow = new FlowBuilder() {
 
       @Override
       public void define() {
-        start(event(id(START))).execute(task(id(TASK)).call(service(TestService.class).method("getString"))).end(event(id(END)));
+        start(event(id(START)))
+          .execute(task(id(TASK)).call(service(TestService.class).method("getString")))
+        .end(event(id(END)));
       }
 
     }.getDefinition();
@@ -50,17 +52,21 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void supportsHandlerCallDefinitionWithParameterInjection() {
     // given:
+    final TaskHandler testHandler = new TaskHandler() {
+      @Execute
+      public void execute(TestService testService1, ExecutionContext context) {
+        // then:
+        assertThat(testService1.getString()).isEqualTo("a String");
+        assertThat(context).isNotNull();
+      }
+    };
+
     FlowDefinition handlerFlow = new FlowBuilder() {
       @Override
       public void define() {
-        start(event(id(START))).execute(task(id(TASK)).call(handler(new TaskHandler() {
-          @Execute
-          public void execute(TestService testService1, ExecutionContext context) {
-            // then:
-            assertThat(testService1.getString()).isEqualTo("a String");
-            assertThat(context).isNotNull();
-          }
-        }))).end(event(id(END)));
+        start(event(id(START)))
+          .execute(task(id(TASK)).call(handler(testHandler)))
+        .end(event(id(END)));
       }
     }.getDefinition();
 
@@ -68,5 +74,36 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     // when:
     context.trigger(new TriggerContext().nodeId(id(START)).definitionId(handlerFlow.getId()));
   }
+
+  @Test
+  public void supportsDelegateClassExecution() {
+    // given:
+
+    class Delegate {
+      @Execute
+      public void doSomeThing() {
+      }
+    }
+
+    Delegate delegateInstance = spy(new Delegate());
+    context.getRegistry().registerService(Delegate.class, delegateInstance);
+
+    FlowDefinition delegateFlow = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id(START)))
+          .execute(task(id(TASK)).delegate(Delegate.class))
+        .end(event(id(END)));
+      }
+    }.getDefinition();
+
+    context.addFlowDefinition(delegateFlow);
+    // when:
+    context.startFlow(delegateFlow.getId(), id(START));
+    // then:
+    verify(delegateInstance, times(1)).doSomeThing();
+  }
+
+
 
 }

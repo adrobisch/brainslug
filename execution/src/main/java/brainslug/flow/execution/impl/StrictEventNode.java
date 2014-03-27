@@ -9,7 +9,7 @@ import brainslug.flow.model.marker.StartEvent;
 
 import java.util.List;
 
-public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
+public class StrictEventNode extends DefaultNodeExecutor<EventDefinition> {
   @Override
   public List<FlowNodeDefinition> execute(EventDefinition event, ExecutionContext execution) {
     if (event.hasMixin(StartEvent.class) || event.hasMixin(EndEvent.class)) {
@@ -21,6 +21,7 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
   }
 
   private List<FlowNodeDefinition> executeIntermediateEvent(EventDefinition event, ExecutionContext execution) {
+    // TODO: check for token here
     throw new UnsupportedOperationException("execution of intermediate events not supported yet");
   }
 }

@@ -78,8 +78,8 @@ These features might or might not be implemented:
 * Static and dynamic flow definitions
 * persistent and non-persistent instances
 * Spring Data TokenStore
-* Alternative Event Dispatcher
 * intent-based REST API orchestration
+* asynchronous retry of tasks
 * Token Migration
 * GraphML export and import
 * BPMN import
