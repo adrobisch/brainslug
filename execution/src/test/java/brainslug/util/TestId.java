@@ -2,6 +2,7 @@ package brainslug.util;
 
 public enum TestId {
   SEQUENCEID,
+  ASYNCID,
   CHOICEID,
   MERGEID,
   PARALLELID,

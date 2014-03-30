@@ -1,5 +1,7 @@
 package brainslug.flow.context;
 
+import brainslug.flow.execution.Scheduler;
+import brainslug.flow.execution.impl.ExecutorServiceScheduler;
 import brainslug.flow.execution.impl.HashMapPropertyStore;
 import brainslug.flow.listener.DefaultListenerManager;
 import brainslug.flow.listener.ListenerManager;
@@ -17,6 +19,7 @@ import brainslug.util.UuidGenerator;
 
 public class BrainslugContext {
 
+  Scheduler scheduler;
   DefinitionStore definitionStore;
   ListenerManager listenerManager;
   FlowExecutor flowExecutor;
@@ -28,6 +31,7 @@ public class BrainslugContext {
   Registry registry;
 
   public BrainslugContext() {
+    withScheduler(new ExecutorServiceScheduler());
     withDefinitionStore(new DefinitionStore());
     withListenerManager(new DefaultListenerManager());
     withTokenStore(new HashMapTokenStore());
@@ -38,7 +42,13 @@ public class BrainslugContext {
     withPropertyStore(new HashMapPropertyStore());
   }
 
-  private BrainslugContext withPropertyStore(HashMapPropertyStore propertyStore) {
+  public BrainslugContext withScheduler(Scheduler scheduler) {
+    this.scheduler = scheduler;
+    scheduler.setContext(this);
+    return this;
+  }
+
+  public BrainslugContext withPropertyStore(HashMapPropertyStore propertyStore) {
     this.propertyStore = propertyStore;
     return this;
   }
@@ -126,6 +136,10 @@ public class BrainslugContext {
 
   public PropertyStore getPropertyStore() {
     return propertyStore;
+  }
+
+  public Scheduler getScheduler() {
+    return scheduler;
   }
 
   public IdGenerator getIdGenerator() {

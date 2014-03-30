@@ -17,7 +17,11 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
   public List<FlowNodeDefinition> execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
     removeTriggerToken(execution);
 
-    if (taskDefinition.getDelegateClass() != null) {
+    if(taskDefinition.isAsync()) {
+      execution.getBrainslugContext().getScheduler()
+        .scheduleTask(execution.getTrigger().getDefinitionId(), taskDefinition.getId());
+      return takeNone();
+    } else if (taskDefinition.getDelegateClass() != null) {
       Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
       executeDelegate(delegateInstance, execution);
     } else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
