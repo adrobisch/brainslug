@@ -100,6 +100,10 @@ public class BrainslugContext {
     return flowExecutor.startFlow(new TriggerContext().definitionId(definitionId).nodeId(startNodeId));
   }
 
+  public Identifier startFlow(TriggerContext context) {
+    return flowExecutor.startFlow(context);
+  }
+
   public ListenerManager getListenerManager() {
     return listenerManager;
   }
