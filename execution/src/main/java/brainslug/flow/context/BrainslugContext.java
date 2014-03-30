@@ -1,36 +1,51 @@
 package brainslug.flow.context;
 
+import brainslug.flow.execution.impl.HashMapPropertyStore;
 import brainslug.flow.listener.DefaultListenerManager;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.execution.FlowExecutor;
 import brainslug.flow.execution.TokenStore;
+import brainslug.flow.execution.PropertyStore;
 import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
 import brainslug.flow.execution.impl.HashMapTokenStore;
 import brainslug.flow.execution.impl.TokenFlowExecutor;
+import brainslug.flow.model.DefinitionStore;
 import brainslug.flow.model.FlowDefinition;
-import brainslug.flow.model.FlowDefinitions;
 import brainslug.flow.model.Identifier;
 import brainslug.util.UuidGenerator;
 
 public class BrainslugContext {
 
-  FlowDefinitions flowDefinitions = new FlowDefinitions();
+  DefinitionStore definitionStore;
   ListenerManager listenerManager;
   FlowExecutor flowExecutor;
   TokenStore tokenStore;
+  PropertyStore propertyStore;
   PredicateEvaluator predicateEvaluator;
   IdGenerator idGenerator;
 
   Registry registry;
 
   public BrainslugContext() {
-    withDispatcher(new DefaultListenerManager());
+    withDefinitionStore(new DefinitionStore());
+    withListenerManager(new DefaultListenerManager());
     withTokenStore(new HashMapTokenStore());
-    withExecutor(new TokenFlowExecutor(tokenStore));
+    withExecutor(new TokenFlowExecutor(this));
     withRegistry(new HashMapRegistry());
     withPredicateEvaluator(new DefaultPredicateEvaluator());
     withIdGenerator(new UuidGenerator());
+    withPropertyStore(new HashMapPropertyStore());
+  }
+
+  private BrainslugContext withPropertyStore(HashMapPropertyStore propertyStore) {
+    this.propertyStore = propertyStore;
+    return this;
+  }
+
+  public BrainslugContext withDefinitionStore(DefinitionStore definitionStore) {
+    this.definitionStore = definitionStore;
+    return this;
   }
 
   public BrainslugContext withTokenStore(TokenStore tokenStore) {
@@ -48,7 +63,7 @@ public class BrainslugContext {
     flowExecutor.setContext(this);
   }
 
-  public BrainslugContext withDispatcher(ListenerManager listenerManager) {
+  public BrainslugContext withListenerManager(ListenerManager listenerManager) {
     this.listenerManager = listenerManager;
     return this;
   }
@@ -69,12 +84,12 @@ public class BrainslugContext {
   }
 
   public BrainslugContext addFlowDefinition(FlowDefinition flowDefinition) {
-    flowDefinitions.addDefinition(flowDefinition);
+    definitionStore.addDefinition(flowDefinition);
     return this;
   }
 
-  public FlowDefinitions getFlowDefinitions() {
-    return flowDefinitions;
+  public DefinitionStore getDefinitionStore() {
+    return definitionStore;
   }
 
   public void trigger(TriggerContext context) {
@@ -82,7 +97,7 @@ public class BrainslugContext {
   }
 
   public Identifier startFlow(Identifier definitionId, Identifier startNodeId) {
-    return flowExecutor.startFlow(definitionId, startNodeId);
+    return flowExecutor.startFlow(new TriggerContext().definitionId(definitionId).nodeId(startNodeId));
   }
 
   public ListenerManager getListenerManager() {
@@ -99,6 +114,14 @@ public class BrainslugContext {
 
   public FlowExecutor getFlowExecutor() {
     return flowExecutor;
+  }
+
+  public TokenStore getTokenStore() {
+    return tokenStore;
+  }
+
+  public PropertyStore getPropertyStore() {
+    return propertyStore;
   }
 
   public IdGenerator getIdGenerator() {

@@ -23,13 +23,13 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   Map<Class<? extends FlowNodeDefinition>, FlowNodeExectuor> nodeExecutors = new HashMap<Class<? extends FlowNodeDefinition>, FlowNodeExectuor>();
 
-  public TokenFlowExecutor(TokenStore tokenStore) {
-    this.tokenStore = tokenStore;
+  public TokenFlowExecutor(BrainslugContext context) {
+    this.tokenStore = context.getTokenStore();
 
     addNodeExecutorMappings();
   }
 
-  void addNodeExecutorMappings() {
+  protected void addNodeExecutorMappings() {
     nodeExecutors.put(EventDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor());
     nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor());
@@ -39,7 +39,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   FlowNodeDefinition<?> getNode(Identifier definitionId, Identifier nodeId) {
-    FlowNodeDefinition<?> node = context.getFlowDefinitions().findById(definitionId).getNode(nodeId);
+    FlowNodeDefinition<?> node = context.getDefinitionStore().findById(definitionId).getNode(nodeId);
     if (node == null) {
       throw new IllegalArgumentException(String.format("node for does not exist %s", nodeId));
     }
@@ -63,14 +63,18 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId, Identifier nodeId) {
-    FlowNodeDefinition<?> node = getStartNodeDefinition(definitionId, nodeId);
+  public Identifier startFlow(TriggerContext<?> trigger) {
+    FlowNodeDefinition<?> node = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
     Identifier instanceId = context.getIdGenerator().generateId();
 
     tokenStore.createInstance(instanceId);
-    tokenStore.addToken(instanceId, nodeId, new Token(nodeId));
+    tokenStore.addToken(instanceId, trigger.getNodeId(), new Token(trigger.getNodeId()));
 
-    context.trigger(new TriggerContext().sourceNodeId(node.getId()).nodeId(node.getId()).definitionId(definitionId).instanceId(instanceId));
+    context.getPropertyStore().storeProperties(trigger.getInstanceId(), trigger.getProperties());
+    context.trigger(new TriggerContext().sourceNodeId(node.getId())
+      .nodeId(node.getId())
+      .definitionId(trigger.getDefinitionId())
+      .instanceId(instanceId));
 
     return instanceId;
   }
@@ -86,19 +90,31 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   @Override
-  public void trigger(TriggerContext triggerContext) {
+  public void trigger(TriggerContext<?> triggerContext) {
     log.debug("triggering {}", triggerContext);
 
     FlowNodeDefinition node = getNode(triggerContext.getDefinitionId(), triggerContext.getNodeId());
     FlowNodeExectuor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
 
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerContext, context);
+    ExecutionContext executionContext = createExecutionContext(triggerContext);
 
     context.getListenerManager().notifyListeners(EventType.BEFORE_EXECUTION, triggerContext);
     List<FlowNodeDefinition> next = nodeExecutor.execute(node, executionContext);
+    context.getPropertyStore().storeProperties(triggerContext.getInstanceId(), triggerContext.getProperties());
     context.getListenerManager().notifyListeners(EventType.AFTER_EXECUTION, triggerContext);
 
     triggerNext(triggerContext, node, next);
+  }
+
+  private ExecutionContext createExecutionContext(TriggerContext triggerContext) {
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerContext, context);
+
+    if(triggerContext.getInstanceId() != null) {
+      executionContext.getTrigger().properties(context.getPropertyStore()
+        .loadProperties(executionContext.getTrigger().getInstanceId()));
+    }
+
+    return executionContext;
   }
 
   protected void triggerNext(TriggerContext event, FlowNodeDefinition<?> node, List<FlowNodeDefinition> next) {
@@ -117,10 +133,10 @@ public class TokenFlowExecutor implements FlowExecutor {
     return false;
   }
 
-  private TriggerContext createTriggerContextForNextNode(TriggerContext<?> event, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
+  private TriggerContext createTriggerContextForNextNode(TriggerContext<?> event, FlowNodeDefinition<?> currentNode, FlowNodeDefinition nextNode) {
     return new TriggerContext()
           .nodeId(nextNode.getId())
-          .sourceNodeId(node.getId())
+          .sourceNodeId(currentNode.getId())
           .definitionId(event.getDefinitionId())
           .instanceId(event.getInstanceId())
           .properties(event.getProperties());

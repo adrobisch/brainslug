@@ -5,6 +5,6 @@ import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.model.Identifier;
 
 public interface FlowExecutor extends ContextAware {
-  Identifier startFlow(Identifier definitionId, Identifier nodeId);
-  void trigger(TriggerContext triggerContext);
+  Identifier startFlow(TriggerContext<?> trigger);
+  void trigger(TriggerContext<?> triggerContext);
 }

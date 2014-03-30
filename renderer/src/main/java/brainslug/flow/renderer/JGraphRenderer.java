@@ -52,7 +52,7 @@ public class JGraphRenderer implements Renderer {
 
     for (FlowNodeDefinition<?> node : flowBuilder.getDefinition().getNodes()) {
       mxRectangle size = skin.getNodeSize(node);
-      Object vertex = graph.insertVertex(graph.getDefaultParent(), node.getId().toString(),
+      Object vertex = graph.insertVertex(graph.getDefaultParent(), node.getId().stringValue(),
           node.getDisplayName(), 0, 0, size.getWidth(), size.getHeight());
       vertices.put(node.getId().toString(), vertex);
       collectNodeEdges(edges, node);

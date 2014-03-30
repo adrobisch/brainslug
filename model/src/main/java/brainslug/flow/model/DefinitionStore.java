@@ -3,7 +3,7 @@ package brainslug.flow.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlowDefinitions {
+public class DefinitionStore {
   List<FlowDefinition> flowDefinitions = new ArrayList<FlowDefinition>();
 
   public void addDefinition(FlowDefinition flowDefinition) {

@@ -14,7 +14,7 @@ public class DefaultExecutionContext implements ExecutionContext {
     this.brainslugContext = brainslugContext;
   }
 
-  public TriggerContext getTrigger() {
+  public TriggerContext<?> getTrigger() {
     return trigger;
   }
 

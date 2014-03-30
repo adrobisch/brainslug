@@ -88,17 +88,17 @@ public class TriggerContext<T extends TriggerContext> {
     getProperties().put(key, value);
   }
 
-  public <T> T getProperty(Object key, Class<T> type) {
-    return (T) getProperties().get(key);
+  public <P> P getProperty(Object key, Class<P> type) {
+    return (P) getProperties().get(key);
   }
 
-  public <T> T getProperty(Class<T> type) {
-    T result = null;
+  public <P> P getProperty(Class<P> type) {
+    P result = null;
     int typeCount = 0;
     for (Object object : getProperties().values()) {
 
       if(object.getClass().isAssignableFrom(type)) {
-        result = (T) object;
+        result = (P) object;
         typeCount ++;
       }
     }
