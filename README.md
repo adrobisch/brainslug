@@ -18,7 +18,7 @@ Features
 Download
 ========
 
-The current version `0.8` is available in the maven central repository:
+The current version `0.9` is available in the maven central repository:
 
 ```xml
   <dependencies>
@@ -26,12 +26,12 @@ The current version `0.8` is available in the maven central repository:
     <dependency>
       <groupId>de.androbit</groupId>
       <artifactId>brainslug-model</artifactId>
-      <version>0.8</version>
+      <version>0.9</version>
     </dependency>
     <dependency>
       <groupId>de.androbit</groupId>
       <artifactId>brainslug-execution</artifactId>
-      <version>0.8</version>
+      <version>0.9</version>
     </dependency>
   ...
   </dependencies>
