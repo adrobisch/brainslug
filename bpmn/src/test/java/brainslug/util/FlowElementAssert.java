@@ -2,7 +2,7 @@ package brainslug.util;
 
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.SequenceFlow;
-import org.fest.assertions.api.IterableAssert;
+import org.assertj.core.api.IterableAssert;
 
 import java.util.*;
 

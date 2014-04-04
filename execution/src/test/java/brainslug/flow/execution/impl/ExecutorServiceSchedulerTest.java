@@ -23,7 +23,7 @@ public class ExecutorServiceSchedulerTest extends AbstractExecutionTest {
     executorServiceScheduler.setContext(contextSpy);
 
     // when:
-    executorServiceScheduler.scheduleTask(id(DEFINITION), id(TASK));
+    executorServiceScheduler.scheduleTask(id(DEFINITION), null, id(TASK));
     // then:
     verify(contextSpy).trigger(eq(new TriggerContext()
       .definitionId(id(DEFINITION))

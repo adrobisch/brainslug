@@ -18,6 +18,7 @@ public class HashMapPropertyStore implements PropertyStore {
 
   @Override
   public Map<Object, Object> loadProperties(Identifier<?> instanceId) {
-    return propertiesByInstance.get(instanceId);
+    Map<Object, Object> instanceProperties = propertiesByInstance.get(instanceId);
+    return instanceProperties == null ? Collections.emptyMap() : instanceProperties;
   }
 }

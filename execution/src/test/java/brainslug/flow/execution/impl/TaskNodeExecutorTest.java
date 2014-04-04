@@ -10,12 +10,13 @@ import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.execution.TaskHandler;
 import brainslug.flow.model.FlowBuilder;
 import brainslug.flow.model.FlowDefinition;
+import brainslug.flow.model.Identifier;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class TaskNodeExecutorTest extends AbstractExecutionTest {
@@ -128,9 +129,9 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
     context.addFlowDefinition(asyncTaskFlow);
     // when:
-    context.startFlow(asyncTaskFlow.getId(), id(START));
+    Identifier instanceId = context.startFlow(asyncTaskFlow.getId(), id(START));
     // then:
-    verify(schedulerMock).scheduleTask(id(ASYNCID), id(TASK));
+    verify(schedulerMock).scheduleTask(id(ASYNCID), instanceId, id(TASK));
   }
 
 }

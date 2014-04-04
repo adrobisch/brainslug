@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.io.*;
 import java.util.ArrayList;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static brainslug.util.FlowElementAssert.assertThat;
 
 public class BpmnModelTransformerTest {

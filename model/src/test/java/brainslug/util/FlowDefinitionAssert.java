@@ -1,8 +1,8 @@
 package brainslug.util;
 
 import brainslug.flow.model.*;
-import org.fest.assertions.api.AbstractAssert;
-import org.fest.assertions.api.Assertions;
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 
 public class FlowDefinitionAssert extends AbstractAssert<FlowDefinitionAssert, FlowDefinition> {
   protected FlowDefinitionAssert(FlowDefinition actual, Class<?> selfType) {

@@ -79,7 +79,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     return instanceId;
   }
 
-  private FlowNodeDefinition<?> getStartNodeDefinition(Identifier definitionId, Identifier nodeId) {
+  protected FlowNodeDefinition<?> getStartNodeDefinition(Identifier definitionId, Identifier nodeId) {
     FlowNodeDefinition<?> node = getNode(definitionId, nodeId);
 
     if (!node.hasMixin(StartEvent.class)) {
@@ -106,15 +106,21 @@ public class TokenFlowExecutor implements FlowExecutor {
     triggerNext(triggerContext, node, next);
   }
 
-  private ExecutionContext createExecutionContext(TriggerContext triggerContext) {
+  protected ExecutionContext createExecutionContext(TriggerContext triggerContext) {
     DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerContext, context);
 
     if(triggerContext.getInstanceId() != null) {
-      executionContext.getTrigger().properties(context.getPropertyStore()
-        .loadProperties(executionContext.getTrigger().getInstanceId()));
+      executionContext.getTrigger().properties(mergeProperties(triggerContext, executionContext));
     }
 
     return executionContext;
+  }
+
+  protected Map<Object, Object> mergeProperties(TriggerContext triggerContext, DefaultExecutionContext executionContext) {
+    Map<Object, Object> properties = context.getPropertyStore()
+        .loadProperties(executionContext.getTrigger().getInstanceId());
+    properties.putAll(triggerContext.getProperties());
+    return properties;
   }
 
   protected void triggerNext(TriggerContext event, FlowNodeDefinition<?> node, List<FlowNodeDefinition> next) {
@@ -126,14 +132,14 @@ public class TokenFlowExecutor implements FlowExecutor {
     }
   }
 
-  private boolean waitingForExternalTrigger(FlowNodeDefinition nextNode) {
+  protected boolean waitingForExternalTrigger(FlowNodeDefinition nextNode) {
     if (nextNode.hasMixin(IntermediateEvent.class)) {
       return true;
     }
     return false;
   }
 
-  private TriggerContext createTriggerContextForNextNode(TriggerContext<?> event, FlowNodeDefinition<?> currentNode, FlowNodeDefinition nextNode) {
+  protected TriggerContext createTriggerContextForNextNode(TriggerContext<?> event, FlowNodeDefinition<?> currentNode, FlowNodeDefinition nextNode) {
     return new TriggerContext()
           .nodeId(nextNode.getId())
           .sourceNodeId(currentNode.getId())
@@ -142,7 +148,7 @@ public class TokenFlowExecutor implements FlowExecutor {
           .properties(event.getProperties());
   }
 
-  private void addToken(TriggerContext event, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
+  protected void addToken(TriggerContext event, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
     if (event.getInstanceId() != null) {
       tokenStore.addToken(event.getInstanceId(), nextNode.getId(), new Token(node.getId()));
     }

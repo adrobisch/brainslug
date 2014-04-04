@@ -11,15 +11,24 @@ public class ExecutorServiceScheduler implements Scheduler {
   protected BrainslugContext context;
 
   @Override
-  public void scheduleTask(final Identifier definitionId, final Identifier taskNodeId) {
+  public void scheduleTask(final Identifier definitionId, final Identifier instanceId, final Identifier taskNodeId) {
     Executors.newSingleThreadExecutor().execute(new Runnable() {
       @Override
       public void run() {
         context.trigger(new TriggerContext()
-          .definitionId(definitionId)
-          .nodeId(taskNodeId));
+            .instanceId(instanceId)
+            .definitionId(definitionId)
+            .nodeId(taskNodeId));
       }
     });
+  }
+
+  @Override
+  public void start() {
+  }
+
+  @Override
+  public void stop() {
   }
 
   @Override

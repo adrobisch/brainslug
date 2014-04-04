@@ -19,7 +19,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
 
     if(taskDefinition.isAsync()) {
       execution.getBrainslugContext().getScheduler()
-        .scheduleTask(execution.getTrigger().getDefinitionId(), taskDefinition.getId());
+        .scheduleTask(execution.getTrigger().getDefinitionId(), execution.getTrigger().getInstanceId(), taskDefinition.getId());
       return takeNone();
     } else if (taskDefinition.getDelegateClass() != null) {
       Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
