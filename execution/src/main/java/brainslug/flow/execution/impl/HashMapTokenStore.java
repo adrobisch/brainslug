@@ -35,7 +35,8 @@ public class HashMapTokenStore implements TokenStore {
   @Override
   public void removeToken(Identifier instanceId, Identifier nodeId, Token token) {
     Map<Identifier, List<Token>> sourceNodeMap = sourceNodeMap(requireTokenMap(instanceId).get(nodeId));
-    if (sourceNodeMap.get(token.getSourceNode()).size() > 0) {
+    List<Token> nodeTokens = sourceNodeMap.get(token.getSourceNode());
+    if (nodeTokens != null && nodeTokens.size() > 0) {
       Token firstTokenFromSource = sourceNodeMap.get(token.getSourceNode()).get(0);
       requireTokenMap(instanceId).get(nodeId).remove(firstTokenFromSource);
     }

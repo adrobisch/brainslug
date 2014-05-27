@@ -75,6 +75,10 @@ public class FlowBuilderSupport {
     return new TaskDefinition().id(id).display(id.toString());
   }
 
+  public TaskDefinition task(Identifier id, Object callee) {
+    return new TaskDefinition().id(id).display(id.toString()).call(new HandlerCallDefinition(callee));
+  }
+
   public EventDefinition event(Identifier id) {
     return new EventDefinition().id(id).display(id.toString());
   }
@@ -95,7 +99,7 @@ public class FlowBuilderSupport {
     return new ServiceCallDefinition(clazz);
   }
 
-  public HandlerCallDefinition handler(Object callee) {
+  public HandlerCallDefinition run(Object callee) {
     return new HandlerCallDefinition(callee);
   }
 

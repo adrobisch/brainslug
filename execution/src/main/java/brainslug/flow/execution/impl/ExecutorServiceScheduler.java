@@ -11,7 +11,7 @@ public class ExecutorServiceScheduler implements Scheduler {
   protected BrainslugContext context;
 
   @Override
-  public void scheduleTask(final Identifier definitionId, final Identifier instanceId, final Identifier taskNodeId) {
+  public void scheduleTask(final Identifier taskNodeId, final Identifier sourceNodeId, final Identifier instanceId, final Identifier definitionId) {
     Executors.newSingleThreadExecutor().execute(new Runnable() {
       @Override
       public void run() {

@@ -2,6 +2,7 @@ package brainslug.flow.execution.impl;
 
 import brainslug.flow.execution.Execute;
 import brainslug.flow.execution.ExecutionContext;
+import brainslug.flow.execution.SimpleTask;
 import brainslug.flow.model.AbstractTaskDefinition;
 import brainslug.flow.model.FlowNodeDefinition;
 import brainslug.flow.model.HandlerCallDefinition;
@@ -17,15 +18,16 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
   public List<FlowNodeDefinition> execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
     removeTriggerToken(execution);
 
-    if(taskDefinition.isAsync()) {
+    if(taskDefinition.isAsync() && execution.getTrigger().getSourceNodeId() != null) {
       execution.getBrainslugContext().getScheduler()
-        .scheduleTask(execution.getTrigger().getDefinitionId(), execution.getTrigger().getInstanceId(), taskDefinition.getId());
+        .scheduleTask(taskDefinition.getId(), execution.getTrigger().getSourceNodeId(), execution.getTrigger().getInstanceId(), execution.getTrigger().getDefinitionId());
       return takeNone();
     } else if (taskDefinition.getDelegateClass() != null) {
       Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
       executeDelegate(delegateInstance, execution);
     } else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
-      executeDelegate(((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee(), execution);
+      final Object callee = ((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee();
+      executeDelegate(callee, execution);
     } else if (taskDefinition.getMethodCall() instanceof ServiceCallDefinition) {
       executeServiceMethodCall(taskDefinition, (ServiceCallDefinition) taskDefinition.getMethodCall(), execution);
     }
@@ -49,8 +51,12 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
   }
 
   protected void executeDelegate(Object delegateInstance, ExecutionContext context) {
-    Method executeMethod = ReflectionUtil.getFirstMethodAnnotatedWith(delegateInstance.getClass(), Execute.class);
-    invokeServiceMethodWithContext(context, delegateInstance, executeMethod);
+    if (delegateInstance instanceof SimpleTask) {
+      ((SimpleTask) delegateInstance).execute(context);
+    } else {
+      Method executeMethod = ReflectionUtil.getFirstMethodAnnotatedWith(delegateInstance.getClass(), Execute.class);
+      invokeServiceMethodWithContext(context, delegateInstance, executeMethod);
+    }
   }
 
   protected void invokeServiceMethodWithContext(ExecutionContext context, Object serviceInstance, Method executeMethod) {
