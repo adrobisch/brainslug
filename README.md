@@ -87,8 +87,5 @@ These features might or might not be implemented:
 License
 =======
 
-brainslug is published under the terms of the LGPL 3.0 License, which is [Apache 2.0 compatible](http://www.apache.org/licenses/GPL-compatibility.html).
+brainslug is published under the terms of the Apache 2.0 License.
 See the [LICENSE](LICENSE) file.
-
-![lgplv3](doc/lgplv3.png)
-
