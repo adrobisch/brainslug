@@ -1,5 +1,7 @@
 package brainslug.flow.model;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ public class DefinitionStore {
   }
 
   public FlowDefinition findById(Identifier id) {
+    LoggerFactory.getLogger(DefinitionStore.class).trace("flowDefinitions: " + flowDefinitions);
     for (FlowDefinition definition : flowDefinitions) {
       if (definition.getId().equals(id)) {
         return definition;

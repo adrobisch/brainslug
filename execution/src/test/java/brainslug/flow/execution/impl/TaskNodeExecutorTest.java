@@ -5,7 +5,7 @@ import brainslug.flow.execution.Scheduler;
 import brainslug.flow.model.Task;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
-import brainslug.flow.listener.TriggerContext;
+import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.execution.Execute;
 import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.model.FlowBuilder;

@@ -1,19 +1,22 @@
 package brainslug.flow.execution;
 
 import brainslug.AbstractExecutionTest;
+import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.execution.impl.TokenFlowExecutor;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
-import brainslug.flow.listener.TriggerContext;
 import brainslug.flow.model.EnumIdentifier;
 import brainslug.flow.model.FlowBuilder;
 import brainslug.flow.model.Identifier;
+import brainslug.util.IdUtil;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
@@ -222,4 +225,26 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     eventOrder.verifyNoMoreInteractions();
   }
 
+  @Test
+  public void shouldPassPropertiesOnStartByTrigger() {
+    // given:
+    BrainslugContext contextSpy = spy(context);
+
+    FlowBuilder flow = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id("start"))).end(event(id("end")));
+      }
+    };
+    contextSpy.addFlowDefinition(flow.getDefinition());
+    TokenFlowExecutor executor = new TokenFlowExecutor(contextSpy);
+
+    // when:
+    executor.startFlow(new TriggerContext().nodeId(IdUtil.id("start")).definitionId(flow.getId()).property("key", "value"));
+    ArgumentCaptor<TriggerContext> triggerCaptor = ArgumentCaptor.forClass(TriggerContext.class);
+
+    // then:
+    verify(contextSpy).trigger(triggerCaptor.capture());
+    assertThat(triggerCaptor.getValue().properties.get("key")).isEqualTo("value");
+  }
 }

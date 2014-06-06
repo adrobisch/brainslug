@@ -1,14 +1,10 @@
 package brainslug.flow.context;
 
-import brainslug.flow.execution.Scheduler;
+import brainslug.flow.execution.*;
 import brainslug.flow.execution.impl.ExecutorServiceScheduler;
 import brainslug.flow.execution.impl.HashMapPropertyStore;
 import brainslug.flow.listener.DefaultListenerManager;
 import brainslug.flow.listener.ListenerManager;
-import brainslug.flow.listener.TriggerContext;
-import brainslug.flow.execution.FlowExecutor;
-import brainslug.flow.execution.TokenStore;
-import brainslug.flow.execution.PropertyStore;
 import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
 import brainslug.flow.execution.impl.HashMapTokenStore;
 import brainslug.flow.execution.impl.TokenFlowExecutor;
@@ -104,6 +100,15 @@ public class BrainslugContext {
 
   public void trigger(TriggerContext context) {
     flowExecutor.trigger(context);
+  }
+
+  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, ExecutionProperties properties) {
+    TriggerContext triggerContext = new TriggerContext()
+        .definitionId(definitionId)
+        .nodeId(startNodeId)
+        .properties(properties);
+
+    return flowExecutor.startFlow(triggerContext);
   }
 
   public Identifier startFlow(Identifier definitionId, Identifier startNodeId) {

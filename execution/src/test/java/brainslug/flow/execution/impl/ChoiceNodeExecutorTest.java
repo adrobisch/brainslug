@@ -3,7 +3,7 @@ package brainslug.flow.execution.impl;
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
-import brainslug.flow.listener.TriggerContext;
+import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.model.FlowBuilder;
 import org.junit.Test;
 import org.mockito.InOrder;

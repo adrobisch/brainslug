@@ -1,10 +1,8 @@
-package brainslug.flow.listener;
+package brainslug.flow.execution;
 
 import brainslug.flow.model.EnumIdentifier;
 import brainslug.flow.model.Identifier;
-
-import java.util.HashMap;
-import java.util.Map;
+import brainslug.flow.model.StringIdentifier;
 
 public class TriggerContext<T extends TriggerContext> {
 
@@ -14,7 +12,7 @@ public class TriggerContext<T extends TriggerContext> {
   protected Identifier nodeId;
   protected Identifier<?> sourceNodeId;
 
-  protected Map<Object, Object> properties;
+  protected ExecutionProperties properties;
 
   public Identifier getSourceNodeId() {
     return sourceNodeId;
@@ -49,6 +47,10 @@ public class TriggerContext<T extends TriggerContext> {
     return definitionId(new EnumIdentifier(id));
   }
 
+  public T definitionId(String id) {
+    return definitionId(new StringIdentifier(id));
+  }
+
   public T definitionId(Identifier definitionId) {
     this.definitionId = definitionId;
     return self();
@@ -69,7 +71,7 @@ public class TriggerContext<T extends TriggerContext> {
     return self();
   }
 
-  public T properties(Map<Object, Object> properties) {
+  public T properties(ExecutionProperties properties) {
     this.properties = properties;
     return self();
   }
@@ -110,9 +112,9 @@ public class TriggerContext<T extends TriggerContext> {
     return result;
   }
 
-  public Map<Object, Object> getProperties() {
+  public ExecutionProperties getProperties() {
     if (properties == null) {
-      properties = new HashMap<Object, Object>();
+      properties = new ExecutionProperties();
     }
     return properties;
   }

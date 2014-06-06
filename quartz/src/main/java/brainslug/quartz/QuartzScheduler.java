@@ -2,7 +2,7 @@ package brainslug.quartz;
 
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.execution.Scheduler;
-import brainslug.flow.listener.TriggerContext;
+import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.model.Identifier;
 
 import static brainslug.util.IdUtil.id;

@@ -1,6 +1,7 @@
 package brainslug.flow.listener;
 
 import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.execution.TriggerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

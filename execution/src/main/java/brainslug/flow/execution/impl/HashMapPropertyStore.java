@@ -1,5 +1,6 @@
 package brainslug.flow.execution.impl;
 
+import brainslug.flow.execution.ExecutionProperties;
 import brainslug.flow.execution.PropertyStore;
 import brainslug.flow.model.Identifier;
 
@@ -9,16 +10,16 @@ import java.util.Map;
 
 public class HashMapPropertyStore implements PropertyStore {
 
-  Map<Identifier, Map<Object, Object>> propertiesByInstance = Collections.synchronizedMap(new HashMap<Identifier, Map<Object, Object>>());
+  Map<Identifier<?>, ExecutionProperties> propertiesByInstance = Collections.synchronizedMap(new HashMap<Identifier<?>, ExecutionProperties>());
 
   @Override
-  public void storeProperties(Identifier<?> instanceId, Map<Object, Object> properties) {
+  public void storeProperties(Identifier<?> instanceId, ExecutionProperties properties) {
     propertiesByInstance.put(instanceId, properties);
   }
 
   @Override
-  public Map<Object, Object> loadProperties(Identifier<?> instanceId) {
-    Map<Object, Object> instanceProperties = propertiesByInstance.get(instanceId);
-    return instanceProperties == null ? Collections.emptyMap() : instanceProperties;
+  public ExecutionProperties loadProperties(Identifier<?> instanceId) {
+    ExecutionProperties instanceProperties = propertiesByInstance.get(instanceId);
+    return instanceProperties == null ? new ExecutionProperties() : instanceProperties;
   }
 }

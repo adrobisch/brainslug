@@ -1,7 +1,7 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.listener.TriggerContext;
+import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.execution.ExecutionContext;
 
 public class DefaultExecutionContext implements ExecutionContext {

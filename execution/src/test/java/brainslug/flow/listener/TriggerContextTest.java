@@ -1,5 +1,6 @@
 package brainslug.flow.listener;
 
+import brainslug.flow.execution.TriggerContext;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -75,7 +75,7 @@ public class FlowBuilderSupport {
     return new TaskDefinition().id(id).display(id.toString());
   }
 
-  public TaskDefinition task(Identifier id, Object callee) {
+  public TaskDefinition task(Identifier id, Task callee) {
     return new TaskDefinition().id(id).display(id.toString()).call(new HandlerCallDefinition(callee));
   }
 

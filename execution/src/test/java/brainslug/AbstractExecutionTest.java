@@ -1,7 +1,6 @@
 package brainslug;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.Execute;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;

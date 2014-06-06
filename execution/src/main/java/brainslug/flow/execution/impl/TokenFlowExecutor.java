@@ -3,7 +3,7 @@ package brainslug.flow.execution.impl;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.execution.*;
 import brainslug.flow.listener.EventType;
-import brainslug.flow.listener.TriggerContext;
+import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.model.*;
 import brainslug.flow.model.marker.IntermediateEvent;
 import brainslug.flow.model.marker.StartEvent;
@@ -24,6 +24,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   Map<Class<? extends FlowNodeDefinition>, FlowNodeExectuor> nodeExecutors = new HashMap<Class<? extends FlowNodeDefinition>, FlowNodeExectuor>();
 
   public TokenFlowExecutor(BrainslugContext context) {
+    this.context = context;
     this.tokenStore = context.getTokenStore();
 
     addNodeExecutorMappings();
@@ -71,10 +72,12 @@ public class TokenFlowExecutor implements FlowExecutor {
     tokenStore.addToken(instanceId, trigger.getNodeId(), new Token(trigger.getNodeId()));
 
     context.getPropertyStore().storeProperties(trigger.getInstanceId(), trigger.getProperties());
-    context.trigger(new TriggerContext().sourceNodeId(node.getId())
+    context.trigger(new TriggerContext()
+      .sourceNodeId(node.getId())
       .nodeId(node.getId())
       .definitionId(trigger.getDefinitionId())
-      .instanceId(instanceId));
+      .instanceId(instanceId)
+      .properties(trigger.getProperties()));
 
     return instanceId;
   }
@@ -116,8 +119,8 @@ public class TokenFlowExecutor implements FlowExecutor {
     return executionContext;
   }
 
-  protected Map<Object, Object> mergeProperties(TriggerContext triggerContext, DefaultExecutionContext executionContext) {
-    Map<Object, Object> properties = context.getPropertyStore()
+  protected ExecutionProperties mergeProperties(TriggerContext triggerContext, DefaultExecutionContext executionContext) {
+    ExecutionProperties properties = context.getPropertyStore()
         .loadProperties(executionContext.getTrigger().getInstanceId());
     properties.putAll(triggerContext.getProperties());
     return properties;
