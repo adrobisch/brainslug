@@ -4,7 +4,7 @@
 
     <groupId>de.androbit</groupId>
     <artifactId>brainslug</artifactId>
-    <version>0.10-SNAPSHOT</version>
+    <version>0.11-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>brainslug root pom</name>
     <description>brainslug is a control flow abstraction and workflow library</description>
