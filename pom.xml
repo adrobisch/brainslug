@@ -4,7 +4,7 @@
 
     <groupId>de.androbit</groupId>
     <artifactId>brainslug</artifactId>
-    <version>0.11-SNAPSHOT</version>
+    <version>0.11</version>
     <packaging>pom</packaging>
     <name>brainslug root pom</name>
     <description>brainslug is a control flow abstraction and workflow library</description>
@@ -30,7 +30,8 @@
         <connection>scm:git:git://github.com/adrobisch/brainslug.git</connection>
         <developerConnection>scm:git:git@github.com:adrobisch/brainslug.git</developerConnection>
         <url>http://github.com/adrobisch/brainslug</url>
-    </scm>
+      <tag>brainslug-0.11</tag>
+  </scm>
 
     <developers>
         <developer>
