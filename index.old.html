@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>brainslug by adrobisch</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>brainslug</h1>
+        <h2>brainslug control flow abstraction and workflow library</h2>
+        <a href="https://github.com/adrobisch/brainslug" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <p><img src="doc/brainslug_big.png" alt="brainslug"></p>
+
+<h1>
+<a name="brainslug" class="anchor" href="#brainslug"><span class="octicon octicon-link"></span></a>brainslug</h1>
+
+<p>brainslug is a control flow abstraction library. It enables you to model your application flow as a graph of typed nodes,
+which can be transformed to different representations or be executed within a customisable environment.</p>
+
+<p><a href="https://travis-ci.org/adrobisch/brainslug"><img src="https://travis-ci.org/adrobisch/brainslug.png?branch=master"></a></p>
+
+<h1>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h1>
+
+<ul>
+<li>Builder DSL for flow definitions</li>
+<li>
+<a href="http://www.omg.org/spec/BPMN/2.0/">BPMN 2.0 XML</a> export using the <a href="https://github.com/Activiti/Activiti">Activiti</a> Model</li>
+<li>Flow Renderer based on the BPMN symbols</li>
+</ul><h1>
+<a name="download" class="anchor" href="#download"><span class="octicon octicon-link"></span></a>Download</h1>
+
+<p>The current version <code>0.9</code> is available in the maven central repository:</p>
+
+<div class="highlight highlight-xml"><pre>  <span class="nt">&lt;dependencies&gt;</span>
+  ...
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>de.androbit<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>brainslug-model<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>0.9<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>de.androbit<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>brainslug-execution<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>0.9<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+  ...
+  <span class="nt">&lt;/dependencies&gt;</span>
+</pre></div>
+
+<h1>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h1>
+
+<p>The main <a href="model">model</a> class is <code>brainslug.flow.model.FlowBuilder</code>. A new Flow Definition is specified in its <code>define</code> method:</p>
+
+<div class="highlight highlight-java"><pre>    <span class="k">new</span> <span class="nf">FlowBuilder</span><span class="o">()</span> <span class="o">{</span>
+      <span class="nd">@Override</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">define</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">start</span><span class="o">(</span><span class="n">event</span><span class="o">(</span><span class="n">id</span><span class="o">(</span><span class="s">"start"</span><span class="o">)))</span>
+          <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">task</span><span class="o">(</span><span class="n">id</span><span class="o">(</span><span class="s">"task"</span><span class="o">)).</span><span class="na">display</span><span class="o">(</span><span class="s">"A Task"</span><span class="o">))</span>
+          <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">task</span><span class="o">(</span><span class="n">id</span><span class="o">(</span><span class="s">"task2"</span><span class="o">)).</span><span class="na">display</span><span class="o">(</span><span class="s">"Another Task"</span><span class="o">))</span>
+        <span class="o">.</span><span class="na">end</span><span class="o">(</span><span class="n">event</span><span class="o">(</span><span class="n">id</span><span class="o">(</span><span class="s">"end"</span><span class="o">)));</span>
+      <span class="o">}</span>
+    <span class="o">};</span>
+</pre></div>
+
+<p>The <a href="renderer">renderer</a> will produce the following flow image:</p>
+
+<p><img src="doc/task_flow.png" alt="task_flow"></p>
+
+<h1>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h1>
+
+<p>Check the documentation of the modules:</p>
+
+<ul>
+<li><a href="model">Model</a></li>
+<li><a href="execution">Execution</a></li>
+<li><a href="renderer">Renderer</a></li>
+<li><a href="bpmn">BPMN transformer</a></li>
+</ul><p>A detailed documentation on the concepts and the current execution options will soon be available in the github wiki pages.</p>
+
+<h1>
+<a name="roadmap" class="anchor" href="#roadmap"><span class="octicon octicon-link"></span></a>Roadmap</h1>
+
+<p>These features might or might not be implemented:</p>
+
+<ul>
+<li>Static and dynamic flow definitions</li>
+<li>persistent and non-persistent instances</li>
+<li>Spring Data TokenStore</li>
+<li>intent-based REST API orchestration</li>
+<li>asynchronous retry of tasks</li>
+<li>Token Migration</li>
+<li>GraphML export and import</li>
+<li>BPMN import</li>
+</ul><h1>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>brainslug is published under the terms of the Apache 2.0 License.
+See the <a href="LICENSE">LICENSE</a> file.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/adrobisch/brainslug/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/adrobisch/brainslug/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/adrobisch/brainslug"></a> is maintained by <a href="https://github.com/adrobisch">adrobisch</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
