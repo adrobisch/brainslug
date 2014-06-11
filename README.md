@@ -1,4 +1,4 @@
-![brainslug](doc/brainslug_big.png)
+![brainslug](doc/src/site/images/brainslug_big.png)
 
 brainslug
 =========
@@ -14,11 +14,12 @@ Features
 * Builder DSL for flow definitions
 * [BPMN 2.0 XML](http://www.omg.org/spec/BPMN/2.0/) export using the [Activiti](https://github.com/Activiti/Activiti) Model
 * Flow Renderer based on the BPMN symbols
+* Quartz Scheduler for Async Tasks
 
 Download
 ========
 
-The current version `0.9` is available in the maven central repository:
+The current version is available in the [maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cbrainslug):
 
 ```xml
   <dependencies>
@@ -40,8 +41,6 @@ The current version `0.9` is available in the maven central repository:
 Example
 =======
 
-The main [model](model) class is `brainslug.flow.model.FlowBuilder`. A new Flow Definition is specified in its `define` method:
-
 ```java
     new FlowBuilder() {
       @Override
@@ -54,35 +53,10 @@ The main [model](model) class is `brainslug.flow.model.FlowBuilder`. A new Flow 
     };
 ```
 
-The [renderer](renderer) will produce the following flow image:
-
-![task_flow](doc/task_flow.png)
-
 Documentation
 =============
 
-Check the documentation of the modules:
-
- * [Model](model)
- * [Execution](execution)
- * [Renderer](renderer)
- * [BPMN transformer](bpmn)
-
-A detailed documentation on the concepts and the current execution options will soon be available in the github wiki pages.
-
-Roadmap
-=======
-
-These features might or might not be implemented:
-
-* Static and dynamic flow definitions
-* persistent and non-persistent instances
-* Spring Data TokenStore
-* intent-based REST API orchestration
-* asynchronous retry of tasks
-* Token Migration
-* GraphML export and import
-* BPMN import
+Check the [github pages](http://adrobisch.github.io/brainslug/) for the brainslug guide and documentation.
 
 License
 =======
