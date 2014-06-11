@@ -42,7 +42,7 @@ Example
 =======
 
 ```java
-    new FlowBuilder() {
+    new brainslug.flow.model.FlowBuilder() {
       @Override
       public void define() {
         start(event(id("start")))
