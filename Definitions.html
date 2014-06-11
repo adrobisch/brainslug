@@ -1,9 +1,9 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html manifest="pamflet.manifest">
+<html>
       <head>
         <meta charset="utf-8"/>
         <meta content="width=device-width, initial-scale=1" name="viewport"/>
-        <title>brainslug — brainslug</title>
+        <title>brainslug — Definitions</title>
         
         <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection"/>
         <link rel="stylesheet" href="css/blueprint/grid.css" type="text/css" media="screen and (min-device-width: 800px), projection"/>
@@ -32,40 +32,32 @@
             </script>
       </head>
       <body class="color_scheme-brainslug">
-        <a class="page next nav" href="Getting+started.html">
+        <a class="page prev nav" href="Getting+started.html">
+            <span class="space">&nbsp;</span>
+            <span class="flip arrow">❧</span>
+          </a><a class="page next nav" href="Execution.html">
             <span class="space">&nbsp;</span>
             <span class="arrow">❧</span>
           </a>
         <div class="container contentswrapper">
           <div class="span-16 prepend-1 append-1 contents">
-            <h1 id="brainslug">brainslug<a href="#brainslug" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><p>brainslug is a control flow abstraction library. 
-It enables you to model your business logic flow as a graph of typed nodes, 
-which can be transformed to different representations or be executed within a customisable environment.
-</p><h1 id="Motivation">Motivation<a href="#Motivation" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><blockquote><p>“Do we really need another Workflow-BPM-whatever engines on the JVM? Smells like ‘Not invented here’!”
-</p></blockquote><p>Activiti and camunda BPM and jBPM might be the most popular on the list, but they all have some kind bigger legacy and target environment 
-they have to deal with and its more difficult to just get to their core, e.g. to understand there internal execution model. 
-</p><p>For example, Activiti is very focused on BPMN 2.0 and its jBPM 4 roots, jBPM5 is coming from the business rule side, 
-BPEL engines makes most sense in WS-* environments.
-</p><p>To some degree they share some strong assumptions:
-</p><ul><li>Relational persistence (with JDBC), execution semantics are often strongly coupled to the DB transaction management
-</li><li>high initial learning effort required to learn the workflow description language like BPMN, BPEL, … 
-the BPMN 2.0 specification is a several hundred pages big
-</li><li>Dynamic expression evaluation, at least to control the flow
-</li><li>You are living in a container (Tomcat / Spring, Java Enterprise Edition)
-</li><li>XML based descriptions / configurations
-</li></ul><p>Those points make them look heavy-weight and inflexible. 
-<em>brainslug</em> aims to provide a small workflow library in Java without these strings attached.
+            <h1 id="Definitions">Definitions<a href="#Definitions" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><h2 id="Flow+Definition">Flow Definition<a href="#Flow+Definition" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A flow definition is a directed graph of typed flow nodes. brainslug provides a set of predefined node types
+which are interpreted by the execution module. Generally its up to the user to define the meaning of the graph,
+but its common to see it as the definition of possible paths / sequence of actions for a desired outcome, e.g.
+the steps to prepare a sandwich, or a ordering process.
+</p><h2 id="Usage">Usage<a href="#Usage" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>See the <a href="https://github.com/adrobisch/brainslug/blob/master/model/src/test/java/brainslug/flow/builder/FlowBuilderTest.java">FlowBuilderTest</a> class
+for examples on how to build flow definitions.
 </p><div class="bottom nav span-16">
                         <em>Next Page</em>
                         <span class="arrow">❧</span>
-                        <a href="Getting+started.html"> Getting started </a>                        
+                        <a href="Execution.html"> Execution </a>                        
                         
                       </div><div class="tocwrapper show">
       <a class="tochead nav" style="display: none" href="#toc">❦</a>
       <a name="toc"></a>
       <h4 class="toctitle">Contents</h4>
       <div class="tocbody">
-      <div class="current">brainslug</div><ol class="toc"> <li><div><a href="Getting+started.html">Getting started</a></div></li><li><div><a href="Definitions.html">Definitions</a></div></li><li><div><a href="Execution.html">Execution</a></div></li><li><div><a href="BPMN.html">BPMN</a></div></li><li class="generated"><div><a href="Contents+in+Depth.html">Contents in Depth</a></div></li><li class="generated"><div><a href="Combined+Pages.html">Combined Pages</a></div></li> </ol></div></div>
+      <div><a href="index.html">brainslug</a></div><ol class="toc"> <li><div><a href="Getting+started.html">Getting started</a></div></li><li><div class="current">Definitions</div></li><li><div><a href="Execution.html">Execution</a></div></li><li><div><a href="BPMN.html">BPMN</a></div></li><li class="generated"><div><a href="Contents+in+Depth.html">Contents in Depth</a></div></li><li class="generated"><div><a href="Combined+Pages.html">Combined Pages</a></div></li> </ol></div></div>
           </div>
         </div>
         <div class="header">
@@ -73,7 +65,7 @@ the BPMN 2.0 specification is a several hundred pages big
         <div class="span-16 prepend-1 append-1">
           <div class="span-16 top nav">
             <div class="span-16 title">
-              <span>brainslug</span> 
+              <span>brainslug</span> — Definitions
             </div>
           </div>
         </div>

@@ -45,7 +45,7 @@
       <a name="toc"></a>
       <h4 class="toctitle">Contents</h4>
       <div class="tocbody">
-      <div><a href="#brainslug">brainslug</a></div><ol class="toc"> <li><div><a href="#Getting+started">Getting started</a></div></li> </ol></div></div><h1 id="brainslug">brainslug<a href="#brainslug" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><p>brainslug is a control flow abstraction library. 
+      <div><a href="#brainslug">brainslug</a></div><ol class="toc"> <li><div><a href="#Getting+started">Getting started</a></div></li><li><div><a href="#Definitions">Definitions</a></div></li><li><div><a href="#Execution">Execution</a></div></li><li><div><a href="#BPMN">BPMN</a></div></li> </ol></div></div><h1 id="brainslug">brainslug<a href="#brainslug" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><p>brainslug is a control flow abstraction library. 
 It enables you to model your business logic flow as a graph of typed nodes, 
 which can be transformed to different representations or be executed within a customisable environment.
 </p><h1 id="Motivation">Motivation<a href="#Motivation" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><blockquote><p>“Do we really need another Workflow-BPM-whatever engines on the JVM? Smells like ‘Not invented here’!”
@@ -87,7 +87,108 @@ the BPMN 2.0 specification is a several hundred pages big
       .end(event(id(&quot;end&quot;)));
     }
   };
-</code></pre>
+</code></pre><h1 id="Definitions">Definitions<a href="#Definitions" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><h2 id="Flow+Definition">Flow Definition<a href="#Flow+Definition" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A flow definition is a directed graph of typed flow nodes. brainslug provides a set of predefined node types
+which are interpreted by the execution module. Generally its up to the user to define the meaning of the graph,
+but its common to see it as the definition of possible paths / sequence of actions for a desired outcome, e.g.
+the steps to prepare a sandwich, or a ordering process.
+</p><h2 id="Usage">Usage<a href="#Usage" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>See the <a href="https://github.com/adrobisch/brainslug/blob/master/model/src/test/java/brainslug/flow/builder/FlowBuilderTest.java">FlowBuilderTest</a> class
+for examples on how to build flow definitions.
+</p><h1 id="Execution">Execution<a href="#Execution" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><p>Flow Definitions can be executed, read this section to learn about the concepts and 
+semantics of a execution.
+</p><h2 id="Concepts">Concepts<a href="#Concepts" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><h3 id="Flow+Instance">Flow Instance<a href="#Flow+Instance" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A flow instance is a single execution of a given flow definition. Depending on the brainslug configuration and flow definition
+an instance might be a persistent and long running, or just be executed in-memory.
+</p><h3 id="Flow+Token">Flow Token<a href="#Flow+Token" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A flow token is a pointer to a flow node in a flow instance. A flow node might have multiple tokens.
+The token includes the information it came from. A flow node needs the correct amount of tokens to be ready
+for execution and will produce a defined amount of new flow node after execution.
+</p><h2 id="Token+Semantics">Token Semantics<a href="#Token+Semantics" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><h3 id="Task+Node">Task Node<a href="#Task+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Task Node will be executed for every incoming token and produces one token per outgoing edge.
+</p><h3 id="Event+Node">Event Node<a href="#Event+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>An Event Node is triggered by every incoming token and produces one token per outgoing edge.
+</p><h3 id="Choice+Node">Choice Node<a href="#Choice+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Choice Node will be executed for every incoming token. A token is produced for the first outgoing path
+where the predicate is fullfilled.
+</p><h3 id="Merge+Node">Merge Node<a href="#Merge+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Merge Node will be executed for every incoming token. A token is produced for every outgoing edge.
+</p><h3 id="Parallel+Node">Parallel Node<a href="#Parallel+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Parallel Node will be executed for every incoming token. A token is produced for every outgoing edge.
+</p><h3 id="Join+Node">Join Node<a href="#Join+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Parallel Node will only be executed if it has tokens from every incoming edge.
+A token is produced for every outgoing edge.
+</p><h2 id="Execution+Example">Execution Example<a href="#Execution+Example" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>To execute a flow definition, you need to create a brainslug context.
+This will create a default context with a service instance:
+</p><pre><code class="prettyprint lang-java">    BrainslugContext context = new BrainslugContext();
+    context.getRegistry().registerService(TestService.class, new TestService());
+</code></pre><p>then define the flow and add it to the context:
+</p><pre><code class="prettyprint lang-java">    FlowDefinition flow = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id(&quot;start&quot;)))
+          .execute(task(id(&quot;task&quot;)).display(&quot;A Task&quot;))
+          .execute(task(id(&quot;task2&quot;)).display(&quot;Another Task&quot;))
+        .end(event(id(&quot;end&quot;)));
+      }
+    }.getDefinition();
+   context.addFlowDefinition(flow);
+</code></pre><p>and trigger a node event for the node you want to start with:
+</p><pre><code class="prettyprint lang-java">context.trigger(new TriggerEvent().nodeId(id(&quot;start&quot;)).definitionId(flow.getId()))
+</code></pre><h2 id="Integration+with+your+code">Integration with your code<a href="#Integration+with+your+code" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>In order to connect you code with a brainslug flow definition you may use method call definition:
+</p><pre><code class="prettyprint lang-java">    new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id(START)))
+        .execute(task(id(TASK))
+          .call(service(TestService.class).method(&quot;getString&quot;)))
+        .end(event(id(END)));
+      }
+    }
+</code></pre><p>or a delegate class:
+</p><pre><code class="prettyprint lang-java">    class Delegate {
+      @Execute
+      public void execute(ExecutionContext context) {
+      ...
+      }
+    }
+    ...
+    context.getRegistry().registerService(Delegate.class, new Delegate());
+    ...
+    new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id(START)))
+          .execute(task(id(TASK)).delegate(Delegate.class)))
+        .end(event(id(END)));
+      }
+    }
+</code></pre><h1 id="BPMN">BPMN<a href="#BPMN" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><p>brainslug is able to export flow definitions to BPMN 2.0 as Image or XML definitions file.
+</p><h2 id="Renderer+Example">Renderer Example<a href="#Renderer+Example" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><pre><code class="prettyprint lang-java">    JGraphRenderer renderer = new JGraphRenderer(new GraphFactory());
+    FileOutputStream outputStream = ...
+    FlowBuilder flowBuilder = ...
+    renderer.render(flowBuilder, outputStream, Format.PNG);
+</code></pre><p><img src="images/task_flow.png" alt="task_flow"/>
+</p><p>also check <a href="https://github.com/adrobisch/brainslug/blob/master/renderer/src/test/java/brainslug/flow/renderer/JGraphRendererTest.java">JGraphRendererTest</a>.
+</p><h2 id="XML+Definitions+export">XML Definitions export<a href="#XML+Definitions+export" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><pre><code class="prettyprint lang-java">    FlowBuilder flowBuilder =  new FlowBuilder() {
+                                 @Override
+                                 public void define() {
+                                   start(event(id(&quot;start&quot;)))
+                                     .execute(task(id(&quot;task&quot;)).display(&quot;A Task&quot;))
+                                     .execute(task(id(&quot;task2&quot;)).display(&quot;Another Task&quot;))
+                                   .end(event(id(&quot;end&quot;)));
+                                 }
+                               };
+    BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
+    String bpmnXml = bpmnModelTransformer.toBpmnXml(flowBuilder);
+</code></pre><p>will produce
+</p><pre><code class="prettyprint lang-xml">  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+  &lt;definitions xmlns=&quot;http://www.omg.org/spec/BPMN/20100524/MODEL&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:activiti=&quot;http://activiti.org/bpmn&quot; xmlns:bpmndi=&quot;http://www.omg.org/spec/BPMN/20100524/DI&quot; xmlns:omgdc=&quot;http://www.omg.org/spec/DD/20100524/DC&quot; xmlns:omgdi=&quot;http://www.omg.org/spec/DD/20100524/DI&quot; typeLanguage=&quot;http://www.w3.org/2001/XMLSchema&quot; expressionLanguage=&quot;http://www.w3.org/1999/XPath&quot; targetNamespace=&quot;http://www.activiti.org/test&quot;&gt;
+    &lt;process id=&quot;471ff134-4050-497b-bf80-d1fa5164f311&quot; name=&quot;471ff134-4050-497b-bf80-d1fa5164f311&quot; isExecutable=&quot;true&quot;&gt;
+      &lt;startEvent id=&quot;start&quot; name=&quot;start&quot;&gt;&lt;/startEvent&gt;
+      &lt;serviceTask id=&quot;task&quot; name=&quot;A Task&quot;&gt;&lt;/serviceTask&gt;
+      &lt;serviceTask id=&quot;task2&quot; name=&quot;Another Task&quot;&gt;&lt;/serviceTask&gt;
+      &lt;endEvent id=&quot;end&quot; name=&quot;end&quot;&gt;&lt;/endEvent&gt;
+      &lt;sequenceFlow sourceRef=&quot;start&quot; targetRef=&quot;task&quot;&gt;&lt;/sequenceFlow&gt;
+      &lt;sequenceFlow sourceRef=&quot;task&quot; targetRef=&quot;task2&quot;&gt;&lt;/sequenceFlow&gt;
+      &lt;sequenceFlow sourceRef=&quot;task2&quot; targetRef=&quot;end&quot;&gt;&lt;/sequenceFlow&gt;
+    &lt;/process&gt;
+    &lt;bpmndi:BPMNDiagram id=&quot;BPMNDiagram_471ff134-4050-497b-bf80-d1fa5164f311&quot;&gt;
+      &lt;bpmndi:BPMNPlane bpmnElement=&quot;471ff134-4050-497b-bf80-d1fa5164f311&quot; id=&quot;BPMNPlane_471ff134-4050-497b-bf80-d1fa5164f311&quot;&gt;&lt;/bpmndi:BPMNPlane&gt;
+    &lt;/bpmndi:BPMNDiagram&gt;
+  &lt;/definitions&gt;
+</code></pre><p>also check <a href="https://github.com/adrobisch/brainslug/blob/master/bpmn/src/test/java/brainslug/bpmn/BpmnModelTransformerTest.java">BpmnModelTransformerTest</a>.
+</p>
           </div>
         </div>
         <div class="header">
