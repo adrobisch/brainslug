@@ -1,7 +1,7 @@
 package brainslug.quartz;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.Scheduler;
+import brainslug.flow.execution.AsyncTaskScheduler;
 import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.model.Identifier;
 
@@ -13,7 +13,7 @@ import org.quartz.*;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
-public class QuartzScheduler implements Scheduler {
+public class QuartzScheduler implements AsyncTaskScheduler {
   private static final String INSTANCE_ID = "instanceId";
   private static final String TASK_NODE_ID = "taskNodeId";
   private static final String DEFINITION_ID = "definitionId";

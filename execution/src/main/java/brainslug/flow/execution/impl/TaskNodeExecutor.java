@@ -19,7 +19,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
     removeTriggerToken(execution);
 
     if(taskDefinition.isAsync() && execution.getTrigger().getSourceNodeId() != null) {
-      execution.getBrainslugContext().getScheduler()
+      execution.getBrainslugContext().getAsyncTaskScheduler()
         .scheduleTask(taskDefinition.getId(), execution.getTrigger().getSourceNodeId(), execution.getTrigger().getInstanceId(), execution.getTrigger().getDefinitionId());
       return takeNone();
     } else if (taskDefinition.getDelegateClass() != null) {

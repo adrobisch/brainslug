@@ -15,7 +15,7 @@ import brainslug.util.UuidGenerator;
 
 public class BrainslugContext {
 
-  Scheduler scheduler;
+  AsyncTaskScheduler asyncTaskScheduler;
   DefinitionStore definitionStore;
   ListenerManager listenerManager;
   FlowExecutor flowExecutor;
@@ -27,7 +27,7 @@ public class BrainslugContext {
   Registry registry;
 
   public BrainslugContext() {
-    withScheduler(new ExecutorServiceScheduler());
+    withAsyncTaskScheduler(new ExecutorServiceScheduler());
     withDefinitionStore(new DefinitionStore());
     withListenerManager(new DefaultListenerManager());
     withTokenStore(new HashMapTokenStore());
@@ -38,9 +38,9 @@ public class BrainslugContext {
     withPropertyStore(new HashMapPropertyStore());
   }
 
-  public BrainslugContext withScheduler(Scheduler scheduler) {
-    this.scheduler = scheduler;
-    scheduler.setContext(this);
+  public BrainslugContext withAsyncTaskScheduler(AsyncTaskScheduler asyncTaskScheduler) {
+    this.asyncTaskScheduler = asyncTaskScheduler;
+    asyncTaskScheduler.setContext(this);
     return this;
   }
 
@@ -143,8 +143,8 @@ public class BrainslugContext {
     return propertyStore;
   }
 
-  public Scheduler getScheduler() {
-    return scheduler;
+  public AsyncTaskScheduler getAsyncTaskScheduler() {
+    return asyncTaskScheduler;
   }
 
   public IdGenerator getIdGenerator() {

@@ -5,7 +5,7 @@ import brainslug.flow.model.marker.IntermediateEvent;
 
 import java.util.LinkedList;
 
-public class FlowPathDefinition<T extends FlowPathDefinition> {
+public class FlowPathDefinition<Self extends FlowPathDefinition> {
   final FlowDefinition definition;
   LinkedList<FlowNodeDefinition> pathNodes = new LinkedList<FlowNodeDefinition>();
 
@@ -23,18 +23,18 @@ public class FlowPathDefinition<T extends FlowPathDefinition> {
     return appendNode(new ParallelDefinition(this).id(id)).self().fork();
   }
 
-  public T execute(AbstractTaskDefinition taskDefinition) {
+  public Self execute(AbstractTaskDefinition taskDefinition) {
     appendNode(taskDefinition);
     return then();
   }
 
-  public T waitFor(EventDefinition eventDefinition) {
+  public Self waitFor(EventDefinition eventDefinition) {
     eventDefinition.with(new IntermediateEvent());
     appendNode(eventDefinition);
     return then();
   }
 
-  public T end(FlowNodeDefinition<EventDefinition> eventDefinition) {
+  public Self end(FlowNodeDefinition<EventDefinition> eventDefinition) {
     if (definition.contains(eventDefinition)) {
       addToPath(eventDefinition);
       connect(pathNodes.getLast(), definition.getNode(eventDefinition.getId()));
@@ -46,7 +46,7 @@ public class FlowPathDefinition<T extends FlowPathDefinition> {
     return then();
   }
 
-  private <T extends FlowNodeDefinition> T appendNode(T flowNodeDefinition) {
+  protected <T extends FlowNodeDefinition> T appendNode(T flowNodeDefinition) {
     if (definition.contains(flowNodeDefinition)) {
       throw new IllegalStateException("Node already exists");
     }
@@ -59,18 +59,18 @@ public class FlowPathDefinition<T extends FlowPathDefinition> {
     return flowNodeDefinition;
   }
 
-  private <T extends FlowNodeDefinition> void addToPath(T flowNodeDefinition) {
+  protected <T extends FlowNodeDefinition> void addToPath(T flowNodeDefinition) {
     pathNodes.add(flowNodeDefinition);
     flowNodeDefinition.setFlowPathDefinition(this);
   }
 
-  private <T extends FlowNodeDefinition> void connect(FlowNodeDefinition previousNode, T flowNodeDefinition) {
+  protected <T extends FlowNodeDefinition> void connect(FlowNodeDefinition previousNode, T flowNodeDefinition) {
     previousNode.addOutgoing(flowNodeDefinition);
     flowNodeDefinition.addIncoming(previousNode);
   }
 
-  public T then() {
-    return (T) this;
+  public Self then() {
+    return (Self)  this;
   }
 
   public LinkedList<FlowNodeDefinition> getPathNodes() {

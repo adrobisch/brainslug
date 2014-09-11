@@ -1,7 +1,7 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.AbstractExecutionTest;
-import brainslug.flow.execution.Scheduler;
+import brainslug.flow.execution.AsyncTaskScheduler;
 import brainslug.flow.model.Task;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
@@ -109,8 +109,8 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void asyncTaskIsDelegatedToScheduler() {
     // given:
-    Scheduler schedulerMock = mock(Scheduler.class);
-    context.withScheduler(schedulerMock);
+    AsyncTaskScheduler asyncTaskSchedulerMock = mock(AsyncTaskScheduler.class);
+    context.withAsyncTaskScheduler(asyncTaskSchedulerMock);
 
     FlowDefinition asyncTaskFlow = new FlowBuilder() {
       @Override
@@ -131,7 +131,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     // when:
     Identifier instanceId = context.startFlow(asyncTaskFlow.getId(), id(START));
     // then:
-    verify(schedulerMock).scheduleTask(id(TASK), id(START), instanceId, id(ASYNCID));
+    verify(asyncTaskSchedulerMock).scheduleTask(id(TASK), id(START), instanceId, id(ASYNCID));
   }
 
 }
