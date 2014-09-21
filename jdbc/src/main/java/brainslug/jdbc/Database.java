@@ -1,5 +1,6 @@
 package brainslug.jdbc;
 
+import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLTemplates;
@@ -12,11 +13,13 @@ import java.sql.SQLException;
 
 public class Database {
   private final DataSource dataSource;
+  private final Configuration configuration;
   private final SQLTemplates dialect;
 
-  public Database(DataSource dataSource, SQLTemplates dialect) {
+  public Database(DataSource dataSource, Configuration configuration) {
     this.dataSource = dataSource;
-    this.dialect = dialect;
+    this.configuration = configuration;
+    this.dialect = configuration.getTemplates();
   }
 
   public SQLQuery query() {

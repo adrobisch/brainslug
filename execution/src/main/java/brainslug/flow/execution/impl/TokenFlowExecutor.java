@@ -7,6 +7,7 @@ import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.model.*;
 import brainslug.flow.model.marker.IntermediateEvent;
 import brainslug.flow.model.marker.StartEvent;
+import brainslug.util.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +69,8 @@ public class TokenFlowExecutor implements FlowExecutor {
     FlowNodeDefinition<?> node = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
     Identifier instanceId = context.getIdGenerator().generateId();
 
-    tokenStore.createInstance(instanceId);
-    tokenStore.addToken(instanceId, trigger.getNodeId(), new Token(trigger.getNodeId()));
+    tokenStore.createInstance();
+    tokenStore.addToken(instanceId, trigger.getNodeId(), Option.<Identifier>empty());
 
     context.getPropertyStore().storeProperties(trigger.getInstanceId(), trigger.getProperties());
     context.trigger(new TriggerContext()

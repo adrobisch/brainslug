@@ -22,7 +22,7 @@ public class JoinNodeExecutor extends DefaultNodeExecutor<JoinDefinition> {
 
   @Override
   public List<FlowNodeDefinition> execute(JoinDefinition joinDefinition, ExecutionContext execution) {
-    Map<Identifier, List<Token>> joinTokens = tokenStore.getTokens(joinDefinition.getId(), execution.getTrigger().getInstanceId());
+    Map<Identifier, List<Token>> joinTokens = tokenStore.tokensGroupedBySource(joinDefinition.getId(), execution.getTrigger().getInstanceId());
     List<Token> consumedTokens = new ArrayList<Token>();
     for (FlowEdgeDefinition edge : joinDefinition.getIncoming()) {
       List<Token> edgeTokens = joinTokens.get(edge.getSource().getId());
