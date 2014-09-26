@@ -25,7 +25,7 @@ public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNo
   }
 
   protected void consumeAllNodeTokens(Identifier instanceId, Identifier nodeId) {
-    Map<Identifier, List<Token>> nodeTokens = tokenStore.tokensGroupedBySourceNode(nodeId, instanceId);
+    Map<Identifier, List<Token>> nodeTokens = tokenStore.getNodeTokens(nodeId, instanceId).groupedBySourceNode();
 
     for (List<Token> tokens : nodeTokens.values()) {
       removeTokens(instanceId, tokens);

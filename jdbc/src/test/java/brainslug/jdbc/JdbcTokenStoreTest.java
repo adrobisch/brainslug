@@ -2,6 +2,7 @@ package brainslug.jdbc;
 
 import brainslug.flow.context.IdGenerator;
 import brainslug.flow.execution.Token;
+import brainslug.flow.execution.TokenList;
 import brainslug.flow.model.Identifier;
 import brainslug.util.Option;
 import com.mysema.query.sql.Configuration;
@@ -40,9 +41,9 @@ public class JdbcTokenStoreTest {
     assertThat(instanceId).isNotNull();
 
     // then:
-    List<Token> instanceTokens = jdbcTokenStore.getInstanceTokens(instanceId);
-    assertThat(instanceTokens)
-      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.<Identifier>empty()))
+    TokenList instanceTokens = jdbcTokenStore.getInstanceTokens(instanceId);
+    assertThat(instanceTokens.getTokens())
+      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.of(instanceId), false))
       .hasSize(1);
   }
 
@@ -50,12 +51,13 @@ public class JdbcTokenStoreTest {
   public void shouldDeleteToken() throws Exception {
     // given:
     JdbcTokenStore jdbcTokenStore = createJdbcTokenStore();
-    createInstanceWithSingleRootToken(jdbcTokenStore);
+    Identifier instanceId = createInstanceWithSingleRootToken(jdbcTokenStore);
     // when:
     jdbcTokenStore.removeToken(instanceId, tokenId);
 
-    assertThat(jdbcTokenStore.tokensGroupedBySourceNode(nodeId, instanceId))
-      .hasSize(0);
+    assertThat(jdbcTokenStore.getNodeTokens(nodeId, instanceId).getTokens())
+      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.of(instanceId), true))
+      .hasSize(1);
   }
 
   private Identifier createInstanceWithSingleRootToken(JdbcTokenStore jdbcTokenStore) {

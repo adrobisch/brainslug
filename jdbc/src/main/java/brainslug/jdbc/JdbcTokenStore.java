@@ -2,7 +2,8 @@ package brainslug.jdbc;
 
 import brainslug.flow.context.IdGenerator;
 import brainslug.flow.execution.Token;
-import brainslug.flow.execution.impl.AbstractTokenStore;
+import brainslug.flow.execution.TokenList;
+import brainslug.flow.execution.TokenStore;
 import brainslug.flow.model.Identifier;
 import brainslug.jdbc.tables.QFlowInstance;
 import brainslug.jdbc.tables.QFlowToken;
@@ -11,7 +12,7 @@ import com.mysema.query.types.ConstructorExpression;
 
 import java.util.*;
 
-public class JdbcTokenStore extends AbstractTokenStore {
+public class JdbcTokenStore implements TokenStore {
 
   private final Database database;
   private final IdGenerator idGenerator;
@@ -22,24 +23,32 @@ public class JdbcTokenStore extends AbstractTokenStore {
   }
 
   @Override
-  public List<Token> getInstanceTokens(Identifier instanceId) {
-    return database.query().from(QFlowToken.flowToken)
+  public TokenList getInstanceTokens(Identifier instanceId) {
+    return new TokenList(database.query().from(QFlowToken.flowToken)
       .where(
         QFlowToken.flowToken.flowInstanceId.eq(instanceId.stringValue())
       )
-      .list(ConstructorExpression.create(Token.class, QFlowToken.flowToken.id, QFlowToken.flowToken.currentNode));
+      .list(ConstructorExpression.create(Token.class,
+        QFlowToken.flowToken.id,
+        QFlowToken.flowToken.currentNode,
+        QFlowToken.flowToken.sourceNode,
+        QFlowToken.flowToken.flowInstanceId,
+        QFlowToken.flowToken.isDead)));
   }
 
   @Override
-  public Map<Identifier, List<Token>> tokensGroupedBySourceNode(Identifier nodeId, Identifier instanceId) {
-    List<Token> nodeTokens = database.query().from(QFlowToken.flowToken)
-      .where(
-        QFlowToken.flowToken.flowInstanceId.eq(instanceId.stringValue()),
-        QFlowToken.flowToken.currentNode.eq(nodeId.stringValue())
-      )
-      .list(ConstructorExpression.create(Token.class, QFlowToken.flowToken.id, QFlowToken.flowToken.sourceNode));
-
-    return sourceNodeMap(nodeId, nodeTokens);
+  public TokenList getNodeTokens(Identifier nodeId, Identifier instanceId) {
+    return new TokenList(database.query().from(QFlowToken.flowToken)
+        .where(
+          QFlowToken.flowToken.flowInstanceId.eq(instanceId.stringValue()),
+          QFlowToken.flowToken.currentNode.eq(nodeId.stringValue())
+        )
+        .list(ConstructorExpression.create(Token.class,
+          QFlowToken.flowToken.id,
+          QFlowToken.flowToken.currentNode,
+          QFlowToken.flowToken.sourceNode,
+          QFlowToken.flowToken.flowInstanceId,
+          QFlowToken.flowToken.isDead)));
   }
 
   @Override
@@ -59,12 +68,13 @@ public class JdbcTokenStore extends AbstractTokenStore {
         new Date().getTime()
       )
       .execute();
-    return new Token(tokenId, nodeId, sourceNodeId, Option.of(instanceId));
+    return new Token(tokenId, nodeId, sourceNodeId, Option.of(instanceId), false);
   }
 
   @Override
   public void removeToken(Identifier instanceId, Identifier tokenId) {
-    database.delete(QFlowToken.flowToken)
+    database.update(QFlowToken.flowToken)
+      .set(QFlowToken.flowToken.isDead, 1)
       .where(
         QFlowToken.flowToken.id.eq(tokenId.stringValue()),
         QFlowToken.flowToken.flowInstanceId.eq(instanceId.stringValue())

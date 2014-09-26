@@ -9,23 +9,22 @@ public class Token {
   Identifier nodeId;
   Option<Identifier> sourceNode;
   Option<Identifier> instanceId;
+  boolean isDead;
 
-  public Token(String id, String nodeId) {
-    this(IdUtil.id(id), IdUtil.id(nodeId));
+  public Token(String id, String nodeId, String sourceNodeId, String instanceId, int isDead) {
+    this(IdUtil.id(id),
+      IdUtil.id(nodeId),
+      Option.of(IdUtil.id(sourceNodeId)),
+      Option.of(IdUtil.id(instanceId)),
+      isDead == 1);
   }
 
-  public Token(Identifier id, Identifier nodeId) {
-    this.id = id;
-    this.nodeId = nodeId;
-    this.sourceNode = Option.empty();
-    this.instanceId = Option.empty();
-  }
-
-  public Token(Identifier id, Identifier nodeId, Option<Identifier> sourceNode, Option<Identifier> instanceId) {
+  public Token(Identifier id, Identifier nodeId, Option<Identifier> sourceNode, Option<Identifier> instanceId, boolean isDead) {
     this.id = id;
     this.nodeId = nodeId;
     this.sourceNode = sourceNode;
     this.instanceId = instanceId;
+    this.isDead = isDead;
   }
 
   public Identifier getId() {
@@ -48,6 +47,15 @@ public class Token {
     return !sourceNode.isPresent();
   }
 
+  public boolean isDead() {
+    return isDead;
+  }
+
+  public Token setDead(boolean isDead) {
+    this.isDead = isDead;
+    return this;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -55,6 +63,7 @@ public class Token {
 
     Token token = (Token) o;
 
+    if (isDead != token.isDead) return false;
     if (id != null ? !id.equals(token.id) : token.id != null) return false;
     if (instanceId != null ? !instanceId.equals(token.instanceId) : token.instanceId != null) return false;
     if (nodeId != null ? !nodeId.equals(token.nodeId) : token.nodeId != null) return false;
@@ -69,6 +78,7 @@ public class Token {
     result = 31 * result + (nodeId != null ? nodeId.hashCode() : 0);
     result = 31 * result + (sourceNode != null ? sourceNode.hashCode() : 0);
     result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
+    result = 31 * result + (isDead ? 1 : 0);
     return result;
   }
 
@@ -79,6 +89,7 @@ public class Token {
       ", nodeId=" + nodeId +
       ", sourceNode=" + sourceNode +
       ", instanceId=" + instanceId +
+      ", isDead=" + isDead +
       '}';
   }
 }

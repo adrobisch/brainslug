@@ -95,8 +95,6 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
   public void shouldExecuteJoin() {
     // given:
     context.addFlowDefinition(new FlowBuilder() {
-      String x = "test";
-
       @Override
       public void define() {
         start(event(id(START)))

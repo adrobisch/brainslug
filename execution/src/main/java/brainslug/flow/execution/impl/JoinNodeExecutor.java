@@ -2,7 +2,6 @@ package brainslug.flow.execution.impl;
 
 import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.execution.Token;
-import brainslug.flow.execution.TokenStore;
 import brainslug.flow.model.FlowEdgeDefinition;
 import brainslug.flow.model.FlowNodeDefinition;
 import brainslug.flow.model.Identifier;
@@ -17,7 +16,7 @@ public class JoinNodeExecutor extends DefaultNodeExecutor<JoinDefinition> {
   @Override
   public List<FlowNodeDefinition> execute(JoinDefinition joinDefinition, ExecutionContext execution) {
     Identifier instanceId = execution.getTrigger().getInstanceId();
-    Map<Identifier, List<Token>> joinTokens = tokenStore.tokensGroupedBySourceNode(joinDefinition.getId(), instanceId);
+    Map<Identifier, List<Token>> joinTokens = tokenStore.getNodeTokens(joinDefinition.getId(), instanceId).groupedBySourceNode();
     List<Token> consumedTokens = new ArrayList<Token>();
     for (FlowEdgeDefinition edge : joinDefinition.getIncoming()) {
       List<Token> edgeTokens = joinTokens.get(edge.getSource().getId());
