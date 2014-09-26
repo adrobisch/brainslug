@@ -27,15 +27,16 @@ public class BrainslugContext {
   Registry registry;
 
   public BrainslugContext() {
-    withAsyncTaskScheduler(new ExecutorServiceScheduler());
+    withIdGenerator(new UuidGenerator());
+    withTokenStore(new HashMapTokenStore(idGenerator));
+    withPropertyStore(new HashMapPropertyStore());
     withDefinitionStore(new DefinitionStore());
+
+    withAsyncTaskScheduler(new ExecutorServiceScheduler());
     withListenerManager(new DefaultListenerManager());
-    withTokenStore(new HashMapTokenStore());
     withExecutor(new TokenFlowExecutor(this));
     withRegistry(new HashMapRegistry());
     withPredicateEvaluator(new DefaultPredicateEvaluator());
-    withIdGenerator(new UuidGenerator());
-    withPropertyStore(new HashMapPropertyStore());
   }
 
   public BrainslugContext withAsyncTaskScheduler(AsyncTaskScheduler asyncTaskScheduler) {
@@ -102,21 +103,17 @@ public class BrainslugContext {
     flowExecutor.trigger(context);
   }
 
-  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, ExecutionProperties properties) {
-    TriggerContext triggerContext = new TriggerContext()
-        .definitionId(definitionId)
-        .nodeId(startNodeId)
-        .properties(properties);
-
-    return flowExecutor.startFlow(triggerContext);
-  }
-
   public Identifier startFlow(Identifier definitionId, Identifier startNodeId) {
     return flowExecutor.startFlow(new TriggerContext().definitionId(definitionId).nodeId(startNodeId));
   }
 
-  public Identifier startFlow(TriggerContext context) {
-    return flowExecutor.startFlow(context);
+  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, ExecutionProperties properties) {
+    TriggerContext triggerContext = new TriggerContext()
+      .definitionId(definitionId)
+      .nodeId(startNodeId)
+      .properties(properties);
+
+    return flowExecutor.startFlow(triggerContext);
   }
 
   public ListenerManager getListenerManager() {

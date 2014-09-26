@@ -1,6 +1,7 @@
 package brainslug.flow.execution;
 
 import brainslug.flow.model.Identifier;
+import brainslug.util.IdUtil;
 import brainslug.util.Option;
 
 public class Token {
@@ -8,6 +9,17 @@ public class Token {
   Identifier nodeId;
   Option<Identifier> sourceNode;
   Option<Identifier> instanceId;
+
+  public Token(String id, String nodeId) {
+    this(IdUtil.id(id), IdUtil.id(nodeId));
+  }
+
+  public Token(Identifier id, Identifier nodeId) {
+    this.id = id;
+    this.nodeId = nodeId;
+    this.sourceNode = Option.empty();
+    this.instanceId = Option.empty();
+  }
 
   public Token(Identifier id, Identifier nodeId, Option<Identifier> sourceNode, Option<Identifier> instanceId) {
     this.id = id;
@@ -20,8 +32,16 @@ public class Token {
     return id;
   }
 
+  public Identifier getNodeId() {
+    return nodeId;
+  }
+
   public Option<Identifier> getSourceNode() {
     return sourceNode;
+  }
+
+  public Option<Identifier> getInstanceId() {
+    return instanceId;
   }
 
   public boolean isRootToken() {

@@ -22,7 +22,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   protected BrainslugContext context;
   protected TokenStore tokenStore;
 
-  Map<Class<? extends FlowNodeDefinition>, FlowNodeExectuor> nodeExecutors = new HashMap<Class<? extends FlowNodeDefinition>, FlowNodeExectuor>();
+  Map<Class<? extends FlowNodeDefinition>, FlowNodeExecutor> nodeExecutors = new HashMap<Class<? extends FlowNodeDefinition>, FlowNodeExecutor>();
 
   public TokenFlowExecutor(BrainslugContext context) {
     this.context = context;
@@ -32,12 +32,12 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   protected void addNodeExecutorMappings() {
-    nodeExecutors.put(EventDefinition.class, new DefaultNodeExecutor());
-    nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor());
-    nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor());
-    nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor());
-    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor(tokenStore));
-    nodeExecutors.put(TaskDefinition.class, new TaskNodeExecutor());
+    nodeExecutors.put(EventDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
+    nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
+    nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
+    nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor().withTokenStore(tokenStore));
+    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor().withTokenStore(tokenStore));
+    nodeExecutors.put(TaskDefinition.class, new TaskNodeExecutor().withTokenStore(tokenStore));
   }
 
   FlowNodeDefinition<?> getNode(Identifier definitionId, Identifier nodeId) {
@@ -48,13 +48,10 @@ public class TokenFlowExecutor implements FlowExecutor {
     return node;
   }
 
-  protected <T extends FlowNodeDefinition> FlowNodeExectuor<T> getNodeExecutor(T nodeDefinition) {
-    FlowNodeExectuor<T> nodeExecutor = nodeExecutors.get(nodeDefinition.getClass());
+  protected <T extends FlowNodeDefinition> FlowNodeExecutor<T> getNodeExecutor(T nodeDefinition) {
+    FlowNodeExecutor<T> nodeExecutor = nodeExecutors.get(nodeDefinition.getClass());
     if (nodeExecutor == null) {
       throw new IllegalArgumentException(String.format("no executor found for node definition %s", nodeDefinition));
-    }
-    if (nodeExecutor instanceof TokenStoreAware) {
-      ((TokenStoreAware) nodeExecutor).setTokenStore(tokenStore);
     }
     return nodeExecutor;
   }
@@ -66,16 +63,14 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   @Override
   public Identifier startFlow(TriggerContext<?> trigger) {
-    FlowNodeDefinition<?> node = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
-    Identifier instanceId = context.getIdGenerator().generateId();
+    FlowNodeDefinition<?> startNode = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
 
-    tokenStore.createInstance();
-    tokenStore.addToken(instanceId, trigger.getNodeId(), Option.<Identifier>empty());
+    Identifier instanceId = tokenStore.createInstance(trigger.getDefinitionId());
+    tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier>empty());
 
     context.getPropertyStore().storeProperties(trigger.getInstanceId(), trigger.getProperties());
     context.trigger(new TriggerContext()
-      .sourceNodeId(node.getId())
-      .nodeId(node.getId())
+      .nodeId(startNode.getId())
       .definitionId(trigger.getDefinitionId())
       .instanceId(instanceId)
       .properties(trigger.getProperties()));
@@ -86,6 +81,10 @@ public class TokenFlowExecutor implements FlowExecutor {
   protected FlowNodeDefinition<?> getStartNodeDefinition(Identifier definitionId, Identifier nodeId) {
     FlowNodeDefinition<?> node = getNode(definitionId, nodeId);
 
+    /**
+     * TODO: we should allow non start events to be executed by default, create a StrictTokenFlowExecutor
+     *       to enforce such constraints
+     */
     if (!node.hasMixin(StartEvent.class)) {
       throw new IllegalArgumentException("flow must be started with start event");
     }
@@ -98,7 +97,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     log.debug("triggering {}", triggerContext);
 
     FlowNodeDefinition node = getNode(triggerContext.getDefinitionId(), triggerContext.getNodeId());
-    FlowNodeExectuor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
+    FlowNodeExecutor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
 
     ExecutionContext executionContext = createExecutionContext(triggerContext);
 
@@ -110,6 +109,8 @@ public class TokenFlowExecutor implements FlowExecutor {
     triggerNext(triggerContext, node, next);
   }
 
+
+  // TODO: create ExecutionContextFactory, which contains merging
   protected ExecutionContext createExecutionContext(TriggerContext triggerContext) {
     DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerContext, context);
 
@@ -152,9 +153,9 @@ public class TokenFlowExecutor implements FlowExecutor {
           .properties(event.getProperties());
   }
 
-  protected void addToken(TriggerContext event, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
-    if (event.getInstanceId() != null) {
-      tokenStore.addToken(event.getInstanceId(), nextNode.getId(), new Token(node.getId()));
+  protected void addToken(TriggerContext triggerContext, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
+    if (triggerContext.getInstanceId() != null) {
+      tokenStore.addToken(triggerContext.getInstanceId(), nextNode.getId(), Option.of(node.getId()));
     }
   }
 }

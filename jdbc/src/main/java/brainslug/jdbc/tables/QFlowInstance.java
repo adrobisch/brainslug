@@ -26,6 +26,8 @@ public class QFlowInstance extends com.mysema.query.sql.RelationalPathBase<QFlow
 
     public final NumberPath<Long> created = createNumber("created", Long.class);
 
+    public final StringPath definitionId = createString("definitionId");
+
     public final StringPath id = createString("id");
 
     public final com.mysema.query.sql.PrimaryKey<QFlowInstance> constraintC = createPrimaryKey(id);
@@ -53,7 +55,8 @@ public class QFlowInstance extends com.mysema.query.sql.RelationalPathBase<QFlow
     }
 
     public void addMetadata() {
-        addMetadata(created, ColumnMetadata.named("CREATED").withIndex(2).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(created, ColumnMetadata.named("CREATED").withIndex(3).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(definitionId, ColumnMetadata.named("DEFINITION_ID").withIndex(2).ofType(Types.VARCHAR).withSize(40).notNull());
         addMetadata(id, ColumnMetadata.named("ID").withIndex(1).ofType(Types.VARCHAR).withSize(40).notNull());
     }
 

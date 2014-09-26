@@ -1,10 +1,12 @@
 package brainslug.flow.execution.impl;
 
 import brainslug.AbstractExecutionTest;
+import brainslug.flow.execution.ExecutionProperties;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
 import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.model.FlowBuilder;
+import brainslug.flow.model.Identifier;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -41,12 +43,12 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     Listener listener = mock(Listener.class);
     context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID));
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START));
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(null).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(null).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
     eventOrder.verifyNoMoreInteractions();
   }
 
@@ -72,12 +74,13 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     Listener listener = mock(Listener.class);
     context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID).property("foo", "bar"));
+
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), ExecutionProperties.with("foo", "bar"));
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(null).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(null).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
     eventOrder.verifyNoMoreInteractions();
   }
 

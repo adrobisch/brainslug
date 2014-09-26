@@ -14,15 +14,10 @@ import java.util.Map;
 
 public class JoinNodeExecutor extends DefaultNodeExecutor<JoinDefinition> {
 
-  private final TokenStore tokenStore;
-
-  public JoinNodeExecutor(TokenStore tokenStore) {
-    this.tokenStore = tokenStore;
-  }
-
   @Override
   public List<FlowNodeDefinition> execute(JoinDefinition joinDefinition, ExecutionContext execution) {
-    Map<Identifier, List<Token>> joinTokens = tokenStore.tokensGroupedBySource(joinDefinition.getId(), execution.getTrigger().getInstanceId());
+    Identifier instanceId = execution.getTrigger().getInstanceId();
+    Map<Identifier, List<Token>> joinTokens = tokenStore.tokensGroupedBySourceNode(joinDefinition.getId(), instanceId);
     List<Token> consumedTokens = new ArrayList<Token>();
     for (FlowEdgeDefinition edge : joinDefinition.getIncoming()) {
       List<Token> edgeTokens = joinTokens.get(edge.getSource().getId());
@@ -32,7 +27,7 @@ public class JoinNodeExecutor extends DefaultNodeExecutor<JoinDefinition> {
         consumedTokens.addAll(edgeTokens);
       }
     }
-    removeTokens(execution, consumedTokens);
+    removeTokens(instanceId, consumedTokens);
     return takeAll(joinDefinition);
   }
 

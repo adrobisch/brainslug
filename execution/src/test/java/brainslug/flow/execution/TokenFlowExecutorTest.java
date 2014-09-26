@@ -42,13 +42,13 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     Listener listener = mock(Listener.class);
     context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(PARALLELID));
+    Identifier instanceId = context.startFlow(id(PARALLELID), id(START));
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(PARALLELID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(PARALLEL)).sourceNodeId(id(START)).definitionId(PARALLELID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(PARALLEL)).definitionId(PARALLELID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK2)).sourceNodeId(id(PARALLEL)).definitionId(PARALLELID));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(PARALLELID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(PARALLEL)).sourceNodeId(id(START)).definitionId(PARALLELID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(PARALLEL)).definitionId(PARALLELID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK2)).sourceNodeId(id(PARALLEL)).definitionId(PARALLELID).instanceId(instanceId));
     eventOrder.verifyNoMoreInteractions();
   }
 
@@ -80,14 +80,14 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     Listener listener = mock(Listener.class);
     context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(MERGEID).property(new String("bla")));
+    Identifier instanceId = context.startFlow(id(MERGEID), id(START));
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(MERGEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(MERGEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(MERGEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(MERGE)).sourceNodeId(id(TASK)).definitionId(MERGEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(END)).sourceNodeId(id(MERGE)).definitionId(MERGEID));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(MERGE)).sourceNodeId(id(TASK)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(END)).sourceNodeId(id(MERGE)).definitionId(MERGEID).instanceId(instanceId));
     eventOrder.verifyNoMoreInteractions();
   }
 
@@ -123,7 +123,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(id(START)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(JOINID).instanceId(instanceId));
     eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(PARALLEL)).sourceNodeId(id(START)).definitionId(JOINID).instanceId(instanceId));
     eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(PARALLEL)).definitionId(JOINID).instanceId(instanceId));
     eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(JOIN)).sourceNodeId(id(TASK)).definitionId(JOINID).instanceId(instanceId));
@@ -160,12 +160,12 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     Listener listener = mock(Listener.class);
     context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID));
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START));
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(null).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(CHOICEID));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).sourceNodeId(null).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).sourceNodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
 
     eventOrder.verifyNoMoreInteractions();
   }
@@ -220,7 +220,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().instanceId(instanceId).nodeId(id(START)).sourceNodeId(id(START)).definitionId(definitionId));
+    eventOrder.verify(listener).notify(new TriggerContext().instanceId(instanceId).nodeId(id(START)).definitionId(definitionId));
     eventOrder.verify(listener).notify(new TriggerContext().instanceId(instanceId).nodeId(id(TASK)).sourceNodeId(id(START)).definitionId(definitionId));
     eventOrder.verifyNoMoreInteractions();
   }

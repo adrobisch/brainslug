@@ -16,7 +16,7 @@ import java.util.List;
 public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition> {
   @Override
   public List<FlowNodeDefinition> execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
-    removeTriggerToken(execution);
+    consumeAllNodeTokens(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId());
 
     if(taskDefinition.isAsync() && execution.getTrigger().getSourceNodeId() != null) {
       execution.getBrainslugContext().getAsyncTaskScheduler()

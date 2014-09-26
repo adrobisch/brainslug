@@ -39,15 +39,15 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     Listener listener = mock(Listener.class);
     context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(serviceCallFlow.getId()));
+    Identifier instanceId = context.startFlow(serviceCallFlow.getId(), id(START));
 
     // then:
     verify(testService).getString();
 
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(serviceCallFlow.getId()));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(START)).definitionId(serviceCallFlow.getId()));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(END)).sourceNodeId(id(TASK)).definitionId(serviceCallFlow.getId()));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(serviceCallFlow.getId()).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).sourceNodeId(id(START)).definitionId(serviceCallFlow.getId()).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(END)).sourceNodeId(id(TASK)).definitionId(serviceCallFlow.getId()).instanceId(instanceId));
     eventOrder.verifyNoMoreInteractions();
   }
 
@@ -74,7 +74,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
     context.addFlowDefinition(handlerFlow);
     // when:
-    context.trigger(new TriggerContext().nodeId(id(START)).definitionId(handlerFlow.getId()));
+    context.startFlow(handlerFlow.getId(), id(START));
   }
 
   @Test

@@ -15,7 +15,7 @@ public class DefaultListenerManager implements ListenerManager {
   Map<EventType, Set<Listener>> listeners = Collections.synchronizedMap(new HashMap<EventType, Set<Listener>>());
 
   synchronized public void notifyListeners(EventType type, TriggerContext context) {
-    log.debug("notify listeners: {}", context);
+    log.debug("notify listeners [{}]: {}, ", type, context);
 
     if (listeners.get(type) == null) {
       log.debug("no listeners in context {} with event type {}", context, type);

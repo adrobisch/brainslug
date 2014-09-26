@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
  * A simplified port of the Java 8
  * Optional type.
  *
- * @author andreas
  */
 public class Option<T> {
 

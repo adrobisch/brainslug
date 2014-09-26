@@ -32,6 +32,8 @@ public class QFlowToken extends com.mysema.query.sql.RelationalPathBase<QFlowTok
 
     public final StringPath id = createString("id");
 
+    public final NumberPath<Integer> isDead = createNumber("isDead", Integer.class);
+
     public final StringPath sourceNode = createString("sourceNode");
 
     public final com.mysema.query.sql.PrimaryKey<QFlowToken> constraint8 = createPrimaryKey(id);
@@ -63,6 +65,7 @@ public class QFlowToken extends com.mysema.query.sql.RelationalPathBase<QFlowTok
         addMetadata(currentNode, ColumnMetadata.named("CURRENT_NODE").withIndex(4).ofType(Types.VARCHAR).withSize(100).notNull());
         addMetadata(flowInstanceId, ColumnMetadata.named("FLOW_INSTANCE_ID").withIndex(3).ofType(Types.VARCHAR).withSize(40).notNull());
         addMetadata(id, ColumnMetadata.named("ID").withIndex(1).ofType(Types.VARCHAR).withSize(40).notNull());
+        addMetadata(isDead, ColumnMetadata.named("IS_DEAD").withIndex(6).ofType(Types.INTEGER).withSize(10));
         addMetadata(sourceNode, ColumnMetadata.named("SOURCE_NODE").withIndex(5).ofType(Types.VARCHAR).withSize(100));
     }
 

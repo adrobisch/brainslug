@@ -3,33 +3,38 @@ package brainslug.flow.execution.impl;
 import brainslug.flow.execution.*;
 import brainslug.flow.model.FlowEdgeDefinition;
 import brainslug.flow.model.FlowNodeDefinition;
+import brainslug.flow.model.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNodeExectuor<T>, TokenStoreAware {
+public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNodeExecutor<T> {
 
   protected TokenStore tokenStore;
 
+  DefaultNodeExecutor withTokenStore(TokenStore tokenStore) {
+    this.tokenStore = tokenStore;
+    return this;
+  }
+
   @Override
   public List<FlowNodeDefinition> execute(T node, ExecutionContext execution) {
-    removeTriggerToken(execution);
+    consumeAllNodeTokens(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId());
     return takeAll(node);
   }
 
-  protected void removeTriggerToken(ExecutionContext execution) {
-    if (execution.getTrigger().getInstanceId() != null) {
-      tokenStore.removeToken(execution.getTrigger().getInstanceId(),
-        execution.getTrigger().getNodeId(),
-        new Token(execution.getTrigger().getSourceNodeId()));
+  protected void consumeAllNodeTokens(Identifier instanceId, Identifier nodeId) {
+    Map<Identifier, List<Token>> nodeTokens = tokenStore.tokensGroupedBySourceNode(nodeId, instanceId);
+
+    for (List<Token> tokens : nodeTokens.values()) {
+      removeTokens(instanceId, tokens);
     }
   }
 
-  protected void removeTokens(ExecutionContext execution, List<Token> tokens) {
+  protected void removeTokens(Identifier instanceId, List<Token> tokens) {
     for (Token token : tokens) {
-      tokenStore.removeToken(execution.getTrigger().getInstanceId(),
-        execution.getTrigger().getNodeId(),
-        token);
+      tokenStore.removeToken(instanceId, token.getId());
     }
   }
 
@@ -45,10 +50,5 @@ public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNo
 
   protected List<FlowNodeDefinition> takeNone() {
     return new ArrayList<FlowNodeDefinition>();
-  }
-
-  @Override
-  public void setTokenStore(TokenStore tokenStore) {
-    this.tokenStore = tokenStore;
   }
 }

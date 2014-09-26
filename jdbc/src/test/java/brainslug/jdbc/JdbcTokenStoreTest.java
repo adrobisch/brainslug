@@ -12,9 +12,8 @@ import org.flywaydb.core.Flyway;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
 import static brainslug.util.IdUtil.id;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,8 +26,8 @@ public class JdbcTokenStoreTest {
 
   Identifier instanceId = id("instance");
   Identifier nodeId = id("node");
-  Identifier sourceNodeId = id("sourceNodeId");
   Identifier tokenId = id("token");
+  Identifier flowId = id("flow");
 
   @Test
   public void shouldInsertInstanceAndToken() throws Exception {
@@ -38,14 +37,12 @@ public class JdbcTokenStoreTest {
     // when:
     Identifier instanceId = createInstanceWithSingleRootToken(jdbcTokenStore);
 
+    assertThat(instanceId).isNotNull();
+
     // then:
-    Map<Identifier, List<Token>> sourceNodeMap = jdbcTokenStore.tokensGroupedBySource(nodeId, instanceId);
-
-    List<Token> expectedSourceTokens = new ArrayList<Token>();
-    expectedSourceTokens.add(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.<Identifier>empty()));
-
-    assertThat(sourceNodeMap)
-      .containsEntry(nodeId, expectedSourceTokens)
+    List<Token> instanceTokens = jdbcTokenStore.getInstanceTokens(instanceId);
+    assertThat(instanceTokens)
+      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.<Identifier>empty()))
       .hasSize(1);
   }
 
@@ -55,16 +52,17 @@ public class JdbcTokenStoreTest {
     JdbcTokenStore jdbcTokenStore = createJdbcTokenStore();
     createInstanceWithSingleRootToken(jdbcTokenStore);
     // when:
-    jdbcTokenStore.removeToken(tokenId);
+    jdbcTokenStore.removeToken(instanceId, tokenId);
 
-    assertThat(jdbcTokenStore.tokensGroupedBySource(nodeId, instanceId))
+    assertThat(jdbcTokenStore.tokensGroupedBySourceNode(nodeId, instanceId))
       .hasSize(0);
   }
 
   private Identifier createInstanceWithSingleRootToken(JdbcTokenStore jdbcTokenStore) {
     when(idGeneratorMock.generateId()).thenReturn(instanceId);
-    Identifier instanceId = jdbcTokenStore.createInstance();
-    when(idGeneratorMock.generateId()).thenReturn(nodeId);
+    Identifier instanceId = jdbcTokenStore.createInstance(flowId);
+
+    when(idGeneratorMock.generateId()).thenReturn(tokenId);
     jdbcTokenStore.addToken(instanceId, nodeId, Option.<Identifier>empty());
     return instanceId;
   }
@@ -87,7 +85,7 @@ public class JdbcTokenStoreTest {
   DataSource datasource() {
     HikariConfig config = new HikariConfig();
     config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
-    config.addDataSourceProperty("url", "jdbc:h2:mem:testdb");
+    config.addDataSourceProperty("url", "jdbc:h2:mem:testdb" + new Random().nextInt());
     config.addDataSourceProperty("user", "sa");
     config.addDataSourceProperty("password", "");
 
