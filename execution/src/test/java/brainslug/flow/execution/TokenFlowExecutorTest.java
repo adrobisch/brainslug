@@ -166,47 +166,6 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     eventOrder.verifyNoMoreInteractions();
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void shoudOnlyStartFlowWithStartEvent() {
-    // given:
-    context.addFlowDefinition(new FlowBuilder() {
-
-      @Override
-      public void define() {
-        start(event(id("start"))).end(event(id("end")));
-      }
-
-      @Override
-      public String getId() {
-        return "startEventTest";
-      }
-    }.getDefinition());
-
-    // when:
-    context.startFlow(id("startEventTest"), id("end"));
-  }
-
-  @Test
-  public void shouldExecuteHelloWord() {
-    FlowDefinition helloWorldFlow = new FlowBuilder() {
-      @Override
-      public void define() {
-        start(event(id("start"))).execute(task(id("helloTask"), new SimpleTask() {
-          @Override
-          public void execute(ExecutionContext context) {
-            System.out.println("Hello World!");
-          }
-        }));
-      }
-    }.getDefinition();
-
-    // create brainslug context with defaults
-    BrainslugContext context = new BrainslugContext();
-    context.addFlowDefinition(helloWorldFlow);
-
-    context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
-  }
-
   @Test
   public void shouldWaitForTriggerAtIntermediateEvent() {
     // given:
