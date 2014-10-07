@@ -2,36 +2,12 @@
 # brainslug
 
 brainslug is a control flow abstraction library. 
-It enables you to model your business logic flow as a graph of typed nodes, 
+It allows to model business logic flow of an application as a graph of typed nodes, 
 which can be transformed to different representations or be executed within a customisable environment.
-
-# Motivation
-
-> "Do we really need another Workflow-BPM-whatever engines on the JVM? Smells like 'Not invented here'!"
-
-Activiti and camunda BPM and jBPM might be the most popular on the list, but they all have some kind bigger legacy and target environment 
-they have to deal with and its more difficult to just get to their core, e.g. to understand there internal execution model. 
-
-For example, Activiti is very focused on BPMN 2.0 and its jBPM 4 roots, jBPM5 is coming from the business rule side, 
-BPEL engines makes most sense in WS-* environments.
-
-To some degree they share some strong assumptions:
-
-* Relational persistence (with JDBC), execution semantics are often strongly coupled to the DB transaction management
-* high initial learning effort required to learn the workflow description language like BPMN, BPEL, ... 
-the BPMN 2.0 specification is a several hundred pages big
-* Dynamic expression evaluation, at least to control the flow
-* You are living in a container (Tomcat / Spring, Java Enterprise Edition)
-* XML based descriptions / configurations
-
-Those points make them look heavy-weight and inflexible. 
-*brainslug* aims to provide a small workflow library in Java without these strings attached.
-
-# Getting started
 
 ## Download
 
-The current version 0.9 is available in the maven central repository:
+The current version is available in the [maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cbrainslug):
 
 ```xml
   <dependencies>
@@ -39,20 +15,46 @@ The current version 0.9 is available in the maven central repository:
     <dependency>
       <groupId>de.androbit</groupId>
       <artifactId>brainslug-model</artifactId>
-      <version>0.9</version>
+      <version>...</version>
     </dependency>
     <dependency>
       <groupId>de.androbit</groupId>
       <artifactId>brainslug-execution</artifactId>
-      <version>0.9</version>
+      <version>...</version>
     </dependency>
   ...
   </dependencies>
 ```
 
-## Example
+## Hello World
 
-The main [model](model) class is `brainslug.flow.model.FlowBuilder`. A new Flow Definition is specified in its define method:
+A new flow is defined by creating a new `brainslug.flow.model.FlowBuilder`:
+
+```java
+  FlowDefinition helloWorldFlow = new FlowBuilder() {
+    @Override
+    public void define() {
+      start(event(id("start"))).execute(task(id("helloTask"), new SimpleTask() {
+        @Override
+        public void execute(ExecutionContext context) {
+          System.out.println("Hello World!");
+        }
+      }));
+    }
+  }.getDefinition();
+```
+
+which is executed by adding it to a brainslug context and finally starting it:
+
+```java
+  //  create brainslug context with defaults
+  BrainslugContext context = new BrainslugContext();
+  context.addFlowDefinition(helloWorldFlow);
+  
+  context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
+```
+
+## Another Example
 
 ```java
   new FlowBuilder() {
@@ -66,7 +68,13 @@ The main [model](model) class is `brainslug.flow.model.FlowBuilder`. A new Flow 
   };
 ```
 
-# Definitions
+which represents the the following flow:
+
+![task_flow](images/task_flow.png)
+
+
+
+# Execution
 
 ## Flow Definition
 
@@ -75,89 +83,49 @@ which are interpreted by the execution module. Generally its up to the user to d
 but its common to see it as the definition of possible paths / sequence of actions for a desired outcome, e.g.
 the steps to prepare a sandwich, or a ordering process.
 
-## Usage
-
 See the [FlowBuilderTest](https://github.com/adrobisch/brainslug/blob/master/model/src/test/java/brainslug/flow/builder/FlowBuilderTest.java) class
 for examples on how to build flow definitions.
 
-# Execution
-
-Flow Definitions can be executed, read this section to learn about the concepts and 
-semantics of a execution.
-
-## Concepts
-
-### Flow Instance
+## Flow Instance
 
 A flow instance is a single execution of a given flow definition. Depending on the brainslug configuration and flow definition
 an instance might be a persistent and long running, or just be executed in-memory.
 
-### Flow Token
+## Flow Token
 
 A flow token is a pointer to a flow node in a flow instance. A flow node might have multiple tokens.
 The token includes the information it came from. A flow node needs the correct amount of tokens to be ready
 for execution and will produce a defined amount of new flow node after execution.
 
-## Token Semantics
+# Token Semantics
 
-### Task Node
+## Task Node
 
 A Task Node will be executed for every incoming token and produces one token per outgoing edge.
 
-### Event Node
+## Event Node
 
 An Event Node is triggered by every incoming token and produces one token per outgoing edge.
 
-### Choice Node
+## Choice Node
 
 A Choice Node will be executed for every incoming token. A token is produced for the first outgoing path
 where the predicate is fullfilled.
 
-### Merge Node
+## Merge Node
 
 A Merge Node will be executed for every incoming token. A token is produced for every outgoing edge.
 
-### Parallel Node
+## Parallel Node
 
 A Parallel Node will be executed for every incoming token. A token is produced for every outgoing edge.
 
-### Join Node
+## Join Node
 
 A Parallel Node will only be executed if it has tokens from every incoming edge.
 A token is produced for every outgoing edge.
 
-## Execution Example
-
-To execute a flow definition, you need to create a brainslug context.
-This will create a default context with a service instance:
-
-```java
-    BrainslugContext context = new BrainslugContext();
-    context.getRegistry().registerService(TestService.class, new TestService());
-```
-
-then define the flow and add it to the context:
-
-```java
-    FlowDefinition flow = new FlowBuilder() {
-      @Override
-      public void define() {
-        start(event(id("start")))
-          .execute(task(id("task")).display("A Task"))
-          .execute(task(id("task2")).display("Another Task"))
-        .end(event(id("end")));
-      }
-    }.getDefinition();
-   context.addFlowDefinition(flow);
-```
-
-and trigger a node event for the node you want to start with:
-
-```java
-context.trigger(new TriggerEvent().nodeId(id("start")).definitionId(flow.getId()))
-```
-
-## Integration with your code
+# Integration with your code
 
 In order to connect you code with a brainslug flow definition you may use method call definition:
 
@@ -195,9 +163,10 @@ or a delegate class:
     }
 ```
 
+
 # BPMN
 
-brainslug is able to export flow definitions to BPMN 2.0 as Image or XML definitions file.
+brainslug is able to export flow definitions to BPMN 2.0 as image or XML definitions file.
 
 ## Renderer Example
 
@@ -249,3 +218,25 @@ will produce
 ```
 
 also check [BpmnModelTransformerTest](https://github.com/adrobisch/brainslug/blob/master/bpmn/src/test/java/brainslug/bpmn/BpmnModelTransformerTest.java).
+
+# Philosophy
+
+> "Do we really need another Workflow-BPM-whatever engines on the JVM? Smells like 'Not invented here'!"
+
+Activiti, camunda BPM and jBPM might be the most popular on the list, but they all have some kind bigger legacy and target environment 
+they have to deal with and its more difficult to just get to their core, e.g. to understand there internal execution model. 
+
+For example, Activiti is very focused on BPMN 2.0 and its jBPM 4 roots, jBPM5 is coming from the business rule side, 
+BPEL engines make most sense in WS-* environments.
+
+To some degree they share some strong assumptions:
+
+* Relational persistence (with JDBC), execution semantics are often strongly coupled to the DB transaction management
+* high initial learning effort required to learn the workflow description language like BPMN, BPEL, ... 
+the BPMN 2.0 specification is a several hundred pages big
+* Dynamic expression evaluation, at least to control the flow
+* You are living in a container (Tomcat / Spring, Java Enterprise Edition)
+* XML based descriptions / configurations
+
+Those points make them look heavy-weight and inflexible. 
+*brainslug* aims to provide a small workflow library in Java without these strings attached.

@@ -34,7 +34,7 @@
             </script>
       </head>
       <body class="color_scheme-brainslug">
-        <a class="page prev nav" href="Definitions.html">
+        <a class="page prev nav" href="index.html">
             <span class="space">&nbsp;</span>
             <span class="flip arrow">❧</span>
           </a><a class="page next nav" href="BPMN.html">
@@ -43,39 +43,26 @@
           </a>
         <div class="container contentswrapper">
           <div class="span-16 prepend-1 append-1 contents">
-            <h1 id="Execution">Execution<a href="#Execution" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><p>Flow Definitions can be executed, read this section to learn about the concepts and 
-semantics of a execution.
-</p><h2 id="Concepts">Concepts<a href="#Concepts" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><h3 id="Flow+Instance">Flow Instance<a href="#Flow+Instance" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A flow instance is a single execution of a given flow definition. Depending on the brainslug configuration and flow definition
+            <h1 id="Execution">Execution<a href="#Execution" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><h2 id="Flow+Definition">Flow Definition<a href="#Flow+Definition" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A flow definition is a directed graph of typed flow nodes. brainslug provides a set of predefined node types
+which are interpreted by the execution module. Generally its up to the user to define the meaning of the graph,
+but its common to see it as the definition of possible paths / sequence of actions for a desired outcome, e.g.
+the steps to prepare a sandwich, or a ordering process.
+</p><p>See the <a href="https://github.com/adrobisch/brainslug/blob/master/model/src/test/java/brainslug/flow/builder/FlowBuilderTest.java">FlowBuilderTest</a> class
+for examples on how to build flow definitions.
+</p><h2 id="Flow+Instance">Flow Instance<a href="#Flow+Instance" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A flow instance is a single execution of a given flow definition. Depending on the brainslug configuration and flow definition
 an instance might be a persistent and long running, or just be executed in-memory.
-</p><h3 id="Flow+Token">Flow Token<a href="#Flow+Token" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A flow token is a pointer to a flow node in a flow instance. A flow node might have multiple tokens.
+</p><h2 id="Flow+Token">Flow Token<a href="#Flow+Token" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A flow token is a pointer to a flow node in a flow instance. A flow node might have multiple tokens.
 The token includes the information it came from. A flow node needs the correct amount of tokens to be ready
 for execution and will produce a defined amount of new flow node after execution.
-</p><h2 id="Token+Semantics">Token Semantics<a href="#Token+Semantics" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><h3 id="Task+Node">Task Node<a href="#Task+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Task Node will be executed for every incoming token and produces one token per outgoing edge.
-</p><h3 id="Event+Node">Event Node<a href="#Event+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>An Event Node is triggered by every incoming token and produces one token per outgoing edge.
-</p><h3 id="Choice+Node">Choice Node<a href="#Choice+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Choice Node will be executed for every incoming token. A token is produced for the first outgoing path
+</p><h1 id="Token+Semantics">Token Semantics<a href="#Token+Semantics" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><h2 id="Task+Node">Task Node<a href="#Task+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A Task Node will be executed for every incoming token and produces one token per outgoing edge.
+</p><h2 id="Event+Node">Event Node<a href="#Event+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>An Event Node is triggered by every incoming token and produces one token per outgoing edge.
+</p><h2 id="Choice+Node">Choice Node<a href="#Choice+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A Choice Node will be executed for every incoming token. A token is produced for the first outgoing path
 where the predicate is fullfilled.
-</p><h3 id="Merge+Node">Merge Node<a href="#Merge+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Merge Node will be executed for every incoming token. A token is produced for every outgoing edge.
-</p><h3 id="Parallel+Node">Parallel Node<a href="#Parallel+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Parallel Node will be executed for every incoming token. A token is produced for every outgoing edge.
-</p><h3 id="Join+Node">Join Node<a href="#Join+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h3><p>A Parallel Node will only be executed if it has tokens from every incoming edge.
+</p><h2 id="Merge+Node">Merge Node<a href="#Merge+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A Merge Node will be executed for every incoming token. A token is produced for every outgoing edge.
+</p><h2 id="Parallel+Node">Parallel Node<a href="#Parallel+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A Parallel Node will be executed for every incoming token. A token is produced for every outgoing edge.
+</p><h2 id="Join+Node">Join Node<a href="#Join+Node" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>A Parallel Node will only be executed if it has tokens from every incoming edge.
 A token is produced for every outgoing edge.
-</p><h2 id="Execution+Example">Execution Example<a href="#Execution+Example" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>To execute a flow definition, you need to create a brainslug context.
-This will create a default context with a service instance:
-</p><pre><code class="prettyprint lang-java">    BrainslugContext context = new BrainslugContext();
-    context.getRegistry().registerService(TestService.class, new TestService());
-</code></pre><p>then define the flow and add it to the context:
-</p><pre><code class="prettyprint lang-java">    FlowDefinition flow = new FlowBuilder() {
-      @Override
-      public void define() {
-        start(event(id(&quot;start&quot;)))
-          .execute(task(id(&quot;task&quot;)).display(&quot;A Task&quot;))
-          .execute(task(id(&quot;task2&quot;)).display(&quot;Another Task&quot;))
-        .end(event(id(&quot;end&quot;)));
-      }
-    }.getDefinition();
-   context.addFlowDefinition(flow);
-</code></pre><p>and trigger a node event for the node you want to start with:
-</p><pre><code class="prettyprint lang-java">context.trigger(new TriggerEvent().nodeId(id(&quot;start&quot;)).definitionId(flow.getId()))
-</code></pre><h2 id="Integration+with+your+code">Integration with your code<a href="#Integration+with+your+code" class="header-link"><span class="header-link-content">&nbsp;</span></a></h2><p>In order to connect you code with a brainslug flow definition you may use method call definition:
+</p><h1 id="Integration+with+your+code">Integration with your code<a href="#Integration+with+your+code" class="header-link"><span class="header-link-content">&nbsp;</span></a></h1><p>In order to connect you code with a brainslug flow definition you may use method call definition:
 </p><pre><code class="prettyprint lang-java">    new FlowBuilder() {
       @Override
       public void define() {
@@ -113,7 +100,7 @@ This will create a default context with a service instance:
       <a name="toc"></a>
       <h4 class="toctitle">Contents</h4>
       <div class="tocbody">
-      <div><a href="index.html">brainslug</a></div><ol class="toc"> <li><div><a href="Getting+started.html">Getting started</a></div></li><li><div><a href="Definitions.html">Definitions</a></div></li><li><div class="current">Execution</div></li><li><div><a href="BPMN.html">BPMN</a></div></li><li class="generated"><div><a href="Contents+in+Depth.html">Contents in Depth</a></div></li><li class="generated"><div><a href="Combined+Pages.html">Combined Pages</a></div></li> </ol></div></div>
+      <div><a href="index.html">brainslug</a></div><ol class="toc"> <li><div class="current">Execution</div></li><li><div><a href="BPMN.html">BPMN</a></div></li><li><div><a href="Philosophy.html">Philosophy</a></div></li><li class="generated"><div><a href="Contents+in+Depth.html">Contents in Depth</a></div></li><li class="generated"><div><a href="Combined+Pages.html">Combined Pages</a></div></li> </ol></div></div>
           </div>
         </div>
         <div class="header">
