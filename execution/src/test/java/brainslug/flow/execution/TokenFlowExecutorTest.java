@@ -5,9 +5,7 @@ import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.execution.impl.TokenFlowExecutor;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
-import brainslug.flow.model.EnumIdentifier;
-import brainslug.flow.model.FlowBuilder;
-import brainslug.flow.model.Identifier;
+import brainslug.flow.model.*;
 import brainslug.util.IdUtil;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -186,6 +184,27 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // when:
     context.startFlow(id("startEventTest"), id("end"));
+  }
+
+  @Test
+  public void shouldExecuteHelloWord() {
+    FlowDefinition helloWorldFlow = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id("start"))).execute(task(id("helloTask"), new SimpleTask() {
+          @Override
+          public void execute(ExecutionContext context) {
+            System.out.println("Hello World!");
+          }
+        }));
+      }
+    }.getDefinition();
+
+    // create brainslug context with defaults
+    BrainslugContext context = new BrainslugContext();
+    context.addFlowDefinition(helloWorldFlow);
+
+    context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
   }
 
   @Test

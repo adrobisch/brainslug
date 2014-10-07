@@ -13,7 +13,6 @@ import org.flywaydb.core.Flyway;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.util.List;
 import java.util.Random;
 
 import static brainslug.util.IdUtil.id;

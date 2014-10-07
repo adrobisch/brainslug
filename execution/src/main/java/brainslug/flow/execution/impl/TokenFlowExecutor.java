@@ -79,17 +79,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   protected FlowNodeDefinition<?> getStartNodeDefinition(Identifier definitionId, Identifier nodeId) {
-    FlowNodeDefinition<?> node = getNode(definitionId, nodeId);
-
-    /**
-     * TODO: we should allow non start events to be executed by default, create a StrictTokenFlowExecutor
-     *       to enforce such constraints
-     */
-    if (!node.hasMixin(StartEvent.class)) {
-      throw new IllegalArgumentException("flow must be started with start event");
-    }
-
-    return node;
+    return getNode(definitionId, nodeId);
   }
 
   @Override

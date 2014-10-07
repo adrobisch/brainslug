@@ -1,6 +1,6 @@
 # BPMN
 
-brainslug is able to export flow definitions to BPMN 2.0 as Image or XML definitions file.
+brainslug is able to export flow definitions to BPMN 2.0 as image or XML definitions file.
 
 ## Renderer Example
 
