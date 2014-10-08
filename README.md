@@ -19,7 +19,7 @@ Features
 Download
 ========
 
-The current version is available in the [maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cbrainslug):
+The current version is available in the [maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cbrainslug)
 
 Documentation
 =============
