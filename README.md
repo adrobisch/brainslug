@@ -29,7 +29,7 @@ Check the [github pages](http://adrobisch.github.io/brainslug/) for examples and
 Versioning
 ==========
 
-Starting with version 1.0.0, brainslug will follow semantic versioning. During the 0.x releases, the minor (.x) releases may include breaking changes.
+Starting with version 1.0.0, brainslug will follow [semantic versioning](http://semver.org). During the 0.x releases, the minor (.x) releases may include breaking changes.
 
 License
 =======
