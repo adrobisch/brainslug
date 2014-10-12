@@ -20,7 +20,7 @@ import java.sql.Types;
 @Generated("com.mysema.query.sql.codegen.MetaDataSerializer")
 public class QSchemaVersion extends com.mysema.query.sql.RelationalPathBase<QSchemaVersion> {
 
-    private static final long serialVersionUID = 477777545;
+    private static final long serialVersionUID = 288457036;
 
     public static final QSchemaVersion schemaVersion = new QSchemaVersion("schema_version");
 

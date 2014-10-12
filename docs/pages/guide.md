@@ -21,7 +21,7 @@ A flow token is a pointer to a flow node in a flow instance. A flow node might h
 The token includes the information it came from. A flow node needs the correct amount of tokens to be ready
 for execution and will produce a defined amount of new flow node after execution.
 
-# Token Semantics
+# Node Types
 
 ## Task Node
 

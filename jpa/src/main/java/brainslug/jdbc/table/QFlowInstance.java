@@ -20,7 +20,7 @@ import java.sql.Types;
 @Generated("com.mysema.query.sql.codegen.MetaDataSerializer")
 public class QFlowInstance extends com.mysema.query.sql.RelationalPathBase<QFlowInstance> {
 
-    private static final long serialVersionUID = -1519674607;
+    private static final long serialVersionUID = 829522926;
 
     public static final QFlowInstance flowInstance = new QFlowInstance("FLOW_INSTANCE");
 
@@ -29,6 +29,8 @@ public class QFlowInstance extends com.mysema.query.sql.RelationalPathBase<QFlow
     public final StringPath definitionId = createString("definitionId");
 
     public final StringPath id = createString("id");
+
+    public final NumberPath<Long> version = createNumber("version", Long.class);
 
     public final com.mysema.query.sql.PrimaryKey<QFlowInstance> constraintC = createPrimaryKey(id);
 
@@ -58,6 +60,7 @@ public class QFlowInstance extends com.mysema.query.sql.RelationalPathBase<QFlow
         addMetadata(created, ColumnMetadata.named("CREATED").withIndex(3).ofType(Types.BIGINT).withSize(19).notNull());
         addMetadata(definitionId, ColumnMetadata.named("DEFINITION_ID").withIndex(2).ofType(Types.VARCHAR).withSize(40).notNull());
         addMetadata(id, ColumnMetadata.named("ID").withIndex(1).ofType(Types.VARCHAR).withSize(40).notNull());
+        addMetadata(version, ColumnMetadata.named("VERSION").withIndex(4).ofType(Types.BIGINT).withSize(19).notNull());
     }
 
 }

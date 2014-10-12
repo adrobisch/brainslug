@@ -1,6 +1,6 @@
-# BPMN
+# BPMN Support
 
-brainslug is able to export flow definitions to BPMN 2.0 as image or XML definitions file.
+brainslug is able to export flow definitions to BPMN 2.0 as rendered image or XML definitions file.
 
 ## Renderer Example
 
@@ -13,20 +13,24 @@ brainslug is able to export flow definitions to BPMN 2.0 as image or XML definit
 
 ![task_flow](images/task_flow.png)
 
-also check [JGraphRendererTest](https://github.com/adrobisch/brainslug/blob/master/renderer/src/test/java/brainslug/flow/renderer/JGraphRendererTest.java).
+also see: [JGraphRendererTest](https://github.com/adrobisch/brainslug/blob/master/renderer/src/test/java/brainslug/flow/renderer/JGraphRendererTest.java).
 
 ## XML Definitions export
 
 ```java
-    FlowBuilder flowBuilder =  new FlowBuilder() {
-                                 @Override
-                                 public void define() {
-                                   start(event(id("start")))
-                                     .execute(task(id("task")).display("A Task"))
-                                     .execute(task(id("task2")).display("Another Task"))
-                                   .end(event(id("end")));
-                                 }
-                               };
+    FlowBuilder flowBuilder =  
+      new FlowBuilder() {
+        @Override
+        public void define() {
+          start(event(id("start")))
+            .execute(task(id("task")).display("A Task"))
+            .execute(task(id("task2")).display("Another Task"))
+          .end(event(id("end")));
+        }
+      };
+```
+
+```
     BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
     String bpmnXml = bpmnModelTransformer.toBpmnXml(flowBuilder);
 ```
@@ -51,4 +55,4 @@ will produce
   </definitions>
 ```
 
-also check [BpmnModelTransformerTest](https://github.com/adrobisch/brainslug/blob/master/bpmn/src/test/java/brainslug/bpmn/BpmnModelTransformerTest.java).
+also see: [BpmnModelTransformerTest](https://github.com/adrobisch/brainslug/blob/master/bpmn/src/test/java/brainslug/bpmn/BpmnModelTransformerTest.java).

@@ -20,7 +20,7 @@ import java.sql.Types;
 @Generated("com.mysema.query.sql.codegen.MetaDataSerializer")
 public class QAsyncTaskErrorDetails extends com.mysema.query.sql.RelationalPathBase<QAsyncTaskErrorDetails> {
 
-    private static final long serialVersionUID = -1052861331;
+    private static final long serialVersionUID = 1556372528;
 
     public static final QAsyncTaskErrorDetails asyncTaskErrorDetails = new QAsyncTaskErrorDetails("ASYNC_TASK_ERROR_DETAILS");
 

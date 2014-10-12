@@ -20,7 +20,7 @@ import java.sql.Types;
 @Generated("com.mysema.query.sql.codegen.MetaDataSerializer")
 public class QFlowToken extends com.mysema.query.sql.RelationalPathBase<QFlowToken> {
 
-    private static final long serialVersionUID = 1561830653;
+    private static final long serialVersionUID = -1551584960;
 
     public static final QFlowToken flowToken = new QFlowToken("FLOW_TOKEN");
 
@@ -35,6 +35,8 @@ public class QFlowToken extends com.mysema.query.sql.RelationalPathBase<QFlowTok
     public final NumberPath<Integer> isDead = createNumber("isDead", Integer.class);
 
     public final StringPath sourceNode = createString("sourceNode");
+
+    public final NumberPath<Long> version = createNumber("version", Long.class);
 
     public final com.mysema.query.sql.PrimaryKey<QFlowToken> constraint8 = createPrimaryKey(id);
 
@@ -62,11 +64,12 @@ public class QFlowToken extends com.mysema.query.sql.RelationalPathBase<QFlowTok
 
     public void addMetadata() {
         addMetadata(created, ColumnMetadata.named("CREATED").withIndex(2).ofType(Types.BIGINT).withSize(19).notNull());
-        addMetadata(currentNode, ColumnMetadata.named("CURRENT_NODE").withIndex(4).ofType(Types.VARCHAR).withSize(100).notNull());
-        addMetadata(flowInstanceId, ColumnMetadata.named("FLOW_INSTANCE_ID").withIndex(3).ofType(Types.VARCHAR).withSize(40).notNull());
+        addMetadata(currentNode, ColumnMetadata.named("CURRENT_NODE").withIndex(5).ofType(Types.VARCHAR).withSize(100).notNull());
+        addMetadata(flowInstanceId, ColumnMetadata.named("FLOW_INSTANCE_ID").withIndex(4).ofType(Types.VARCHAR).withSize(40).notNull());
         addMetadata(id, ColumnMetadata.named("ID").withIndex(1).ofType(Types.VARCHAR).withSize(40).notNull());
-        addMetadata(isDead, ColumnMetadata.named("IS_DEAD").withIndex(6).ofType(Types.INTEGER).withSize(10));
-        addMetadata(sourceNode, ColumnMetadata.named("SOURCE_NODE").withIndex(5).ofType(Types.VARCHAR).withSize(100));
+        addMetadata(isDead, ColumnMetadata.named("IS_DEAD").withIndex(7).ofType(Types.INTEGER).withSize(10));
+        addMetadata(sourceNode, ColumnMetadata.named("SOURCE_NODE").withIndex(6).ofType(Types.VARCHAR).withSize(100));
+        addMetadata(version, ColumnMetadata.named("VERSION").withIndex(3).ofType(Types.BIGINT).withSize(19).notNull());
     }
 
 }
