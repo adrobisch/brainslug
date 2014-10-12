@@ -3,9 +3,11 @@ package brainslug.quartz;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.execution.SimpleTask;
-import brainslug.flow.model.FlowBuilder;
-import brainslug.flow.model.FlowDefinition;
-import brainslug.flow.model.Identifier;
+import brainslug.flow.execution.async.AsyncTask;
+import brainslug.flow.execution.async.AsyncTaskSchedulerOptions;
+import brainslug.flow.FlowBuilder;
+import brainslug.flow.FlowDefinition;
+import brainslug.flow.Identifier;
 import static com.jayway.awaitility.Awaitility.*;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,29 +30,39 @@ public class QuartzSchedulerTest {
     // given:
     Scheduler scheduler = mock(Scheduler.class);
 
-    QuartzScheduler quartzScheduler = new QuartzScheduler(scheduler);
+    QuartzScheduler quartzScheduler = quartzSchedulerWithContextMock(scheduler);
 
     Identifier taskId = id("task");
     Identifier instanceId = id("instance");
     Identifier definitionId = id("definition");
-    Identifier sourceNodeId = id("start");
 
     // when:
-    quartzScheduler.scheduleTask(taskId, sourceNodeId, instanceId, definitionId);
+    quartzScheduler.scheduleTask(new AsyncTask()
+      .withTaskNodeId(taskId)
+      .withInstanceId(instanceId)
+      .withDefinitionId(definitionId));
+
     // then:
     verify(scheduler).scheduleJob(any(JobDetail.class), any(Trigger.class));
   }
 
+  private QuartzScheduler quartzSchedulerWithContextMock(Scheduler scheduler) {
+    QuartzScheduler quartzScheduler = new QuartzScheduler(scheduler);
+    quartzScheduler.setContext(mock(BrainslugContext.class));
+    quartzScheduler.start(new AsyncTaskSchedulerOptions());
+    return quartzScheduler;
+  }
+
   @Test
   public void shouldExecuteAsyncTaskInFlowInstance() throws SchedulerException {
-    // GIVEN:
-    final AsyncTask asyncTask = Mockito.spy(new AsyncTask());
+    // given:
+    final SimpleAsyncTask simpleAsyncTask = Mockito.spy(new SimpleAsyncTask());
 
     FlowDefinition asyncTaskFlow = new FlowBuilder() {
       @Override
       public void define() {
         start(event(id("start")))
-            .execute(task(id("task"), asyncTask).async(true)).end(event(id("end")));
+            .execute(task(id("task"), simpleAsyncTask).async(true)).end(event(id("end")));
       }
 
     }.getDefinition();
@@ -58,16 +70,16 @@ public class QuartzSchedulerTest {
     Scheduler quartzScheduler = createQuartzScheduler();
 
     BrainslugContext context = new BrainslugContext().withAsyncTaskScheduler(new QuartzScheduler(quartzScheduler))
-        .addFlowDefinition(asyncTaskFlow);
+        .addFlowDefinition(asyncTaskFlow).start();
     // when:
     Identifier instanceId = context.startFlow(asyncTaskFlow.getId(), id("start"));
     quartzScheduler.start();
 
     // then:
-    await().until(taskCalled(asyncTask));
+    await().until(taskCalled(simpleAsyncTask));
   }
 
-  private Callable<Boolean> taskCalled(final AsyncTask task) {
+  private Callable<Boolean> taskCalled(final SimpleAsyncTask task) {
     return new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
@@ -84,7 +96,7 @@ public class QuartzSchedulerTest {
     }
   }
 
-  class AsyncTask extends SimpleTask {
+  class SimpleAsyncTask extends SimpleTask {
     boolean called;
 
     @Override

@@ -1,7 +1,7 @@
 package brainslug.flow.renderer;
 
-import brainslug.flow.model.FlowBuilder;
-import brainslug.flow.model.FlowNodeDefinition;
+import brainslug.flow.FlowBuilder;
+import brainslug.flow.node.FlowNodeDefinition;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;

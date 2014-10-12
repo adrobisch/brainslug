@@ -1,6 +1,7 @@
 package brainslug.flow.renderer;
 
-import brainslug.flow.model.*;
+import brainslug.flow.node.*;
+import brainslug.flow.node.task.AbstractTaskDefinition;
 import com.mxgraph.canvas.mxGraphics2DCanvas;
 import com.mxgraph.shape.mxStencilShape;
 import com.mxgraph.util.mxConstants;
@@ -38,13 +39,13 @@ abstract public class Skin {
     if (node instanceof ParallelDefinition) {
       return Shapes.GatewayParallel;
     }
-    if (node.hasMixin(brainslug.flow.model.marker.EndEvent.class)) {
+    if (node.hasMixin(brainslug.flow.node.marker.EndEvent.class)) {
       return Shapes.EndEvent;
     }
-    if (node.hasMixin(brainslug.flow.model.marker.StartEvent.class)) {
+    if (node.hasMixin(brainslug.flow.node.marker.StartEvent.class)) {
       return Shapes.StartEvent;
     }
-    if (node.hasMixin(brainslug.flow.model.marker.IntermediateEvent.class)) {
+    if (node.hasMixin(brainslug.flow.node.marker.IntermediateEvent.class)) {
       return Shapes.IntermediateEvent;
     }
 

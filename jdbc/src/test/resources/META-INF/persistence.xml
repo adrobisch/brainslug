@@ -1,0 +1,8 @@
+<persistence>
+    <persistence-unit name="bs" transaction-type="JTA">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>brainslug.jdbc.entity.AsyncTaskEntity</class>
+        <class>brainslug.jdbc.entity.FlowInstanceEntity</class>
+        <class>brainslug.jdbc.entity.FlowTokenEntity</class>
+    </persistence-unit>
+</persistence>

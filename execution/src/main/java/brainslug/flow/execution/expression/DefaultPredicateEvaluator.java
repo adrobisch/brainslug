@@ -1,13 +1,12 @@
 package brainslug.flow.execution.expression;
 
-import brainslug.flow.context.PredicateEvaluator;
 import brainslug.flow.execution.Execute;
 import brainslug.flow.execution.ExecutionContext;
-import brainslug.flow.model.HandlerCallDefinition;
-import brainslug.flow.model.ServiceCallDefinition;
-import brainslug.flow.model.expression.EqualDefinition;
-import brainslug.flow.model.expression.Expression;
-import brainslug.flow.model.expression.Property;
+import brainslug.flow.node.task.HandlerCallDefinition;
+import brainslug.flow.node.task.ServiceCallDefinition;
+import brainslug.flow.expression.EqualDefinition;
+import brainslug.flow.expression.Expression;
+import brainslug.flow.expression.Property;
 import brainslug.util.ReflectionUtil;
 
 import java.lang.reflect.Method;

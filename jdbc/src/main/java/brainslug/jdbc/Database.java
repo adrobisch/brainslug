@@ -1,56 +1,36 @@
 package brainslug.jdbc;
 
-import com.mysema.query.sql.Configuration;
-import com.mysema.query.sql.RelationalPath;
-import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLTemplates;
-import com.mysema.query.sql.dml.SQLDeleteClause;
-import com.mysema.query.sql.dml.SQLInsertClause;
-import com.mysema.query.sql.dml.SQLUpdateClause;
+import com.mysema.query.jpa.JPQLTemplates;
+import com.mysema.query.jpa.impl.JPADeleteClause;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.EntityPath;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
 
 public class Database {
-  private final DataSource dataSource;
-  private final Configuration configuration;
-  private final SQLTemplates dialect;
 
-  public Database(DataSource dataSource, Configuration configuration) {
-    this.dataSource = dataSource;
-    this.configuration = configuration;
-    this.dialect = configuration.getTemplates();
+  private final EntityManager entityManager;
+  private final JPQLTemplates jpqlDialect;
+
+  public Database(EntityManager entityManager, JPQLTemplates jpqlTemplates) {
+    this.entityManager = entityManager;
+    this.jpqlDialect = jpqlTemplates;
   }
 
-  public SQLQuery query() {
-    try {
-      return new SQLQuery(dataSource.getConnection(), dialect);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
+  public JPAQuery query() {
+    return new JPAQuery(entityManager, jpqlDialect);
   }
 
-  public SQLInsertClause insert(RelationalPath<?> path) {
-    try {
-      return new SQLInsertClause(dataSource.getConnection(), dialect, path);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
+  public <T> T insertOrUpdate(T entity) {
+    entityManager.persist(entity);
+    return entity;
   }
 
-  public SQLUpdateClause update(RelationalPath<?> path) {
-    try {
-      return new SQLUpdateClause(dataSource.getConnection(), dialect, path);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
+  public void flush() {
+    entityManager.flush();
   }
 
-  public SQLDeleteClause delete(RelationalPath<?> path) {
-    try {
-      return new SQLDeleteClause(dataSource.getConnection(), dialect, path);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
+  public JPADeleteClause delete(EntityPath<?> path) {
+    return new JPADeleteClause(entityManager, path, jpqlDialect);
   }
 }

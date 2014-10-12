@@ -1,9 +1,7 @@
 package brainslug.flow.execution;
 
-import brainslug.flow.model.FlowNodeDefinition;
-
-import java.util.List;
+import brainslug.flow.node.FlowNodeDefinition;
 
 public interface FlowNodeExecutor<T extends FlowNodeDefinition> {
-  List<FlowNodeDefinition> execute(T nodeDefinition, ExecutionContext context);
+  FlowNodeExecutionResult execute(T nodeDefinition, ExecutionContext context);
 }

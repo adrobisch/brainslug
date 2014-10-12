@@ -2,7 +2,7 @@ package brainslug.bpmn;
 
 import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
-import brainslug.flow.model.FlowNodeDefinition;
+import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.renderer.DefaultSkin;
 import brainslug.flow.renderer.ShapeInfo;
 

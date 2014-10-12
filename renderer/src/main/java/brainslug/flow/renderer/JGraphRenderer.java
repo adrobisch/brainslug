@@ -1,6 +1,10 @@
 package brainslug.flow.renderer;
 
-import brainslug.flow.model.*;
+import brainslug.flow.*;
+import brainslug.flow.node.ChoiceDefinition;
+import brainslug.flow.path.FlowEdgeDefinition;
+import brainslug.flow.node.FlowNodeDefinition;
+import brainslug.flow.path.ThenDefinition;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxRectangle;
@@ -75,7 +79,7 @@ public class JGraphRenderer implements Renderer {
     String label = edge.getDisplayName();
     if (edge.getSource() instanceof ChoiceDefinition) {
       for (ThenDefinition then : ((ChoiceDefinition) edge.getSource()).getThenPaths()) {
-        if (then.getPathNodes().get(1).equals(edge.getTarget())) {
+        if (then.getPathNodes().getFirst().equals(edge.getTarget())) {
           return then.getPredicateDefinition().getActual().toString();
         }
       }

@@ -1,8 +1,7 @@
 package brainslug.util;
 
-import brainslug.flow.context.IdGenerator;
-import brainslug.flow.model.Identifier;
-import brainslug.flow.model.StringIdentifier;
+import brainslug.flow.Identifier;
+import brainslug.flow.StringIdentifier;
 
 import java.util.UUID;
 

@@ -1,7 +1,8 @@
 create table FLOW_INSTANCE (
     ID varchar(40) not null primary key,
     DEFINITION_ID varchar(40) not null,
-    CREATED bigint not null
+    CREATED bigint not null,
+    VERSION bigint not null
 );
 
 create index IDX_INSTANCE_DEFINITION on FLOW_INSTANCE(DEFINITION_ID);
@@ -9,6 +10,7 @@ create index IDX_INSTANCE_DEFINITION on FLOW_INSTANCE(DEFINITION_ID);
 create table FLOW_TOKEN (
     ID varchar(40) not null primary key,
     CREATED bigint not null,
+    VERSION bigint not null,
     FLOW_INSTANCE_ID varchar(40) not null,
     CURRENT_NODE varchar(100) not null,
     SOURCE_NODE varchar(100),

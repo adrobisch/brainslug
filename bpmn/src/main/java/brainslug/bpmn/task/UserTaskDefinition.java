@@ -1,6 +1,6 @@
 package brainslug.bpmn.task;
 
-import brainslug.flow.model.AbstractTaskDefinition;
+import brainslug.flow.node.task.AbstractTaskDefinition;
 
 public class UserTaskDefinition extends AbstractTaskDefinition<UserTaskDefinition> {
 

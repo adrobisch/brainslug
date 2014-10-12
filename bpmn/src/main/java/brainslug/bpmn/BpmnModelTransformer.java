@@ -1,11 +1,17 @@
 package brainslug.bpmn;
 
-import brainslug.flow.model.*;
-import brainslug.flow.model.EventDefinition;
-import brainslug.flow.model.expression.Expression;
+import brainslug.flow.*;
+import brainslug.flow.node.*;
+import brainslug.flow.expression.Expression;
 import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
-import brainslug.flow.model.marker.IntermediateEvent;
+import brainslug.flow.node.marker.IntermediateEvent;
+import brainslug.flow.node.EventDefinition;
+import brainslug.flow.path.AndDefinition;
+import brainslug.flow.path.FlowEdgeDefinition;
+import brainslug.flow.path.FlowPathDefinition;
+import brainslug.flow.path.ThenDefinition;
+import brainslug.flow.node.task.AbstractTaskDefinition;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.EndEvent;
@@ -73,7 +79,7 @@ public class BpmnModelTransformer {
         collectOutgoingFlows(node);
       }
       else {
-        throw new UnsupportedOperationException("dont know how to transform " + node);
+        throw new UnsupportedOperationException("unable  to transform " + node);
       }
     }
   }
@@ -118,7 +124,7 @@ public class BpmnModelTransformer {
   private SequenceFlow addIncomingSequenceFlowToFirstPathNode(FlowElement flowElement, FlowPathDefinition<?> then) {
     SequenceFlow flow = createSequenceFlow(
       flowElement.getId(),
-      then.getPathNodes().get(1).getId().toString()
+      then.getPathNodes().getFirst().getId().toString()
     );
     sequenceFlows.add(flow);
     return flow;
@@ -142,17 +148,17 @@ public class BpmnModelTransformer {
   }
 
   private void addEvent(EventDefinition event, Process process) {
-    if (event.hasMixin(brainslug.flow.model.marker.StartEvent.class)) {
+    if (event.hasMixin(brainslug.flow.node.marker.StartEvent.class)) {
       process.addFlowElement(createStartEvent(event));
     }
-    else if (event.hasMixin(brainslug.flow.model.marker.EndEvent.class)) {
+    else if (event.hasMixin(brainslug.flow.node.marker.EndEvent.class)) {
       process.addFlowElement(createEndEvent(event));
     }
     else if (event.hasMixin(IntermediateEvent.class)) {
       process.addFlowElement(createIntermediateCatchEvent(event));
     }
     else {
-      throw new UnsupportedOperationException("dont know how to transform " + event);
+      throw new UnsupportedOperationException("unable to transform " + event);
     }
   }
 

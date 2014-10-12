@@ -1,21 +1,17 @@
 package brainslug.flow.execution;
 
-import brainslug.flow.model.EnumIdentifier;
-import brainslug.flow.model.Identifier;
-import brainslug.flow.model.StringIdentifier;
+import brainslug.flow.EnumIdentifier;
+import brainslug.flow.Identifier;
+import brainslug.flow.StringIdentifier;
 
 public class TriggerContext<T extends TriggerContext> {
 
   protected Identifier definitionId;
   protected Identifier instanceId;
   protected Identifier nodeId;
-  protected Identifier<?> sourceNodeId;
+  protected Boolean async = false;
 
   protected ExecutionProperties properties;
-
-  public Identifier getSourceNodeId() {
-    return sourceNodeId;
-  }
 
   public Identifier getDefinitionId() {
     return definitionId;
@@ -56,8 +52,8 @@ public class TriggerContext<T extends TriggerContext> {
     return self();
   }
 
-  public T sourceNodeId(Identifier sourceNodeId) {
-    this.sourceNodeId = sourceNodeId;
+  public T async(Boolean async) {
+    this.async = async;
     return self();
   }
 
@@ -91,7 +87,7 @@ public class TriggerContext<T extends TriggerContext> {
 
       if(object.getClass().isAssignableFrom(type)) {
         result = (P) object;
-        typeCount ++;
+        typeCount++;
       }
     }
     if (typeCount == 0) {
@@ -109,6 +105,10 @@ public class TriggerContext<T extends TriggerContext> {
     return properties;
   }
 
+  public Boolean isAsync() {
+    return async;
+  }
+
   /**
    * TODO: should we include the properties into equals?
    */
@@ -122,7 +122,7 @@ public class TriggerContext<T extends TriggerContext> {
     if (definitionId != null ? !definitionId.equals(that.definitionId) : that.definitionId != null) return false;
     if (instanceId != null ? !instanceId.equals(that.instanceId) : that.instanceId != null) return false;
     if (nodeId != null ? !nodeId.equals(that.nodeId) : that.nodeId != null) return false;
-    if (sourceNodeId != null ? !sourceNodeId.equals(that.sourceNodeId) : that.sourceNodeId != null) return false;
+    if (async != null ? !async.equals(that.async) : that.async != null) return false;
 
     return true;
   }
@@ -132,7 +132,7 @@ public class TriggerContext<T extends TriggerContext> {
     int result = definitionId != null ? definitionId.hashCode() : 0;
     result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
     result = 31 * result + (nodeId != null ? nodeId.hashCode() : 0);
-    result = 31 * result + (sourceNodeId != null ? sourceNodeId.hashCode() : 0);
+    result = 31 * result + (async != null ? async.hashCode() : 0);
     return result;
   }
 
@@ -142,7 +142,7 @@ public class TriggerContext<T extends TriggerContext> {
       "definitionId=" + definitionId +
       ", instanceId=" + instanceId +
       ", nodeId=" + nodeId +
-      ", sourceNodeId=" + sourceNodeId +
+      ", async=" + async +
       '}';
   }
 }

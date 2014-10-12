@@ -31,7 +31,7 @@ The current version is available in the [maven central repository](http://search
 
 ## Hello World
 
-A new flow is defined by creating a new `brainslug.flow.model.FlowBuilder`:
+A new flow is defined by creating a new `brainslug.model.FlowBuilder`:
 
 ```java
   FlowDefinition helloWorldFlow = new FlowBuilder() {

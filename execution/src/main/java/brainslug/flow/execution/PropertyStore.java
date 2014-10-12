@@ -1,6 +1,6 @@
 package brainslug.flow.execution;
 
-import brainslug.flow.model.Identifier;
+import brainslug.flow.Identifier;
 
 /**
  * A storage for flow instance properties.

@@ -1,0 +1,107 @@
+package brainslug.flow.execution.token;
+
+import brainslug.AbstractExecutionTest;
+import brainslug.flow.execution.ExecutionProperties;
+import brainslug.flow.listener.EventType;
+import brainslug.flow.listener.Listener;
+import brainslug.flow.execution.TriggerContext;
+import brainslug.flow.FlowBuilder;
+import brainslug.flow.Identifier;
+import org.junit.Test;
+import org.mockito.InOrder;
+
+import static brainslug.util.IdUtil.id;
+import static brainslug.util.TestId.*;
+import static brainslug.util.TestId.CHOICE;
+import static brainslug.util.TestId.CHOICEID;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+
+public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
+
+  @Test
+  public void shouldEvaluateEqualDefinition() {
+    // given:
+    context.addFlowDefinition(new FlowBuilder() {
+      String x = "test";
+
+      @Override
+      public void define() {
+        start(event(id(START))).choice(id(CHOICE))
+          .when(expression(x).isEqualTo("test")).execute(task(id(TASK)))
+            .or()
+          .when(expression(x).isEqualTo("test2")).execute(task(id(TASK2)));
+      }
+
+      @Override
+      public String getId() {
+        return CHOICEID.name();
+      }
+
+    }.getDefinition());
+
+    Listener listener = mock(Listener.class);
+    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
+    // when:
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START));
+    // then:
+    InOrder eventOrder = inOrder(listener);
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verifyNoMoreInteractions();
+  }
+
+  @Test
+  public void shouldExecuteChoiceTruePath() {
+    // given:
+    Listener listener = choiceFlowListener();
+    // when:
+
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), ExecutionProperties.with("foo", "bar"));
+    // then:
+    InOrder eventOrder = inOrder(listener);
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verifyNoMoreInteractions();
+  }
+
+  @Test
+  public void shouldExecuteChoiceFalsePath() {
+    // given:
+    Listener listener = choiceFlowListener();
+    // when:
+
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), ExecutionProperties.with("foo", "oof"));
+    // then:
+    InOrder eventOrder = inOrder(listener);
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK2)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verifyNoMoreInteractions();
+  }
+
+  private Listener choiceFlowListener() {
+    context.addFlowDefinition(new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id(START))).choice(id(CHOICE))
+          .when(property(id("foo")).isEqualTo("bar")).execute(task(id(TASK)))
+            .or()
+          .when(property(id("foo")).isEqualTo("oof")).execute(task(id(TASK2)));
+      }
+
+      @Override
+      public String getId() {
+        return CHOICEID.name();
+      }
+
+    }.getDefinition());
+
+    Listener listener = mock(Listener.class);
+    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
+    return listener;
+  }
+
+}

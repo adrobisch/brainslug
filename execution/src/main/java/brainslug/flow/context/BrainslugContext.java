@@ -1,21 +1,27 @@
 package brainslug.flow.context;
 
 import brainslug.flow.execution.*;
-import brainslug.flow.execution.impl.ExecutorServiceScheduler;
-import brainslug.flow.execution.impl.HashMapPropertyStore;
+import brainslug.flow.execution.async.*;
+import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.HashMapPropertyStore;
+import brainslug.flow.execution.token.TokenStore;
 import brainslug.flow.listener.DefaultListenerManager;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
-import brainslug.flow.execution.impl.HashMapTokenStore;
-import brainslug.flow.execution.impl.TokenFlowExecutor;
-import brainslug.flow.model.DefinitionStore;
-import brainslug.flow.model.FlowDefinition;
-import brainslug.flow.model.Identifier;
+import brainslug.flow.execution.token.HashMapTokenStore;
+import brainslug.flow.execution.token.TokenFlowExecutor;
+import brainslug.flow.execution.DefinitionStore;
+import brainslug.flow.FlowDefinition;
+import brainslug.flow.Identifier;
+import brainslug.util.IdGenerator;
+import brainslug.util.Preconditions;
 import brainslug.util.UuidGenerator;
 
 public class BrainslugContext {
 
   AsyncTaskScheduler asyncTaskScheduler;
+  AsyncTaskStore asyncTaskStore;
+  AsyncTaskSchedulerOptions asyncTaskSchedulerOptions;
   DefinitionStore definitionStore;
   ListenerManager listenerManager;
   FlowExecutor flowExecutor;
@@ -27,12 +33,19 @@ public class BrainslugContext {
   Registry registry;
 
   public BrainslugContext() {
-    withIdGenerator(new UuidGenerator());
-    withTokenStore(new HashMapTokenStore(idGenerator));
-    withPropertyStore(new HashMapPropertyStore());
-    withDefinitionStore(new DefinitionStore());
+    initialize();
+  }
 
-    withAsyncTaskScheduler(new ExecutorServiceScheduler());
+  protected void initialize() {
+    withIdGenerator(new UuidGenerator())
+      .withTokenStore(new HashMapTokenStore(idGenerator));
+
+    withPropertyStore(new HashMapPropertyStore());
+    withDefinitionStore(new HashMapDefinitionStore());
+
+    withAsyncTaskStore(new ArrayListTaskStore())
+      .withAsyncTaskScheduler(new ExecutorServiceScheduler());
+
     withListenerManager(new DefaultListenerManager());
     withExecutor(new TokenFlowExecutor(this));
     withRegistry(new HashMapRegistry());
@@ -42,6 +55,11 @@ public class BrainslugContext {
   public BrainslugContext withAsyncTaskScheduler(AsyncTaskScheduler asyncTaskScheduler) {
     this.asyncTaskScheduler = asyncTaskScheduler;
     asyncTaskScheduler.setContext(this);
+    return this;
+  }
+
+  public BrainslugContext withAsyncTaskStore(AsyncTaskStore asyncTaskStore) {
+    this.asyncTaskStore = asyncTaskStore;
     return this;
   }
 
@@ -67,7 +85,6 @@ public class BrainslugContext {
 
   private void setupFlowExecutor(FlowExecutor newFlowExecutor) {
     this.flowExecutor = newFlowExecutor;
-    flowExecutor.setContext(this);
   }
 
   public BrainslugContext withListenerManager(ListenerManager listenerManager) {
@@ -116,6 +133,16 @@ public class BrainslugContext {
     return flowExecutor.startFlow(triggerContext);
   }
 
+  public BrainslugContext start() {
+    Preconditions.notNull(asyncTaskScheduler).start(asyncTaskSchedulerOptions);
+    return this;
+  }
+
+  public BrainslugContext stop() {
+    Preconditions.notNull(asyncTaskScheduler).stop();
+    return this;
+  }
+
   public ListenerManager getListenerManager() {
     return listenerManager;
   }
@@ -146,5 +173,9 @@ public class BrainslugContext {
 
   public IdGenerator getIdGenerator() {
     return idGenerator;
+  }
+
+  public AsyncTaskStore getAsyncTaskStore() {
+    return asyncTaskStore;
   }
 }

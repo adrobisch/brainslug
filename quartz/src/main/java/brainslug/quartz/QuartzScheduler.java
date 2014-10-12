@@ -1,9 +1,10 @@
 package brainslug.quartz;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.AsyncTaskScheduler;
 import brainslug.flow.execution.TriggerContext;
-import brainslug.flow.model.Identifier;
+import brainslug.flow.execution.async.AbstractAsyncTaskScheduler;
+import brainslug.flow.execution.async.AsyncTask;
+import brainslug.flow.Identifier;
 
 import static brainslug.util.IdUtil.id;
 import static org.quartz.JobBuilder.newJob;
@@ -13,14 +14,12 @@ import org.quartz.*;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
-public class QuartzScheduler implements AsyncTaskScheduler {
-  private static final String INSTANCE_ID = "instanceId";
-  private static final String TASK_NODE_ID = "taskNodeId";
-  private static final String DEFINITION_ID = "definitionId";
-  private static final String SOURCE_NODE_ID = "sourceNodeId";
+public class QuartzScheduler extends AbstractAsyncTaskScheduler {
+  protected static final String INSTANCE_ID = "instanceId";
+  protected static final String TASK_NODE_ID = "taskNodeId";
+  protected static final String DEFINITION_ID = "definitionId";
 
-  private final org.quartz.Scheduler quartz;
-  private BrainslugContext context;
+  protected final org.quartz.Scheduler quartz;
 
   public QuartzScheduler(org.quartz.Scheduler quartz) {
     this.quartz = quartz;
@@ -39,11 +38,9 @@ public class QuartzScheduler implements AsyncTaskScheduler {
         Identifier instanceId = id(bundle.getJobDetail().getJobDataMap().getString(INSTANCE_ID));
         Identifier taskNodeId = id(bundle.getJobDetail().getJobDataMap().getString(TASK_NODE_ID));
         Identifier definitionId = id(bundle.getJobDetail().getJobDataMap().getString(DEFINITION_ID));
-        Identifier sourceNodeId = id(bundle.getJobDetail().getJobDataMap().getString(SOURCE_NODE_ID));
 
         return new TaskJob(context)
             .withTaskNodeId(taskNodeId)
-            .withSourceNodeId(sourceNodeId)
             .withDefinitionId(definitionId)
             .withInstanceId(instanceId);
       }
@@ -56,7 +53,6 @@ public class QuartzScheduler implements AsyncTaskScheduler {
     Identifier taskNodeId;
     Identifier instanceId;
     Identifier definitionId;
-    Identifier sourceNodeId;
 
     public TaskJob(BrainslugContext brainslugContext) {
       this.brainslugContext = brainslugContext;
@@ -77,27 +73,22 @@ public class QuartzScheduler implements AsyncTaskScheduler {
       return this;
     }
 
-    TaskJob withSourceNodeId(Identifier sourceNodeId) {
-      this.sourceNodeId = sourceNodeId;
-      return this;
-    }
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
       brainslugContext.trigger(new TriggerContext()
           .instanceId(instanceId)
           .nodeId(taskNodeId)
-          .definitionId(definitionId));
+          .definitionId(definitionId)
+          .async(true));
     }
   }
 
   @Override
-  public void scheduleTask(Identifier taskNodeId, Identifier sourceNodeId, Identifier instanceId, Identifier definitionId) {
+  public void internalScheduleTask(AsyncTask asyncTask) {
     JobDetail job = newJob(TaskJob.class)
-        .usingJobData(TASK_NODE_ID, taskNodeId.stringValue())
-        .usingJobData(INSTANCE_ID, instanceId.stringValue())
-        .usingJobData(DEFINITION_ID, definitionId.stringValue())
-        .usingJobData(SOURCE_NODE_ID, sourceNodeId.stringValue())
+        .usingJobData(TASK_NODE_ID, asyncTask.getTaskNodeId().stringValue())
+        .usingJobData(INSTANCE_ID, asyncTask.getInstanceId().stringValue())
+        .usingJobData(DEFINITION_ID, asyncTask.getDefinitionId().stringValue())
         .storeDurably()
         .build();
 
@@ -117,7 +108,7 @@ public class QuartzScheduler implements AsyncTaskScheduler {
   }
 
   @Override
-  public void start() {
+  protected void internalStart() {
     try {
       quartz.start();
     } catch (SchedulerException e) {
@@ -126,16 +117,11 @@ public class QuartzScheduler implements AsyncTaskScheduler {
   }
 
   @Override
-  public void stop() {
+  protected void internalStop() {
     try {
       quartz.shutdown(true);
     } catch (SchedulerException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @Override
-  public void setContext(BrainslugContext context) {
-    this.context = context;
   }
 }

@@ -1,10 +1,10 @@
 package brainslug.bpmn;
 
-import brainslug.flow.model.FlowBuilder;
-import brainslug.flow.model.Identifier;
+import brainslug.flow.FlowBuilder;
+import brainslug.flow.Identifier;
 import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
-import brainslug.flow.model.expression.PredicateBuilder;
+import brainslug.flow.expression.PredicateBuilder;
 
 abstract public class BpmnFlowBuilder extends FlowBuilder {
 
