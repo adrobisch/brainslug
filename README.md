@@ -24,7 +24,7 @@ The current version is available in the [maven central repository](http://search
 Documentation
 =============
 
-Check the [github pages](http://adrobisch.github.io/brainslug/) for examples and documentation.
+Check [Read The Docs](http://brainslug.readthedocs.org) for examples and documentation.
 
 Versioning
 ==========
