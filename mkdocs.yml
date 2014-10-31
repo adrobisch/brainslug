@@ -1,5 +1,4 @@
 site_name: brainslug documentation
-docs_dir: pages
 pages:
 - [index.md, Home, "Home"]
 - [helloworld.md, "Hello World!"]
