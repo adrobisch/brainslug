@@ -2,7 +2,7 @@ package brainslug.flow.expression;
 
 public class EqualDefinition<V, E> {
   private final V actual;
-  E expected;
+  private final E expected;
 
   public EqualDefinition(V actual, E expectedValue) {
     this.expected = expectedValue;

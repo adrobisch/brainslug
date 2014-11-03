@@ -14,13 +14,9 @@
     <dependencies>
         <dependency>
             <groupId>de.androbit</groupId>
-            <artifactId>brainslug-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.androbit</groupId>
             <artifactId>brainslug-execution</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
 </project>

@@ -95,6 +95,10 @@ public class FlowPathDefinition<Self extends FlowPathDefinition> {
     return startNode;
   }
 
+  public FlowNodeDefinition getFirstNode() {
+    return getPathNodes().peekFirst();
+  }
+
   public FlowDefinition getDefinition() {
     return definition;
   }

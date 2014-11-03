@@ -67,35 +67,21 @@ public class TriggerContext<T extends TriggerContext> {
     return self();
   }
 
-  public T property(Object key, Object value) {
+  public T property(String key, Object value) {
     setProperty(key, value);
     return self();
   }
 
-  public void setProperty(Object key, Object value) {
+  public void setProperty(String key, Object value) {
     getProperties().put(key, value);
   }
 
-  public <P> P getProperty(Object key, Class<P> type) {
-    return (P) getProperties().get(key);
+  public <P> P getProperty(String key, Class<P> type) {
+    return getProperties().get(key, type);
   }
 
   public <P> P getProperty(Class<P> type) {
-    P result = null;
-    int typeCount = 0;
-    for (Object object : getProperties().values()) {
-
-      if(object.getClass().isAssignableFrom(type)) {
-        result = (P) object;
-        typeCount++;
-      }
-    }
-    if (typeCount == 0) {
-      throw new IllegalArgumentException(String.format("no property of type %s exists", type));
-    }else if(typeCount > 1) {
-      throw new IllegalArgumentException(String.format("multiple properties of type %s exist", type));
-    }
-    return result;
+    return getProperties().getProperty(type);
   }
 
   public ExecutionProperties getProperties() {

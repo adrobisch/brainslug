@@ -221,6 +221,6 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // then:
     verify(contextSpy).trigger(triggerCaptor.capture());
-    assertThat(triggerCaptor.getValue().getProperties().get("key")).isEqualTo("value");
+    assertThat(triggerCaptor.getValue().getProperties().get("key", String.class)).isEqualTo("value");
   }
 }

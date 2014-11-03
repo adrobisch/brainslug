@@ -11,7 +11,7 @@ import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
 public class QFlowTokenEntity extends EntityPathBase<FlowTokenEntity> {
 
-    private static final long serialVersionUID = 290861597L;
+    private static final long serialVersionUID = 290961597L;
 
     public static final QFlowTokenEntity flowTokenEntity = new QFlowTokenEntity("flowTokenEntity");
 

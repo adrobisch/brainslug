@@ -11,6 +11,7 @@
     <url>http://github.com/adrobisch/brainslug</url>
 
     <modules>
+      <module>core</module>
       <module>model</module>
       <module>execution</module>
       <module>bpmn</module>

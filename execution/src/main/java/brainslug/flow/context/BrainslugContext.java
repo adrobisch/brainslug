@@ -63,7 +63,7 @@ public class BrainslugContext {
     return this;
   }
 
-  public BrainslugContext withPropertyStore(HashMapPropertyStore propertyStore) {
+  public BrainslugContext withPropertyStore(PropertyStore propertyStore) {
     this.propertyStore = propertyStore;
     return this;
   }

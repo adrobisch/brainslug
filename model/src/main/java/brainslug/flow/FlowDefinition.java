@@ -38,7 +38,7 @@ public class FlowDefinition {
     throw new IllegalArgumentException("Node with id " + id + " does not exist.");
   }
 
-  public <T> T getNode(Identifier id, Class<T> clazz) {
+  public <T extends FlowNodeDefinition> T getNode(Identifier id, Class<T> clazz) {
     FlowNodeDefinition<?> node = getNode(id);
     if (!node.getClass().isAssignableFrom(clazz)) {
       throw new IllegalArgumentException("Requested node should have type " + clazz.getName());

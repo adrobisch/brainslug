@@ -33,12 +33,7 @@ The current version is available in the [maven central repository](http://search
   ...
     <dependency>
       <groupId>de.androbit</groupId>
-      <artifactId>brainslug-model</artifactId>
-      <version>...</version>
-    </dependency>
-    <dependency>
-      <groupId>de.androbit</groupId>
-      <artifactId>brainslug-execution</artifactId>
+      <artifactId>brainslug-core</artifactId>
       <version>...</version>
     </dependency>
   ...

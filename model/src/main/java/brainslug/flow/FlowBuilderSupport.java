@@ -1,8 +1,6 @@
 package brainslug.flow;
 
-import brainslug.flow.expression.PredicateBuilder;
-import brainslug.flow.expression.Expression;
-import brainslug.flow.expression.Property;
+import brainslug.flow.expression.*;
 import brainslug.flow.node.marker.StartEvent;
 import brainslug.flow.node.*;
 import brainslug.flow.path.FlowPathDefinition;
@@ -104,6 +102,10 @@ public class FlowBuilderSupport {
 
   public <T extends Identifier> PredicateBuilder<Property> property(T expression) {
     return new PredicateBuilder<Property>(new Property(expression));
+  }
+
+  public <T extends Predicate> PredicateDefinition<T> property(T predicate) {
+    return new PredicateDefinition<T>(predicate);
   }
 
   public ServiceCallDefinition service(Class<?> clazz) {

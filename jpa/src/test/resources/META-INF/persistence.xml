@@ -4,5 +4,6 @@
         <class>brainslug.jdbc.entity.AsyncTaskEntity</class>
         <class>brainslug.jdbc.entity.FlowInstanceEntity</class>
         <class>brainslug.jdbc.entity.FlowTokenEntity</class>
+        <class>brainslug.jdbc.entity.InstancePropertyEntity</class>
     </persistence-unit>
 </persistence>

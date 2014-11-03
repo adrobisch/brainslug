@@ -64,6 +64,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier>empty());
 
     context.getPropertyStore().storeProperties(trigger.getInstanceId(), trigger.getProperties());
+
     context.trigger(new TriggerContext()
       .nodeId(startNode.getId())
       .definitionId(trigger.getDefinitionId())
@@ -87,11 +88,13 @@ public class TokenFlowExecutor implements FlowExecutor {
     ExecutionContext executionContext = createExecutionContext(triggerContext);
 
     context.getListenerManager().notifyListeners(EventType.BEFORE_EXECUTION, triggerContext);
-    List<FlowNodeDefinition> next = nodeExecutor.execute(node, executionContext).getNextNodes();
+
+    FlowNodeExecutionResult executionResult = nodeExecutor.execute(node, executionContext);
     context.getPropertyStore().storeProperties(triggerContext.getInstanceId(), triggerContext.getProperties());
+
     context.getListenerManager().notifyListeners(EventType.AFTER_EXECUTION, triggerContext);
 
-    triggerNext(triggerContext, node, next);
+    triggerNext(triggerContext, node, executionResult);
   }
 
   // TODO: create ExecutionContextFactory, which contains merging
@@ -112,8 +115,8 @@ public class TokenFlowExecutor implements FlowExecutor {
     return properties;
   }
 
-  protected void triggerNext(TriggerContext event, FlowNodeDefinition<?> node, List<FlowNodeDefinition> next) {
-    for (FlowNodeDefinition nextNode : next) {
+  protected void triggerNext(TriggerContext event, FlowNodeDefinition<?> node, FlowNodeExecutionResult flowNodeExecutionResult) {
+    for (FlowNodeDefinition nextNode : flowNodeExecutionResult.getNextNodes()) {
       addToken(event, node, nextNode);
       if (!waitingForExternalTrigger(nextNode)) {
         trigger(createTriggerContextForNextNode(event, nextNode));

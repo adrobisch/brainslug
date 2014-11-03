@@ -23,6 +23,7 @@ Those points make them look heavy-weight and inflexible.
 
 A developer using brainslug should be able to:
 
+* no external dependencies in the core parts (model and execution), except for logging  
 * understand the execution model by reading the code
 * customize all aspects the library (including persistence and transaction management)
 * be so confident, the never want so buy commercial (sometimes called *enterprise*) support

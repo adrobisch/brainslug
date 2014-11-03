@@ -36,6 +36,8 @@ public class QFlowInstance extends com.mysema.query.sql.RelationalPathBase<QFlow
 
     public final com.mysema.query.sql.ForeignKey<QFlowToken> _constraint80 = createInvForeignKey(id, "FLOW_INSTANCE_ID");
 
+    public final com.mysema.query.sql.ForeignKey<QInstanceProperty> _constraintA9 = createInvForeignKey(id, "INSTANCE_ID");
+
     public QFlowInstance(String variable) {
         super(QFlowInstance.class, forVariable(variable), "PUBLIC", "FLOW_INSTANCE");
         addMetadata();

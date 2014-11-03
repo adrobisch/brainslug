@@ -2,6 +2,7 @@ package brainslug.flow.execution.expression;
 
 import brainslug.flow.execution.Execute;
 import brainslug.flow.execution.ExecutionContext;
+import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.task.HandlerCallDefinition;
 import brainslug.flow.node.task.ServiceCallDefinition;
 import brainslug.flow.expression.EqualDefinition;
@@ -15,15 +16,12 @@ public class DefaultPredicateEvaluator implements PredicateEvaluator {
 
   @Override
   public boolean evaluate(EqualDefinition predicate, ExecutionContext context) {
-    if (predicate.getActual() instanceof Property) {
-      return evaluateProperty((Property) predicate.getActual(), getExpectedValue(predicate), context);
-    }
     return getValue(predicate, context).equals(getExpectedValue(predicate));
   }
 
-  private boolean evaluateProperty(Property property, Object expected, ExecutionContext context) {
+  private Object propertyValue(Property property, ExecutionContext context) {
     String propertyId = property.getValue().getId().toString();
-    return context.getTrigger().getProperty(propertyId, Object.class).equals(expected);
+    return context.getTrigger().getProperty(propertyId, Object.class);
   }
 
   private Object getExpectedValue(EqualDefinition predicate) {
@@ -34,6 +32,12 @@ public class DefaultPredicateEvaluator implements PredicateEvaluator {
   }
 
   private Object getValue(EqualDefinition predicate, ExecutionContext context) {
+    if (predicate.getActual() instanceof PropertyPredicate) {
+      return ((PropertyPredicate) predicate.getActual()).isFulfilled(context.getTrigger().getProperties());
+    }
+    if (predicate.getActual() instanceof Property) {
+      return propertyValue((Property) predicate.getActual(), context);
+    }
     if (predicate.getActual() instanceof Expression) {
       return ((Expression) predicate.getActual()).getValue();
     }

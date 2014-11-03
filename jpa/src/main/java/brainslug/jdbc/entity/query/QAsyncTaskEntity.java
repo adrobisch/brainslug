@@ -10,7 +10,7 @@ import com.mysema.query.types.Path;
 
 public class QAsyncTaskEntity extends EntityPathBase<AsyncTaskEntity> {
 
-    private static final long serialVersionUID = 290861597L;
+    private static final long serialVersionUID = 290861591L;
 
     public static final QAsyncTaskEntity asyncTaskEntity = new QAsyncTaskEntity("asyncTaskEntity");
 

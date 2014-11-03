@@ -276,7 +276,7 @@ public class FlowBuilderTest {
 
         goal(id("taskExecuted")).check(new GoalPredicate<Void>() {
           @Override
-          public Boolean isFulfilled(Void aVoid) {
+          public boolean isFulfilled(Void aVoid) {
             return true;
           }
         });
