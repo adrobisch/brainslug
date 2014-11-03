@@ -30,17 +30,39 @@ public class JpaPropertyStore implements PropertyStore {
     log.debug("storing properties {} for instance {}", executionProperties, instanceId);
 
     for (ExecutionProperty property : executionProperties.getValues()) {
-      Identifier newId = idGenerator.generateId();
-      Long created = new Date().getTime();
-
-      InstancePropertyEntity instanceProperty = new InstancePropertyEntity()
-        .withId(newId.stringValue())
-        .withCreated(created)
-        .withInstanceId(instanceId.stringValue())
-        .withPropertyKey(property.getKey());
-
+      InstancePropertyEntity instanceProperty = getOrCreatePropertyEntity(instanceId, property);
       database.insertOrUpdate(setValueField(instanceProperty, property.getObjectValue()));
     }
+  }
+
+  protected InstancePropertyEntity getOrCreatePropertyEntity(Identifier<?> instanceId, ExecutionProperty property) {
+    InstancePropertyEntity instanceProperty = getProperty(instanceId, property.getKey());
+
+    if (instanceProperty != null) {
+      return instanceProperty;
+    } else {
+      return newInstancePropertyEntity(instanceId, property);
+    }
+  }
+
+  InstancePropertyEntity getProperty(Identifier<?> instanceId, String propertyKey) {
+    return database.query()
+        .from(QInstancePropertyEntity.instancePropertyEntity)
+        .where(
+          QInstancePropertyEntity.instancePropertyEntity.propertyKey.eq(propertyKey),
+          QInstancePropertyEntity.instancePropertyEntity.instanceId.eq(instanceId.stringValue())
+        ).singleResult(QInstancePropertyEntity.instancePropertyEntity);
+  }
+
+  protected InstancePropertyEntity newInstancePropertyEntity(Identifier<?> instanceId, ExecutionProperty property) {
+    Identifier newId = idGenerator.generateId();
+    Long created = new Date().getTime();
+
+    return new InstancePropertyEntity()
+      .withId(newId.stringValue())
+      .withCreated(created)
+      .withInstanceId(instanceId.stringValue())
+      .withPropertyKey(property.getKey());
   }
 
   @Override
