@@ -292,6 +292,27 @@ public class FlowBuilderTest {
   }
 
   @Test
+  public void buildFlowWithInlineGoal() {
+    FlowDefinition goalFlow = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(id("start"))
+          .execute(task(id("simpleTask"))
+            .goal(check(id("inlineGoal"), new GoalPredicate() {
+              @Override
+              public boolean isFulfilled(Object o) {
+                return false;
+              }
+            })))
+          .end(id("end"));
+      }
+    }.getDefinition();
+
+    TaskDefinition taskNode = (TaskDefinition) goalFlow.getNode(IdUtil.id("simpleTask"));
+    Assertions.assertThat(taskNode.getGoal()).isEqualTo(Option.of(IdUtil.id("inlineGoal")));
+  }
+
+  @Test
   public void buildFlowWithRetryStrategy() {
     FlowDefinition goalFlow = new FlowBuilder() {
       @Override
