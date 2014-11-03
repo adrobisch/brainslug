@@ -1,10 +1,8 @@
 package brainslug.flow.execution.expression;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.DefaultExecutionContext;
-import brainslug.flow.execution.ExecutionProperties;
-import brainslug.flow.execution.PropertyStore;
-import brainslug.flow.execution.TriggerContext;
+import brainslug.flow.context.Registry;
+import brainslug.flow.execution.*;
 import brainslug.flow.expression.PredicateDefinition;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -21,28 +19,83 @@ public class DefaultPredicateEvaluatorTest {
     // given:
 
     DefaultPredicateEvaluator evaluator = new DefaultPredicateEvaluator();
-    PropertyStore propertyStoreMock = mock(PropertyStore.class);
-
-    final DefaultExecutionContext executionContext = new DefaultExecutionContext(new TriggerContext().property("test", "foo"),
-      new BrainslugContext()
-        .withPropertyStore(propertyStoreMock));
+    DefaultExecutionContext executionContext = testContext();
 
     PropertyPredicate predicateSpy = spy(new PropertyPredicate() {
       @Override
       public boolean isFulfilled(ExecutionProperties executionProperties) {
         Assertions.assertThat(executionProperties).isNotNull();
-        return executionProperties.get("test", String.class).equals("foo");
+        return false;
       }
     });
 
-    PredicateDefinition predicateDefinition = new PredicateDefinition<PropertyPredicate>(predicateSpy);
+    PredicateDefinition predicateDefintion = new PredicateDefinition<PropertyPredicate>(predicateSpy);
     // when:
 
-    boolean result = evaluator.evaluate(predicateDefinition, executionContext);
+    boolean result = evaluator.evaluate(predicateDefintion, executionContext);
 
     // then:
     verify(predicateSpy).isFulfilled(any(ExecutionProperties.class));
-    Assertions.assertThat(result);
+    Assertions.assertThat(result).isFalse();
+  }
+
+
+  @Test
+  public void shouldEvaluateContextPredicate() {
+    // given:
+
+    DefaultPredicateEvaluator evaluator = new DefaultPredicateEvaluator();
+    DefaultExecutionContext executionContext = testContext();
+
+    ContextPredicate predicateSpy = spy(new ContextPredicate() {
+      @Override
+      public boolean isFulfilled(ExecutionContext executionContext) {
+        Assertions.assertThat(executionContext).isNotNull();
+        return true;
+      }
+    });
+
+    PredicateDefinition predicateDefintion = new PredicateDefinition<ContextPredicate>(predicateSpy);
+    // when:
+
+    boolean result = evaluator.evaluate(predicateDefintion, executionContext);
+
+    // then:
+    verify(predicateSpy).isFulfilled(any(ExecutionContext.class));
+    Assertions.assertThat(result).isTrue();
+  }
+
+  @Test
+  public void shouldEvaluateServicePredicate() {
+    // given:
+
+    DefaultPredicateEvaluator evaluator = new DefaultPredicateEvaluator();
+    DefaultExecutionContext executionContext = testContext();
+
+    ServicePredicate predicateSpy = spy(new ServicePredicate() {
+      @Override
+      public boolean isFulfilled(Registry executionContext) {
+        Assertions.assertThat(executionContext).isNotNull();
+        return true;
+      }
+    });
+
+    PredicateDefinition predicateDefintion = new PredicateDefinition<ServicePredicate>(predicateSpy);
+    // when:
+
+    boolean result = evaluator.evaluate(predicateDefintion, executionContext);
+
+    // then:
+    verify(predicateSpy).isFulfilled(any(Registry.class));
+    Assertions.assertThat(result).isTrue();
+  }
+
+  private DefaultExecutionContext testContext() {
+    PropertyStore propertyStoreMock = mock(PropertyStore.class);
+
+    return new DefaultExecutionContext(new TriggerContext().property("test", "foo"),
+        new BrainslugContext()
+          .withPropertyStore(propertyStoreMock));
   }
 
 }

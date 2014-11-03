@@ -2,7 +2,6 @@ package brainslug.flow.execution.expression;
 
 import brainslug.flow.execution.Execute;
 import brainslug.flow.execution.ExecutionContext;
-import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.task.HandlerCallDefinition;
 import brainslug.flow.node.task.ServiceCallDefinition;
 import brainslug.flow.expression.EqualDefinition;
@@ -31,23 +30,29 @@ public class DefaultPredicateEvaluator implements PredicateEvaluator {
     return predicate.getExpectedValue();
   }
 
-  private Object getValue(EqualDefinition predicate, ExecutionContext context) {
-    if (predicate.getActual() instanceof PropertyPredicate) {
-      return ((PropertyPredicate) predicate.getActual()).isFulfilled(context.getTrigger().getProperties());
+  private Object getValue(EqualDefinition equalDefinition, ExecutionContext context) {
+    if (equalDefinition.getActual() instanceof ContextPredicate) {
+      return ((ContextPredicate) equalDefinition.getActual()).isFulfilled(context);
     }
-    if (predicate.getActual() instanceof Property) {
-      return propertyValue((Property) predicate.getActual(), context);
+    if (equalDefinition.getActual() instanceof PropertyPredicate) {
+      return ((PropertyPredicate) equalDefinition.getActual()).isFulfilled(context.getTrigger().getProperties());
     }
-    if (predicate.getActual() instanceof Expression) {
-      return ((Expression) predicate.getActual()).getValue();
+    if (equalDefinition.getActual() instanceof ServicePredicate) {
+      return ((ServicePredicate) equalDefinition.getActual()).isFulfilled(context.getBrainslugContext().getRegistry());
     }
-    if (predicate.getActual() instanceof ServiceCallDefinition) {
-      return invokeServiceMethod((ServiceCallDefinition) predicate.getActual(), context);
+    if (equalDefinition.getActual() instanceof Property) {
+      return propertyValue((Property) equalDefinition.getActual(), context);
     }
-    if (predicate.getActual() instanceof HandlerCallDefinition) {
-      return invokeHandlerMethod((HandlerCallDefinition) predicate.getActual());
+    if (equalDefinition.getActual() instanceof Expression) {
+      return ((Expression) equalDefinition.getActual()).getValue();
     }
-    throw new UnsupportedOperationException("unable to evaluate " + predicate);
+    if (equalDefinition.getActual() instanceof ServiceCallDefinition) {
+      return invokeServiceMethod((ServiceCallDefinition) equalDefinition.getActual(), context);
+    }
+    if (equalDefinition.getActual() instanceof HandlerCallDefinition) {
+      return invokeHandlerMethod((HandlerCallDefinition) equalDefinition.getActual());
+    }
+    throw new UnsupportedOperationException("unable to evaluate " + equalDefinition);
   }
 
   private Object invokeServiceMethod(ServiceCallDefinition methodDefinition, ExecutionContext context) {

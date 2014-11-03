@@ -10,6 +10,7 @@ public class TriggerContext<T extends TriggerContext> {
   protected Identifier instanceId;
   protected Identifier nodeId;
   protected Boolean async = false;
+  protected Boolean signaling = false;
 
   protected ExecutionProperties properties;
 
@@ -57,6 +58,11 @@ public class TriggerContext<T extends TriggerContext> {
     return self();
   }
 
+  public T signaling(Boolean signaling) {
+    this.signaling = signaling;
+    return self();
+  }
+
   public T properties(ExecutionProperties properties) {
     this.properties = properties;
     return self();
@@ -81,7 +87,7 @@ public class TriggerContext<T extends TriggerContext> {
   }
 
   public <P> P getProperty(Class<P> type) {
-    return getProperties().getProperty(type);
+    return type.cast(getProperties().getProperty(type));
   }
 
   public ExecutionProperties getProperties() {
@@ -93,6 +99,10 @@ public class TriggerContext<T extends TriggerContext> {
 
   public Boolean isAsync() {
     return async;
+  }
+
+  public Boolean isSignaling() {
+    return signaling;
   }
 
   /**
@@ -109,6 +119,7 @@ public class TriggerContext<T extends TriggerContext> {
     if (instanceId != null ? !instanceId.equals(that.instanceId) : that.instanceId != null) return false;
     if (nodeId != null ? !nodeId.equals(that.nodeId) : that.nodeId != null) return false;
     if (async != null ? !async.equals(that.async) : that.async != null) return false;
+    if (signaling != null ? !signaling.equals(that.signaling) : that.signaling != null) return false;
 
     return true;
   }
@@ -119,6 +130,7 @@ public class TriggerContext<T extends TriggerContext> {
     result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
     result = 31 * result + (nodeId != null ? nodeId.hashCode() : 0);
     result = 31 * result + (async != null ? async.hashCode() : 0);
+    result = 31 * result + (signaling != null ? signaling.hashCode() : 0);
     return result;
   }
 
@@ -129,6 +141,7 @@ public class TriggerContext<T extends TriggerContext> {
       ", instanceId=" + instanceId +
       ", nodeId=" + nodeId +
       ", async=" + async +
+      ", signaling=" + signaling +
       '}';
   }
 }

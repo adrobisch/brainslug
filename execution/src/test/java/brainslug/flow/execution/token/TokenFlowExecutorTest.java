@@ -167,41 +167,6 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
   }
 
   @Test
-  public void shouldWaitForTriggerAtIntermediateEvent() {
-    // given:
-    final Identifier definitionId = id("intermediateEventTest");
-
-    context.addFlowDefinition(new FlowBuilder() {
-
-      @Override
-      public void define() {
-        start(event(id(START)))
-          .execute(task(id(TASK)))
-          .waitFor(event(id(INTERMEDIATE)))
-          .execute(task(id(TASK2)))
-        .end(event(id(END)));
-      }
-
-      @Override
-      public String getId() {
-        return definitionId.stringValue();
-      }
-    }.getDefinition());
-
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
-
-    // when:
-    Identifier instanceId = context.startFlow(definitionId, id(START));
-
-    // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().instanceId(instanceId).nodeId(id(START)).definitionId(definitionId));
-    eventOrder.verify(listener).notify(new TriggerContext().instanceId(instanceId).nodeId(id(TASK)).definitionId(definitionId));
-    eventOrder.verifyNoMoreInteractions();
-  }
-
-  @Test
   public void shouldPassPropertiesOnStartByTrigger() {
     // given:
     BrainslugContext contextSpy = spy(context);

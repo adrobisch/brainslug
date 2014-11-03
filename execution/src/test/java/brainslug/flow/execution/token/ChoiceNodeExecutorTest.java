@@ -92,7 +92,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
       @Override
       public void define() {
         start(id("start")).choice(id("choice"))
-          .when(property(new PropertyPredicate() {
+          .when(predicate(new PropertyPredicate() {
             @Override
             public boolean isFulfilled(ExecutionProperties executionProperties) {
               return predicateFulfilled;

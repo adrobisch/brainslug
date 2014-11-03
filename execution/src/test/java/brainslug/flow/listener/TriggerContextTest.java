@@ -10,7 +10,7 @@ public class TriggerContextTest {
   @Test
   public void shouldGetSinglePropertyByClass() {
     //given
-    TriggerContext triggerContext = new TriggerContext();
+    TriggerContext<?> triggerContext = new TriggerContext();
     //when
     triggerContext.setProperty("foo", "bar");
     //then
@@ -20,7 +20,7 @@ public class TriggerContextTest {
   @Test(expected = IllegalArgumentException.class)
   public void shouldThrowExceptionIfSinglePropertyIsAmbiguous() {
     //given
-    TriggerContext triggerContext = new TriggerContext();
+    TriggerContext<?> triggerContext = new TriggerContext();
     //when
     triggerContext.setProperty("foo", "bar");
     triggerContext.setProperty("many", "bar");

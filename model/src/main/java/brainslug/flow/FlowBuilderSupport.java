@@ -104,7 +104,7 @@ public class FlowBuilderSupport {
     return new PredicateBuilder<Property>(new Property(expression));
   }
 
-  public <T extends Predicate> PredicateDefinition<T> property(T predicate) {
+  public <T extends Predicate> PredicateDefinition<T> predicate(T predicate) {
     return new PredicateDefinition<T>(predicate);
   }
 

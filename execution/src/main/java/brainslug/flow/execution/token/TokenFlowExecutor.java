@@ -32,7 +32,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   protected void addNodeExecutorMappings() {
-    nodeExecutors.put(EventDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
+    nodeExecutors.put(EventDefinition.class, new EventNodeExecutor().withTokenStore(tokenStore));
     nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
     nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
     nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor().withTokenStore(tokenStore));
@@ -115,20 +115,11 @@ public class TokenFlowExecutor implements FlowExecutor {
     return properties;
   }
 
-  protected void triggerNext(TriggerContext event, FlowNodeDefinition<?> node, FlowNodeExecutionResult flowNodeExecutionResult) {
+  protected void triggerNext(TriggerContext triggerContext, FlowNodeDefinition<?> node, FlowNodeExecutionResult flowNodeExecutionResult) {
     for (FlowNodeDefinition nextNode : flowNodeExecutionResult.getNextNodes()) {
-      addToken(event, node, nextNode);
-      if (!waitingForExternalTrigger(nextNode)) {
-        trigger(createTriggerContextForNextNode(event, nextNode));
-      }
+      addToken(triggerContext, node, nextNode);
+      trigger(createTriggerContextForNextNode(triggerContext, nextNode));
     }
-  }
-
-  protected boolean waitingForExternalTrigger(FlowNodeDefinition nextNode) {
-    if (nextNode.hasMixin(IntermediateEvent.class)) {
-      return true;
-    }
-    return false;
   }
 
   protected TriggerContext createTriggerContextForNextNode(TriggerContext<?> event, FlowNodeDefinition nextNode) {
