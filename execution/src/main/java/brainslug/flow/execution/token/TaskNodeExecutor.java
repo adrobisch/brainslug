@@ -1,9 +1,10 @@
 package brainslug.flow.execution.token;
 
 import brainslug.flow.execution.*;
-import brainslug.flow.execution.async.AsyncTask;
+import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.*;
 import brainslug.flow.FlowDefinition;
+import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.task.*;
 import brainslug.util.Option;
 import brainslug.util.ReflectionUtil;
@@ -28,9 +29,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
       scheduleAsyncTask(taskDefinition, execution);
       return takeNone();
     } else if (taskDefinition.getDelegateClass() != null) {
-      Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
-      executeDelegate(delegateInstance, execution);
-      return takeAll(taskDefinition);
+      return executeDelegateClass(taskDefinition, execution);
     } else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
       final Object callee = ((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee();
       executeDelegate(callee, execution);
@@ -45,29 +44,32 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
     }
   }
 
+  private FlowNodeExecutionResult executeDelegateClass(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
+    Object delegateInstance = execution.getBrainslugContext().getRegistry().getService(taskDefinition.getDelegateClass());
+    executeDelegate(delegateInstance, execution);
+    return takeAll(taskDefinition);
+  }
+
   protected boolean goalIsFulfilled(Identifier goalId, ExecutionContext execution) {
     FlowDefinition definition = execution
       .getBrainslugContext()
       .getDefinitionStore()
       .findById(execution.getTrigger().getDefinitionId());
 
-    Option<GoalPredicate> goalPredicate = definition.getGoalPredicate(goalId);
+    Option<PredicateDefinition> goalPredicate = definition.getGoalPredicate(goalId);
 
     if (!goalPredicate.isPresent()) {
       return false;
-    } else if (goalPredicate.get() instanceof GoalCondition) {
-      GoalCondition goalCondition = (GoalCondition) goalPredicate.get();
-      return goalCondition.isFulfilled(execution);
     } else {
-      throw new IllegalArgumentException("goal predicate type not supported: " + goalPredicate.getClass().getName());
+      return execution.getBrainslugContext().getPredicateEvaluator().evaluate(goalPredicate.get(), execution);
     }
   }
 
   protected void scheduleAsyncTask(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
-    execution.getBrainslugContext().getAsyncTaskScheduler()
-      .scheduleTask(
-        new AsyncTask()
-          .withTaskNodeId(taskDefinition.getId())
+    execution.getBrainslugContext().getAsyncTriggerScheduler()
+      .schedule(
+        new AsyncTrigger()
+          .withNodeId(taskDefinition.getId())
           .withInstanceId(execution.getTrigger().getInstanceId())
           .withDefinitionId(execution.getTrigger().getDefinitionId())
       );

@@ -50,6 +50,32 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
     return self();
   }
 
+  /**
+   * A goal groups tasks by the outcome they contribute to.
+   * Tasks with a goal defined will only be executed if the goal is
+   * not fulfilled yet.
+   *
+   * Goals must have a predicate to check the state of fulfilment.
+   * <p>
+   * Example:
+   *
+   * <pre>
+   * {@code new FlowBuilder() {
+        @Override
+        public void define() {
+          GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
+
+          start(event(id(START)))
+          .execute(task(id(TASK), simpleTask).goal(testGoal))
+          .end(event(id(END)));
+        }
+     }
+   * }
+   * </pre>
+   * </p>
+   * @param goal the goal this task belongs to
+   * @return this event definition with goal defined
+   */
   public SelfType goal(GoalDefinition goal) {
     this.goalId = goal.getId();
     return self();

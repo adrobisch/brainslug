@@ -274,12 +274,12 @@ public class FlowBuilderTest {
             .goal(id("taskExecuted")))
         .end(id("end"));
 
-        goal(id("taskExecuted")).check(new GoalPredicate<Void>() {
+        goal(id("taskExecuted")).check(predicate(new GoalPredicate<Void>() {
           @Override
           public boolean isFulfilled(Void aVoid) {
             return true;
           }
-        });
+        }));
       }
     }.getDefinition();
 
@@ -298,12 +298,12 @@ public class FlowBuilderTest {
       public void define() {
         start(id("start"))
           .execute(task(id("simpleTask"))
-            .goal(check(id("inlineGoal"), new GoalPredicate() {
+            .goal(check(id("inlineGoal"), predicate(new GoalPredicate() {
               @Override
               public boolean isFulfilled(Object o) {
                 return false;
               }
-            })))
+            }))))
           .end(id("end"));
       }
     }.getDefinition();

@@ -6,21 +6,21 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class ExecutorServiceScheduler extends AbstractAsyncTaskScheduler {
+public class ExecutorServiceScheduler extends AbstractAsyncTriggerScheduler {
 
   private Logger log = LoggerFactory.getLogger(ExecutorServiceScheduler.class);
 
   ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
   ExecutorService taskExecutorService = Executors.newCachedThreadPool();
 
-  AsyncTaskExecutor asyncTaskExecutor = new AsyncTaskExecutor();
+  AsyncTriggerExecutor asyncTriggerExecutor = new AsyncTriggerExecutor();
 
   @Override
   protected void internalStart() {
     log.info("starting async job scheduling with options: " + options);
 
-    FutureTask<List<Future<AsyncTaskExecutionResult>>> executeTasks =
-      new FutureTask<List<Future<AsyncTaskExecutionResult>>>(new ExecuteTasksCallable(context, options, taskExecutorService, asyncTaskExecutor));
+    FutureTask<List<Future<AsyncTriggerExecutionResult>>> executeTasks =
+      new FutureTask<List<Future<AsyncTriggerExecutionResult>>>(new ExecuteTasksCallable(context, options, taskExecutorService, asyncTriggerExecutor));
 
     scheduledExecutorService.scheduleAtFixedRate(executeTasks,
       options.getScheduleDelay(),
@@ -47,12 +47,12 @@ public class ExecutorServiceScheduler extends AbstractAsyncTaskScheduler {
     return this;
   }
 
-  public AsyncTaskExecutor getAsyncTaskExecutor() {
-    return asyncTaskExecutor;
+  public AsyncTriggerExecutor getAsyncTriggerExecutor() {
+    return asyncTriggerExecutor;
   }
 
-  public ExecutorServiceScheduler withAsyncTaskExecutor(AsyncTaskExecutor asyncTaskExecutor) {
-    this.asyncTaskExecutor = asyncTaskExecutor;
+  public ExecutorServiceScheduler withAsyncTriggerExecutor(AsyncTriggerExecutor asyncTriggerExecutor) {
+    this.asyncTriggerExecutor = asyncTriggerExecutor;
     return this;
   }
 }

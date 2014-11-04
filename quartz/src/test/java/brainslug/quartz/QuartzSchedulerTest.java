@@ -3,12 +3,13 @@ package brainslug.quartz;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.execution.SimpleTask;
-import brainslug.flow.execution.async.AsyncTask;
-import brainslug.flow.execution.async.AsyncTaskSchedulerOptions;
+import brainslug.flow.execution.async.AsyncTrigger;
+import brainslug.flow.execution.async.AsyncTriggerSchedulerOptions;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
 import static com.jayway.awaitility.Awaitility.*;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.quartz.JobDetail;
@@ -37,8 +38,8 @@ public class QuartzSchedulerTest {
     Identifier definitionId = id("definition");
 
     // when:
-    quartzScheduler.scheduleTask(new AsyncTask()
-      .withTaskNodeId(taskId)
+    quartzScheduler.schedule(new AsyncTrigger()
+      .withNodeId(taskId)
       .withInstanceId(instanceId)
       .withDefinitionId(definitionId));
 
@@ -49,7 +50,7 @@ public class QuartzSchedulerTest {
   private QuartzScheduler quartzSchedulerWithContextMock(Scheduler scheduler) {
     QuartzScheduler quartzScheduler = new QuartzScheduler(scheduler);
     quartzScheduler.setContext(mock(BrainslugContext.class));
-    quartzScheduler.start(new AsyncTaskSchedulerOptions());
+    quartzScheduler.start(new AsyncTriggerSchedulerOptions());
     return quartzScheduler;
   }
 
@@ -69,10 +70,10 @@ public class QuartzSchedulerTest {
 
     Scheduler quartzScheduler = createQuartzScheduler();
 
-    BrainslugContext context = new BrainslugContext().withAsyncTaskScheduler(new QuartzScheduler(quartzScheduler))
+    BrainslugContext context = new BrainslugContext().withAsyncTriggerScheduler(new QuartzScheduler(quartzScheduler))
         .addFlowDefinition(asyncTaskFlow).start();
     // when:
-    Identifier instanceId = context.startFlow(asyncTaskFlow.getId(), id("start"));
+    context.startFlow(asyncTaskFlow.getId(), id("start"));
     quartzScheduler.start();
 
     // then:

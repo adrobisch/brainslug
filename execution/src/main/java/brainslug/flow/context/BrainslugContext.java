@@ -19,9 +19,9 @@ import brainslug.util.UuidGenerator;
 
 public class BrainslugContext {
 
-  AsyncTaskScheduler asyncTaskScheduler;
-  AsyncTaskStore asyncTaskStore;
-  AsyncTaskSchedulerOptions asyncTaskSchedulerOptions;
+  AsyncTriggerScheduler asyncTriggerScheduler;
+  AsyncTriggerStore asyncTriggerStore;
+  AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions;
   DefinitionStore definitionStore;
   ListenerManager listenerManager;
   FlowExecutor flowExecutor;
@@ -43,8 +43,8 @@ public class BrainslugContext {
     withPropertyStore(new HashMapPropertyStore());
     withDefinitionStore(new HashMapDefinitionStore());
 
-    withAsyncTaskStore(new ArrayListTaskStore())
-      .withAsyncTaskScheduler(new ExecutorServiceScheduler());
+    withAsyncTriggerStore(new ArrayListTriggerStore())
+      .withAsyncTriggerScheduler(new ExecutorServiceScheduler());
 
     withListenerManager(new DefaultListenerManager());
     withExecutor(new TokenFlowExecutor(this));
@@ -52,14 +52,14 @@ public class BrainslugContext {
     withPredicateEvaluator(new DefaultPredicateEvaluator());
   }
 
-  public BrainslugContext withAsyncTaskScheduler(AsyncTaskScheduler asyncTaskScheduler) {
-    this.asyncTaskScheduler = asyncTaskScheduler;
-    asyncTaskScheduler.setContext(this);
+  public BrainslugContext withAsyncTriggerScheduler(AsyncTriggerScheduler asyncTriggerScheduler) {
+    this.asyncTriggerScheduler = asyncTriggerScheduler;
+    asyncTriggerScheduler.setContext(this);
     return this;
   }
 
-  public BrainslugContext withAsyncTaskStore(AsyncTaskStore asyncTaskStore) {
-    this.asyncTaskStore = asyncTaskStore;
+  public BrainslugContext withAsyncTriggerStore(AsyncTriggerStore asyncTriggerStore) {
+    this.asyncTriggerStore = asyncTriggerStore;
     return this;
   }
 
@@ -134,12 +134,12 @@ public class BrainslugContext {
   }
 
   public BrainslugContext start() {
-    Preconditions.notNull(asyncTaskScheduler).start(asyncTaskSchedulerOptions);
+    Preconditions.notNull(asyncTriggerScheduler).start(asyncTriggerSchedulerOptions);
     return this;
   }
 
   public BrainslugContext stop() {
-    Preconditions.notNull(asyncTaskScheduler).stop();
+    Preconditions.notNull(asyncTriggerScheduler).stop();
     return this;
   }
 
@@ -167,15 +167,15 @@ public class BrainslugContext {
     return propertyStore;
   }
 
-  public AsyncTaskScheduler getAsyncTaskScheduler() {
-    return asyncTaskScheduler;
+  public AsyncTriggerScheduler getAsyncTriggerScheduler() {
+    return asyncTriggerScheduler;
   }
 
   public IdGenerator getIdGenerator() {
     return idGenerator;
   }
 
-  public AsyncTaskStore getAsyncTaskStore() {
-    return asyncTaskStore;
+  public AsyncTriggerStore getAsyncTriggerStore() {
+    return asyncTriggerStore;
   }
 }

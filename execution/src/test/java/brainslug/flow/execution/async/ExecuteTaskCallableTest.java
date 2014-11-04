@@ -13,13 +13,13 @@ import static org.mockito.Mockito.*;
 
 public class ExecuteTaskCallableTest {
 
-  AsyncTaskExecutor asyncTaskExecutor = mock(AsyncTaskExecutor.class);
-  AsyncTaskStore asyncTaskStore = mock(AsyncTaskStore.class);
+  AsyncTriggerExecutor asyncTriggerExecutor = mock(AsyncTriggerExecutor.class);
+  AsyncTriggerStore asyncTriggerStore = mock(AsyncTriggerStore.class);
   AbstractRetryStrategy retryStrategy = mock(AbstractRetryStrategy.class);
 
   BrainslugContext brainslugContext() {
     BrainslugContext context = mock(BrainslugContext.class);
-    when(context.getAsyncTaskStore()).thenReturn(asyncTaskStore);
+    when(context.getAsyncTriggerStore()).thenReturn(asyncTriggerStore);
     return context;
   }
 
@@ -27,47 +27,47 @@ public class ExecuteTaskCallableTest {
   public void shouldIncrementRetriesOnFailedExecution() {
     // given:
     BrainslugContext context = brainslugContext();
-    AsyncTask asyncTaskWithRetriesLeft = taskMock(5);
+    AsyncTrigger asyncTriggerWithRetriesLeft = taskMock(5);
 
-    when(asyncTaskExecutor.execute(asyncTaskWithRetriesLeft, context))
-      .thenReturn(new AsyncTaskExecutionResult().setFailed(true).withException(new RuntimeException("error")));
+    when(asyncTriggerExecutor.execute(asyncTriggerWithRetriesLeft, context))
+      .thenReturn(new AsyncTriggerExecutionResult().setFailed(true).withException(new RuntimeException("error")));
 
     // when:
-    new ExecuteTaskCallable(context, asyncTaskWithRetriesLeft, asyncTaskExecutor, retryStrategy).call();
+    new ExecuteTaskCallable(context, asyncTriggerWithRetriesLeft, asyncTriggerExecutor, retryStrategy).call();
 
     // then:
-    InOrder order = inOrder(asyncTaskWithRetriesLeft, asyncTaskStore, retryStrategy);
-    order.verify(asyncTaskWithRetriesLeft).incrementRetries();
+    InOrder order = inOrder(asyncTriggerWithRetriesLeft, asyncTriggerStore, retryStrategy);
+    order.verify(asyncTriggerWithRetriesLeft).incrementRetries();
     order.verify(retryStrategy).nextRetry(eq(0l), any(Date.class));
-    order.verify(asyncTaskStore).storeTask(asyncTaskWithRetriesLeft);
+    order.verify(asyncTriggerStore).storeTrigger(asyncTriggerWithRetriesLeft);
   }
 
   @Test(expected = IllegalStateException.class)
   public void shouldThrowExceptionWhenNoRetriesLeft() {
     // given:
     BrainslugContext context = brainslugContext();
-    AsyncTask asyncTaskWithNoRetriesLeft = taskMock(0);
+    AsyncTrigger asyncTriggerWithNoRetriesLeft = taskMock(0);
 
     // when:
-    new ExecuteTaskCallable(context, asyncTaskWithNoRetriesLeft, asyncTaskExecutor, retryStrategy).call();
+    new ExecuteTaskCallable(context, asyncTriggerWithNoRetriesLeft, asyncTriggerExecutor, retryStrategy).call();
   }
 
-  private AsyncTask taskMock(long retriesLeft) {
-    AsyncTask asyncTask = mock(AsyncTask.class);
-    when(asyncTask.getRetries()).thenReturn(5l - retriesLeft);
-    when(asyncTask.getMaxRetries()).thenReturn(5l);
+  private AsyncTrigger taskMock(long retriesLeft) {
+    AsyncTrigger asyncTrigger = mock(AsyncTrigger.class);
+    when(asyncTrigger.getRetries()).thenReturn(5l - retriesLeft);
+    when(asyncTrigger.getMaxRetries()).thenReturn(5l);
 
-    when(asyncTask.incrementRetries())
-      .thenReturn(asyncTask);
+    when(asyncTrigger.incrementRetries())
+      .thenReturn(asyncTrigger);
 
-    when(asyncTask.withDueDate(anyLong()))
-      .thenReturn(asyncTask);
+    when(asyncTrigger.withDueDate(anyLong()))
+      .thenReturn(asyncTrigger);
 
-    when(asyncTask.withErrorDetails(any(AsyncTaskErrorDetails.class)))
-      .thenReturn(asyncTask);
+    when(asyncTrigger.withErrorDetails(any(AsyncTriggerErrorDetails.class)))
+      .thenReturn(asyncTrigger);
 
     when(retryStrategy.nextRetry(anyLong(), any(Date.class))).thenReturn(new Date(0));
 
-    return asyncTask;
+    return asyncTrigger;
   }
 }

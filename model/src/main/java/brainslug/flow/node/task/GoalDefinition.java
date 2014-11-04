@@ -2,6 +2,8 @@ package brainslug.flow.node.task;
 
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
+import brainslug.flow.expression.Predicate;
+import brainslug.flow.expression.PredicateDefinition;
 
 public class GoalDefinition {
   FlowDefinition flowDefinition;
@@ -11,7 +13,7 @@ public class GoalDefinition {
     this.flowDefinition = flowDefinition;
   }
 
-  public GoalDefinition check(GoalPredicate predicate) {
+  public GoalDefinition check(PredicateDefinition predicate) {
     flowDefinition.addGoal(id, predicate);
     return this;
   }

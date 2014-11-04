@@ -6,33 +6,33 @@ import brainslug.flow.node.task.RetryStrategy;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-public class ExecuteTaskCallable implements Callable<AsyncTaskExecutionResult> {
+public class ExecuteTaskCallable implements Callable<AsyncTriggerExecutionResult> {
   RetryStrategy retryStrategy;
-  AsyncTaskExecutor asyncTaskExecutor;
+  AsyncTriggerExecutor asyncTriggerExecutor;
   BrainslugContext context;
-  AsyncTask asyncTask;
+  AsyncTrigger asyncTrigger;
 
-  ExecuteTaskCallable(BrainslugContext context, AsyncTask asyncTask, AsyncTaskExecutor asyncTaskExecutor, RetryStrategy retryStrategy) {
+  ExecuteTaskCallable(BrainslugContext context, AsyncTrigger asyncTrigger, AsyncTriggerExecutor asyncTriggerExecutor, RetryStrategy retryStrategy) {
     this.context = context;
-    this.asyncTask = asyncTask;
-    this.asyncTaskExecutor = asyncTaskExecutor;
+    this.asyncTrigger = asyncTrigger;
+    this.asyncTriggerExecutor = asyncTriggerExecutor;
     this.retryStrategy = retryStrategy;
   }
 
   @Override
-  public AsyncTaskExecutionResult call() {
-    if (asyncTask.getRetries() >= asyncTask.getMaxRetries()) {
+  public AsyncTriggerExecutionResult call() {
+    if (asyncTrigger.getRetries() >= asyncTrigger.getMaxRetries()) {
       throw new IllegalStateException();
     }
 
-    AsyncTaskExecutionResult execution = asyncTaskExecutor.execute(asyncTask, context);
+    AsyncTriggerExecutionResult execution = asyncTriggerExecutor.execute(asyncTrigger, context);
     if (execution.isFailed()) {
-      context.getAsyncTaskStore().storeTask(asyncTask
-        .incrementRetries()
-        .withDueDate(retryStrategy
-            .nextRetry(asyncTask.getRetries(), getBaseDate()).getTime())
-        .withErrorDetails(new AsyncTaskErrorDetails(execution.getException().get()))
-        );
+      context.getAsyncTriggerStore().storeTrigger(asyncTrigger
+          .incrementRetries()
+          .withDueDate(retryStrategy
+            .nextRetry(asyncTrigger.getRetries(), getBaseDate()).getTime())
+          .withErrorDetails(new AsyncTriggerErrorDetails(execution.getException().get()))
+      );
     }
     return execution;
   }

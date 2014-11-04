@@ -23,9 +23,9 @@ public class ExecutorServiceSchedulerTest extends AbstractExecutionTest {
 
   final BrainslugContext contextMockWithDefinition() {
     BrainslugContext context = mock(BrainslugContext.class);
-    AsyncTaskStore asyncTaskStore = new ArrayListTaskStore();
+    AsyncTriggerStore asyncTriggerStore = new ArrayListTriggerStore();
 
-    when(context.getAsyncTaskStore()).thenReturn(asyncTaskStore);
+    when(context.getAsyncTriggerStore()).thenReturn(asyncTriggerStore);
     HashMapDefinitionStore definitionStore = new HashMapDefinitionStore();
 
     definitionStore.addDefinition(new FlowBuilder() {
@@ -53,8 +53,8 @@ public class ExecutorServiceSchedulerTest extends AbstractExecutionTest {
     Identifier instanceId = IdUtil.id("instance");
 
     // when:
-    executorServiceScheduler.scheduleTask(new AsyncTask()
-      .withTaskNodeId(id(TASK))
+    executorServiceScheduler.schedule(new AsyncTrigger()
+      .withNodeId(id(TASK))
       .withInstanceId(instanceId)
       .withDefinitionId(id(ASYNCID)));
 
@@ -63,7 +63,8 @@ public class ExecutorServiceSchedulerTest extends AbstractExecutionTest {
       .definitionId(id(ASYNCID))
       .instanceId(instanceId)
       .nodeId(id(TASK))
-      .async(true);
+      .async(true)
+      .signaling(true);
 
     await().until(contextWasTriggered(contextMock, expectedTrigger));
   }
@@ -73,7 +74,7 @@ public class ExecutorServiceSchedulerTest extends AbstractExecutionTest {
     executorServiceScheduler.setContext(context);
 
     executorServiceScheduler.start(
-      new AsyncTaskSchedulerOptions()
+      new AsyncTriggerSchedulerOptions()
         .withScheduleDelay(500)
         .withSchedulePeriod(5000)
         .withScheduleUnit(TimeUnit.MILLISECONDS)

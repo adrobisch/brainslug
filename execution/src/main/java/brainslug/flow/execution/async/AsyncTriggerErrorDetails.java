@@ -3,10 +3,10 @@ package brainslug.flow.execution.async;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class AsyncTaskErrorDetails {
+public class AsyncTriggerErrorDetails {
   Exception exception;
 
-  public AsyncTaskErrorDetails(Exception exception) {
+  public AsyncTriggerErrorDetails(Exception exception) {
     this.exception = exception;
   }
 
@@ -22,7 +22,7 @@ public class AsyncTaskErrorDetails {
     return exception;
   }
 
-  public AsyncTaskErrorDetails withException(Exception exception) {
+  public AsyncTriggerErrorDetails withException(Exception exception) {
     this.exception = exception;
     return this;
   }
@@ -32,7 +32,7 @@ public class AsyncTaskErrorDetails {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    AsyncTaskErrorDetails that = (AsyncTaskErrorDetails) o;
+    AsyncTriggerErrorDetails that = (AsyncTriggerErrorDetails) o;
 
     if (exception != null ? !exception.equals(that.exception) : that.exception != null) return false;
 

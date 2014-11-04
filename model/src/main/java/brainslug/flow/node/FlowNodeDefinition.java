@@ -4,7 +4,6 @@ import brainslug.flow.EnumIdentifier;
 import brainslug.flow.Identifier;
 import brainslug.flow.StringIdentifier;
 import brainslug.flow.path.FlowEdgeDefinition;
-import brainslug.flow.path.FlowPathDefinition;
 import brainslug.util.MixableBase;
 
 import java.util.ArrayList;
@@ -14,11 +13,10 @@ public class FlowNodeDefinition<T extends FlowNodeDefinition> extends MixableBas
 
   Identifier id;
   String displayName;
+  String documentation;
 
   List<FlowEdgeDefinition> incoming = new ArrayList<FlowEdgeDefinition>();
   List<FlowEdgeDefinition> outgoing = new ArrayList<FlowEdgeDefinition>();
-
-  FlowPathDefinition flowPathDefinition;
 
   public T id(Enum id) {
     this.id = new EnumIdentifier(id);
@@ -37,6 +35,11 @@ public class FlowNodeDefinition<T extends FlowNodeDefinition> extends MixableBas
 
   public T display(String displayName) {
     this.displayName = displayName;
+    return self();
+  }
+
+  public T documentation(String documentation) {
+    this.documentation = documentation;
     return self();
   }
 

@@ -2,7 +2,7 @@ package brainslug.flow.execution.async;
 
 import java.util.concurrent.TimeUnit;
 
-public class AsyncTaskSchedulerOptions  {
+public class AsyncTriggerSchedulerOptions {
   boolean disabled = false;
 
   long scheduleDelay = 0;
@@ -15,7 +15,7 @@ public class AsyncTaskSchedulerOptions  {
     return schedulePeriod;
   }
 
-  public AsyncTaskSchedulerOptions withSchedulePeriod(long schedulePeriod) {
+  public AsyncTriggerSchedulerOptions withSchedulePeriod(long schedulePeriod) {
     this.schedulePeriod = schedulePeriod;
     return this;
   }
@@ -24,7 +24,7 @@ public class AsyncTaskSchedulerOptions  {
     return scheduleUnit;
   }
 
-  public AsyncTaskSchedulerOptions withScheduleUnit(TimeUnit scheduleUnit) {
+  public AsyncTriggerSchedulerOptions withScheduleUnit(TimeUnit scheduleUnit) {
     this.scheduleUnit = scheduleUnit;
     return this;
   }
@@ -33,7 +33,7 @@ public class AsyncTaskSchedulerOptions  {
     return scheduleDelay;
   }
 
-  public AsyncTaskSchedulerOptions withScheduleDelay(long scheduleDelay) {
+  public AsyncTriggerSchedulerOptions withScheduleDelay(long scheduleDelay) {
     this.scheduleDelay = scheduleDelay;
     return this;
   }
@@ -42,7 +42,7 @@ public class AsyncTaskSchedulerOptions  {
     return maxTaskCount;
   }
 
-  public AsyncTaskSchedulerOptions withMaxTaskCount(long maxTaskCount) {
+  public AsyncTriggerSchedulerOptions withMaxTaskCount(long maxTaskCount) {
     this.maxTaskCount = maxTaskCount;
     return this;
   }
@@ -51,7 +51,7 @@ public class AsyncTaskSchedulerOptions  {
     return disabled;
   }
 
-  public AsyncTaskSchedulerOptions setDisabled(boolean disabled) {
+  public AsyncTriggerSchedulerOptions setDisabled(boolean disabled) {
     this.disabled = disabled;
     return this;
   }

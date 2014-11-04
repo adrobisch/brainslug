@@ -1,16 +1,13 @@
 package brainslug.flow.execution.async;
 
 import brainslug.flow.Identifier;
-import brainslug.util.IdUtil;
 import brainslug.util.Option;
-
-import java.util.Date;
 
 import static brainslug.util.IdUtil.id;
 
-public class AsyncTask {
+public class AsyncTrigger {
   Identifier id;
-  Identifier taskNodeId;
+  Identifier nodeId;
   Identifier instanceId;
   Identifier definitionId;
 
@@ -22,14 +19,14 @@ public class AsyncTask {
 
   long version = 0;
 
-  AsyncTaskErrorDetails errorDetails;
+  AsyncTriggerErrorDetails errorDetails;
 
-  public AsyncTask() {
+  public AsyncTrigger() {
   }
 
-  public AsyncTask(String id, String taskNodeId, String instanceId, String definitionId, Long createdDate, Long dueDate, Long retries, Long maxRetries, Long version) {
+  public AsyncTrigger(String id, String nodeId, String instanceId, String definitionId, Long createdDate, Long dueDate, Long retries, Long maxRetries, Long version) {
     this.id = id(id);
-    this.taskNodeId = id(taskNodeId);
+    this.nodeId = id(nodeId);
     this.instanceId = id(instanceId);
     this.definitionId = id(definitionId);
     this.createdDate = createdDate;
@@ -39,12 +36,12 @@ public class AsyncTask {
     this.version = version;
   }
 
-  public Identifier getTaskNodeId() {
-    return taskNodeId;
+  public Identifier getNodeId() {
+    return nodeId;
   }
 
-  public AsyncTask withTaskNodeId(Identifier taskNodeId) {
-    this.taskNodeId = taskNodeId;
+  public AsyncTrigger withNodeId(Identifier taskNodeId) {
+    this.nodeId = taskNodeId;
     return this;
   }
 
@@ -52,7 +49,7 @@ public class AsyncTask {
     return instanceId;
   }
 
-  public AsyncTask withInstanceId(Identifier instanceId) {
+  public AsyncTrigger withInstanceId(Identifier instanceId) {
     this.instanceId = instanceId;
     return this;
   }
@@ -61,7 +58,7 @@ public class AsyncTask {
     return definitionId;
   }
 
-  public AsyncTask withDefinitionId(Identifier definitionId) {
+  public AsyncTrigger withDefinitionId(Identifier definitionId) {
     this.definitionId = definitionId;
     return this;
   }
@@ -70,8 +67,8 @@ public class AsyncTask {
     return dueDate;
   }
 
-  public AsyncTask withDueDate(long delay) {
-    this.dueDate = delay;
+  public AsyncTrigger withDueDate(long dueDate) {
+    this.dueDate = dueDate;
     return this;
   }
 
@@ -79,7 +76,7 @@ public class AsyncTask {
     return retries;
   }
 
-  public AsyncTask incrementRetries() {
+  public AsyncTrigger incrementRetries() {
     this.retries++;
     return this;
   }
@@ -88,7 +85,7 @@ public class AsyncTask {
     return maxRetries;
   }
 
-  public AsyncTask withMaxRetries(long maxRetries) {
+  public AsyncTrigger withMaxRetries(long maxRetries) {
     this.maxRetries = maxRetries;
     return this;
   }
@@ -97,12 +94,12 @@ public class AsyncTask {
     return version;
   }
 
-  public AsyncTask incrementVersion() {
+  public AsyncTrigger incrementVersion() {
     this.version++;
     return this;
   }
 
-  public AsyncTask withVersion(long version) {
+  public AsyncTrigger withVersion(long version) {
     this.version = version;
     return this;
   }
@@ -111,16 +108,16 @@ public class AsyncTask {
     return createdDate;
   }
 
-  public AsyncTask withCreatedDate(long createdDate) {
+  public AsyncTrigger withCreatedDate(long createdDate) {
     this.createdDate = createdDate;
     return this;
   }
 
-  public Option<AsyncTaskErrorDetails> getErrorDetails() {
+  public Option<AsyncTriggerErrorDetails> getErrorDetails() {
     return Option.of(errorDetails);
   }
 
-  public AsyncTask withErrorDetails(AsyncTaskErrorDetails errorDetails) {
+  public AsyncTrigger withErrorDetails(AsyncTriggerErrorDetails errorDetails) {
     this.errorDetails = errorDetails;
     return this;
   }
@@ -129,7 +126,7 @@ public class AsyncTask {
     return Option.of(id);
   }
 
-  public AsyncTask withId(Identifier id) {
+  public AsyncTrigger withId(Identifier id) {
     this.id = id;
     return this;
   }
@@ -139,25 +136,25 @@ public class AsyncTask {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    AsyncTask asyncTask = (AsyncTask) o;
+    AsyncTrigger asyncTrigger = (AsyncTrigger) o;
 
-    if (dueDate != asyncTask.dueDate) return false;
-    if (maxRetries != asyncTask.maxRetries) return false;
-    if (retries != asyncTask.retries) return false;
-    if (version != asyncTask.version) return false;
-    if (definitionId != null ? !definitionId.equals(asyncTask.definitionId) : asyncTask.definitionId != null)
+    if (dueDate != asyncTrigger.dueDate) return false;
+    if (maxRetries != asyncTrigger.maxRetries) return false;
+    if (retries != asyncTrigger.retries) return false;
+    if (version != asyncTrigger.version) return false;
+    if (definitionId != null ? !definitionId.equals(asyncTrigger.definitionId) : asyncTrigger.definitionId != null)
       return false;
-    if (errorDetails != null ? !errorDetails.equals(asyncTask.errorDetails) : asyncTask.errorDetails != null)
+    if (errorDetails != null ? !errorDetails.equals(asyncTrigger.errorDetails) : asyncTrigger.errorDetails != null)
       return false;
-    if (instanceId != null ? !instanceId.equals(asyncTask.instanceId) : asyncTask.instanceId != null) return false;
-    if (taskNodeId != null ? !taskNodeId.equals(asyncTask.taskNodeId) : asyncTask.taskNodeId != null) return false;
+    if (instanceId != null ? !instanceId.equals(asyncTrigger.instanceId) : asyncTrigger.instanceId != null) return false;
+    if (nodeId != null ? !nodeId.equals(asyncTrigger.nodeId) : asyncTrigger.nodeId != null) return false;
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = taskNodeId != null ? taskNodeId.hashCode() : 0;
+    int result = nodeId != null ? nodeId.hashCode() : 0;
     result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
     result = 31 * result + (definitionId != null ? definitionId.hashCode() : 0);
     result = 31 * result + (int) (dueDate ^ (dueDate >>> 32));
@@ -170,8 +167,8 @@ public class AsyncTask {
 
   @Override
   public String toString() {
-    return "AsyncTask{" +
-      "taskNodeId=" + taskNodeId +
+    return "AsyncTrigger{" +
+      "nodeId=" + nodeId +
       ", instanceId=" + instanceId +
       ", definitionId=" + definitionId +
       ", dueDate=" + dueDate +

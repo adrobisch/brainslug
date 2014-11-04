@@ -8,14 +8,19 @@ import brainslug.flow.execution.DefaultExecutionContext;
 import brainslug.flow.execution.ExecutionContext;
 import brainslug.flow.execution.FlowNodeExecutionResult;
 import brainslug.flow.execution.TriggerContext;
+import brainslug.flow.execution.async.AsyncTrigger;
+import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.flow.execution.expression.ContextPredicate;
 import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.EventDefinition;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
+import static org.mockito.Mockito.*;
 
 public class EventNodeExecutorTest {
 
@@ -49,7 +54,7 @@ public class EventNodeExecutorTest {
   }
 
   @Test
-  public void shouldNotContinueOnSignalingTriggerIfPredicateIsFalse() {
+  public void shouldContinueOnSignalingTriggerIfPredicateIsFalse() {
     // given:
     EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
     FlowDefinition eventFlow = eventFlow();
@@ -62,7 +67,8 @@ public class EventNodeExecutorTest {
       .execute(eventDefinitionWithPredicate, execution);
 
     // then:
-    Assertions.assertThat(executionResult.getNextNodes()).isEmpty();
+    Assertions.assertThat(executionResult.getNextNodes())
+      .containsOnly(eventFlow.getNode(id(TASK2)));
   }
 
   @Test
@@ -83,16 +89,77 @@ public class EventNodeExecutorTest {
       .containsOnly(eventFlow.getNode(id(TASK2)));
   }
 
+  @Test
+  public void shouldContinueOnNonSignalingTriggerIfPredicateIsTrue() {
+    // given:
+    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
+    FlowDefinition eventFlow = eventFlow();
+
+    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
+    EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, true);
+
+    // when:
+    FlowNodeExecutionResult executionResult = eventNodeExecutor
+      .execute(eventDefinitionWithPredicate, execution);
+
+    // then:
+    Assertions.assertThat(executionResult.getNextNodes())
+      .containsOnly(eventFlow.getNode(id(TASK2)));
+  }
+
+  @Test
+  public void shouldNotContinueOnNonSignalingTriggerIfPredicateIsFalse() {
+    // given:
+    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
+    FlowDefinition eventFlow = eventFlow();
+
+    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
+    EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, false);
+
+    // when:
+    FlowNodeExecutionResult executionResult = eventNodeExecutor
+      .execute(eventDefinitionWithPredicate, execution);
+
+    // then:
+    Assertions.assertThat(executionResult.getNextNodes()).isEmpty();
+  }
+
+  @Test
+  public void shouldStoreAsyncTriggerForElapsedTimerDefinition() {
+    // given:
+    AsyncTriggerStore asyncTriggerStoreMock = mock(AsyncTriggerStore.class);
+    EventNodeExecutor eventNodeExecutor = spy(new EventNodeExecutor());
+
+    FlowDefinition eventFlow = timerEventFlow();
+    EventDefinition timerEventNode = eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class);
+
+    BrainslugContext brainslugContextWithMock = new BrainslugContext().withAsyncTriggerStore(asyncTriggerStoreMock);
+    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), brainslugContextWithMock);
+
+    // when:
+    when(eventNodeExecutor.getCurrentTime()).thenReturn(42l);
+    FlowNodeExecutionResult executionResult = eventNodeExecutor
+      .execute(timerEventNode, execution);
+
+    // then:
+    Assertions.assertThat(executionResult.getNextNodes()).isEmpty();
+
+    verify(asyncTriggerStoreMock).storeTrigger(
+      new AsyncTrigger()
+      .withNodeId(id(INTERMEDIATE))
+      .withDueDate(5042l)
+    );
+  }
 
   private EventDefinition eventDefinitionWithPredicate(FlowDefinition eventFlow, final boolean predicateFulfilled) {
-    return eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class).onlyIf(new PredicateDefinition<ContextPredicate>(
-        new ContextPredicate() {
-          @Override
-          public boolean isFulfilled(ExecutionContext executionContext) {
-            return predicateFulfilled;
-          }
+    return eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class).continueIf(new PredicateDefinition<ContextPredicate>(
+      new ContextPredicate() {
+        @Override
+        public boolean isFulfilled(ExecutionContext executionContext) {
+          return predicateFulfilled;
         }
-      ));
+      }
+    ));
   }
 
   private FlowDefinition eventFlow() {
@@ -115,5 +182,26 @@ public class EventNodeExecutorTest {
         }
       }.getDefinition();
   }
+
+  private FlowDefinition timerEventFlow() {
+    final Identifier definitionId = id("timerEventFlow");
+
+    return new FlowBuilder() {
+
+      @Override
+      public void define() {
+        start(event(id(START)))
+          .execute(task(id(TASK)))
+          .waitFor(event(id(INTERMEDIATE)).elapsedTime(5, TimeUnit.SECONDS))
+          .execute(task(id(TASK2)));
+      }
+
+      @Override
+      public String getId() {
+        return definitionId.stringValue();
+      }
+    }.getDefinition();
+  }
+
 
 }

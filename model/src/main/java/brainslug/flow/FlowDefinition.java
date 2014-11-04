@@ -1,5 +1,7 @@
 package brainslug.flow;
 
+import brainslug.flow.expression.Predicate;
+import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.task.GoalPredicate;
 import brainslug.util.Option;
@@ -15,12 +17,12 @@ public class FlowDefinition {
   private String name;
 
   List<FlowNodeDefinition> nodes = new ArrayList<FlowNodeDefinition>();
-  Map<Identifier, GoalPredicate> goalPredicates = new HashMap<Identifier, GoalPredicate>();
+  Map<Identifier, PredicateDefinition> goalPredicates = new HashMap<Identifier, PredicateDefinition>();
 
   public FlowDefinition() {
   }
 
-  public Option<GoalPredicate> getGoalPredicate(Identifier goalId) {
+  public Option<PredicateDefinition> getGoalPredicate(Identifier goalId) {
     return Option.of(goalPredicates.get(goalId));
   }
 
@@ -72,7 +74,7 @@ public class FlowDefinition {
     return this;
   }
 
-  public void addGoal(Identifier id, GoalPredicate predicate) {
+  public void addGoal(Identifier id, PredicateDefinition predicate) {
     goalPredicates.put(id, predicate);
   }
 }

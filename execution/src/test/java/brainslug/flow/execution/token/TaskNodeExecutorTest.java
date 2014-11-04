@@ -2,9 +2,10 @@ package brainslug.flow.execution.token;
 
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.execution.*;
-import brainslug.flow.execution.async.AsyncTask;
-import brainslug.flow.execution.async.AsyncTaskScheduler;
+import brainslug.flow.execution.async.AsyncTrigger;
+import brainslug.flow.execution.async.AsyncTriggerScheduler;
 import brainslug.flow.*;
+import brainslug.flow.execution.expression.ContextPredicate;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
 import brainslug.flow.FlowDefinition;
@@ -110,8 +111,8 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void asyncTaskIsDelegatedToScheduler() {
     // given:
-    AsyncTaskScheduler asyncTaskSchedulerMock = mock(AsyncTaskScheduler.class);
-    context.withAsyncTaskScheduler(asyncTaskSchedulerMock);
+    AsyncTriggerScheduler asyncTriggerSchedulerMock = mock(AsyncTriggerScheduler.class);
+    context.withAsyncTriggerScheduler(asyncTriggerSchedulerMock);
 
     FlowDefinition asyncTaskFlow = new FlowBuilder() {
       @Override
@@ -132,8 +133,8 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     // when:
     Identifier instanceId = context.startFlow(asyncTaskFlow.getId(), id(START));
     // then:
-    verify(asyncTaskSchedulerMock).scheduleTask(new AsyncTask()
-      .withTaskNodeId(id(TASK))
+    verify(asyncTriggerSchedulerMock).schedule(new AsyncTrigger()
+      .withNodeId(id(TASK))
       .withInstanceId(instanceId)
       .withDefinitionId(id(ASYNCID)));
   }
@@ -176,14 +177,14 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
   private class GoalFlow {
     private SimpleTask simpleTask;
-    private GoalCondition goalCondition;
+    private ContextPredicate goalCondition;
     private FlowDefinition goalFlow;
 
     public SimpleTask getSimpleTask() {
       return simpleTask;
     }
 
-    public GoalCondition getGoalCondition() {
+    public ContextPredicate getGoalCondition() {
       return goalCondition;
     }
 
@@ -193,12 +194,12 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
     public GoalFlow setup() {
       simpleTask = mock(SimpleTask.class);
-      goalCondition = mock(GoalCondition.class);
+      goalCondition = mock(ContextPredicate.class);
 
       goalFlow = new FlowBuilder() {
         @Override
         public void define() {
-          GoalDefinition testGoal = goal(id("aGoal")).check(goalCondition);
+          GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
 
           start(event(id(START)))
             .execute(task(id(TASK), simpleTask).goal(testGoal))

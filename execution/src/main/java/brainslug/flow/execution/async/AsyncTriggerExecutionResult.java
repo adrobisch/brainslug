@@ -2,18 +2,18 @@ package brainslug.flow.execution.async;
 
 import brainslug.util.Option;
 
-public class AsyncTaskExecutionResult {
+public class AsyncTriggerExecutionResult {
   boolean failed = false;
   Exception exception = null;
 
-  AsyncTaskExecutionResult() {
+  AsyncTriggerExecutionResult() {
   }
 
   public boolean isFailed() {
     return failed;
   }
 
-  public AsyncTaskExecutionResult setFailed(boolean failed) {
+  public AsyncTriggerExecutionResult setFailed(boolean failed) {
     this.failed = failed;
     return this;
   }
@@ -22,7 +22,7 @@ public class AsyncTaskExecutionResult {
     return Option.of(exception);
   }
 
-  public AsyncTaskExecutionResult withException(Exception exception) {
+  public AsyncTriggerExecutionResult withException(Exception exception) {
     this.exception = exception;
     return this;
   }

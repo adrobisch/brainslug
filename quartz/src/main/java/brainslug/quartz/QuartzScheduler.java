@@ -2,8 +2,8 @@ package brainslug.quartz;
 
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.execution.TriggerContext;
-import brainslug.flow.execution.async.AbstractAsyncTaskScheduler;
-import brainslug.flow.execution.async.AsyncTask;
+import brainslug.flow.execution.async.AbstractAsyncTriggerScheduler;
+import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.Identifier;
 
 import static brainslug.util.IdUtil.id;
@@ -14,7 +14,7 @@ import org.quartz.*;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
-public class QuartzScheduler extends AbstractAsyncTaskScheduler {
+public class QuartzScheduler extends AbstractAsyncTriggerScheduler {
   protected static final String INSTANCE_ID = "instanceId";
   protected static final String TASK_NODE_ID = "taskNodeId";
   protected static final String DEFINITION_ID = "definitionId";
@@ -79,16 +79,18 @@ public class QuartzScheduler extends AbstractAsyncTaskScheduler {
           .instanceId(instanceId)
           .nodeId(taskNodeId)
           .definitionId(definitionId)
-          .async(true));
+          .async(true)
+          .signaling(true)
+      );
     }
   }
 
   @Override
-  public void internalScheduleTask(AsyncTask asyncTask) {
+  public void internalSchedule(AsyncTrigger asyncTrigger) {
     JobDetail job = newJob(TaskJob.class)
-        .usingJobData(TASK_NODE_ID, asyncTask.getTaskNodeId().stringValue())
-        .usingJobData(INSTANCE_ID, asyncTask.getInstanceId().stringValue())
-        .usingJobData(DEFINITION_ID, asyncTask.getDefinitionId().stringValue())
+        .usingJobData(TASK_NODE_ID, asyncTrigger.getNodeId().stringValue())
+        .usingJobData(INSTANCE_ID, asyncTrigger.getInstanceId().stringValue())
+        .usingJobData(DEFINITION_ID, asyncTrigger.getDefinitionId().stringValue())
         .storeDurably()
         .build();
 

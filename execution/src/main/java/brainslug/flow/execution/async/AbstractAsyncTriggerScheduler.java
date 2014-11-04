@@ -4,24 +4,24 @@ import brainslug.flow.context.BrainslugContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractAsyncTaskScheduler implements AsyncTaskScheduler {
+public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerScheduler {
   protected BrainslugContext context;
   protected AtomicBoolean running = new AtomicBoolean(false);
-  protected AsyncTaskSchedulerOptions options;
+  protected AsyncTriggerSchedulerOptions options;
 
   @Override
-  public void scheduleTask(AsyncTask asyncTask) {
+  public void schedule(AsyncTrigger asyncTrigger) {
     if (running.get()) {
-      internalScheduleTask(asyncTask);
+      internalSchedule(asyncTrigger);
     }
   }
 
-  protected void internalScheduleTask(AsyncTask asyncTask) {
-    context.getAsyncTaskStore().storeTask(asyncTask);
+  protected void internalSchedule(AsyncTrigger asyncTrigger) {
+    context.getAsyncTriggerStore().storeTrigger(asyncTrigger);
   }
 
   @Override
-  public synchronized void start(AsyncTaskSchedulerOptions options) {
+  public synchronized void start(AsyncTriggerSchedulerOptions options) {
     this.options = options;
 
     if (this.context == null) {
