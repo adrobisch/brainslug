@@ -6,6 +6,15 @@ brainslug is a control flow abstraction library.
 It allows to model business logic flow of an application as a graph of typed nodes,
 which can be transformed to different representations or be executed within a customisable environment.
 
+
+## Features
+
+* Builder DSL for flow definitions
+* [BPMN 2.0 XML](http://www.omg.org/spec/BPMN/2.0/) export using the [Activiti](https://github.com/Activiti/Activiti) Model
+* Flow Renderer based on the BPMN symbols
+* Quartz Scheduler for Async Tasks
+
+
 ## Example
 
 ```java

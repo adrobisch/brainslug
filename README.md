@@ -1,4 +1,4 @@
-![brainslug](doc/src/site/images/brainslug_big.png)
+![brainslug](docs/images/brainslug_big.png)
 
 brainslug
 =========
@@ -7,14 +7,6 @@ brainslug is a control flow abstraction library. It enables you to model your ap
 which can be transformed to different representations or be executed within a customisable environment.
 
 <a href="https://travis-ci.org/adrobisch/brainslug"><img src="https://travis-ci.org/adrobisch/brainslug.png?branch=master" /></a>
-
-Features
-========
-
-* Builder DSL for flow definitions
-* [BPMN 2.0 XML](http://www.omg.org/spec/BPMN/2.0/) export using the [Activiti](https://github.com/Activiti/Activiti) Model
-* Flow Renderer based on the BPMN symbols
-* Quartz Scheduler for Async Tasks
 
 Download
 ========
