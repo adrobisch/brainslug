@@ -57,8 +57,9 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldEvaluatePropertyPredicate() {
     // given:
-    ChoiceNodeExecutor choiceNodeExecutor = new ChoiceNodeExecutor();
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
+    BrainslugContext brainslugContext = new BrainslugContext();
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor().withTokenStore(brainslugContext.getTokenStore());
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(new TriggerContext(), brainslugContext);
 
     FlowDefinition flowDefinition = propertyPredicateFlow(true);
     // when:
@@ -73,8 +74,9 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldTakeOtherwisePathIfNoneMatches() {
     // given:
-    ChoiceNodeExecutor choiceNodeExecutor = new ChoiceNodeExecutor();
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
+    BrainslugContext brainslugContext = new BrainslugContext();
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor().withTokenStore(brainslugContext.getTokenStore());
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(new TriggerContext(), brainslugContext);
 
     FlowDefinition flowDefinition = propertyPredicateFlow(false);
 

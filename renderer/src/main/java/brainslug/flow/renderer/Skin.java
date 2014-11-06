@@ -39,13 +39,13 @@ abstract public class Skin {
     if (node instanceof ParallelDefinition) {
       return Shapes.GatewayParallel;
     }
-    if (node.hasMixin(brainslug.flow.node.marker.EndEvent.class)) {
+    if (node.is(brainslug.flow.node.event.EndEvent.class)) {
       return Shapes.EndEvent;
     }
-    if (node.hasMixin(brainslug.flow.node.marker.StartEvent.class)) {
+    if (node.is(brainslug.flow.node.event.StartEvent.class)) {
       return Shapes.StartEvent;
     }
-    if (node.hasMixin(brainslug.flow.node.marker.IntermediateEvent.class)) {
+    if (node.is(brainslug.flow.node.event.IntermediateEvent.class)) {
       return Shapes.IntermediateEvent;
     }
 

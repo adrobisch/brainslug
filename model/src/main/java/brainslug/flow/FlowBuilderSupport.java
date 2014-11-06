@@ -1,13 +1,16 @@
 package brainslug.flow;
 
 import brainslug.flow.expression.*;
-import brainslug.flow.node.marker.StartEvent;
+import brainslug.flow.node.event.AbstractEventDefinition;
+import brainslug.flow.node.event.timer.StartTimerDefinition;
+import brainslug.flow.node.event.StartEvent;
 import brainslug.flow.node.*;
 import brainslug.flow.path.FlowPathDefinition;
 import brainslug.flow.node.task.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class FlowBuilderSupport {
 
@@ -33,8 +36,14 @@ public class FlowBuilderSupport {
     return start(event(startId));
   }
 
-  public FlowPathDefinition start(EventDefinition event) {
+  public FlowPathDefinition start(AbstractEventDefinition event) {
     event.with(new StartEvent());
+    definition.addNode(event);
+    return new FlowPathDefinition(definition, event);
+  }
+
+  public FlowPathDefinition start(AbstractEventDefinition event, StartTimerDefinition startTimerDefinition) {
+    event.with(new StartEvent().withRecurringTimerDefinition(startTimerDefinition));
     definition.addNode(event);
     return new FlowPathDefinition(definition, event);
   }
@@ -49,7 +58,7 @@ public class FlowBuilderSupport {
   }
 
   public FlowPathDefinition on(Identifier id) {
-    return new FlowPathDefinition(definition, definition.getNode(id, EventDefinition.class));
+    return new FlowPathDefinition(definition, definition.getNode(id, AbstractEventDefinition.class));
   }
 
   public FlowPathDefinition merge(Identifier mergeId, Identifier... ids) {
@@ -90,6 +99,10 @@ public class FlowBuilderSupport {
 
   public EventDefinition event(Identifier id) {
     return new EventDefinition().id(id).display(id.toString());
+  }
+
+  public StartTimerDefinition every(int interval, TimeUnit intervalUnit) {
+    return new StartTimerDefinition(interval, intervalUnit);
   }
 
   public <T> PredicateBuilder<Expression> expression(T expression) {

@@ -49,8 +49,7 @@ public class QuartzSchedulerTest {
 
   private QuartzScheduler quartzSchedulerWithContextMock(Scheduler scheduler) {
     QuartzScheduler quartzScheduler = new QuartzScheduler(scheduler);
-    quartzScheduler.setContext(mock(BrainslugContext.class));
-    quartzScheduler.start(new AsyncTriggerSchedulerOptions());
+    quartzScheduler.start(mock(BrainslugContext.class), new AsyncTriggerSchedulerOptions());
     return quartzScheduler;
   }
 

@@ -2,10 +2,11 @@ package brainslug.flow.path;
 
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
-import brainslug.flow.node.marker.EndEvent;
-import brainslug.flow.node.marker.IntermediateEvent;
-import brainslug.flow.node.ChoiceDefinition;
 import brainslug.flow.node.EventDefinition;
+import brainslug.flow.node.event.AbstractEventDefinition;
+import brainslug.flow.node.event.EndEvent;
+import brainslug.flow.node.event.IntermediateEvent;
+import brainslug.flow.node.ChoiceDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.ParallelDefinition;
 import brainslug.flow.node.task.AbstractTaskDefinition;
@@ -35,7 +36,7 @@ public class FlowPathDefinition<Self extends FlowPathDefinition> {
     return then();
   }
 
-  public Self waitFor(EventDefinition eventDefinition) {
+  public Self waitFor(AbstractEventDefinition eventDefinition) {
     eventDefinition.with(new IntermediateEvent());
     appendNode(eventDefinition);
     return then();

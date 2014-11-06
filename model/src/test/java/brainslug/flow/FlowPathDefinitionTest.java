@@ -1,6 +1,7 @@
 package brainslug.flow;
 
 import brainslug.flow.node.EventDefinition;
+import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.path.FlowPathDefinition;
 import org.junit.Test;
@@ -14,8 +15,8 @@ public class FlowPathDefinitionTest {
   public void shouldConnectToExistingEndEvent() {
     // GIVEN:
     FlowDefinition flowDefinition = mock(FlowDefinition.class);
-    EventDefinition startEvent = new EventDefinition().id("start");
-    EventDefinition endEvent = new EventDefinition().id("end");
+    AbstractEventDefinition startEvent = new EventDefinition().id("start");
+    AbstractEventDefinition endEvent = new EventDefinition().id("end");
     FlowPathDefinition<?> pathDefinition = new FlowPathDefinition(flowDefinition, startEvent);
 
     when(flowDefinition.contains(any(FlowNodeDefinition.class))).thenReturn(true);

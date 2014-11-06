@@ -40,4 +40,12 @@ public class ExecuteTaskCallable implements Callable<AsyncTriggerExecutionResult
   public Date getBaseDate() {
     return new Date();
   }
+
+  @Override
+  public String toString() {
+    return "ExecuteTaskCallable{" +
+      "retryStrategy=" + retryStrategy +
+      ", asyncTrigger=" + asyncTrigger +
+      '}';
+  }
 }

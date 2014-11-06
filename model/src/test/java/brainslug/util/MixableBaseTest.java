@@ -23,7 +23,7 @@ public class MixableBaseTest {
   @Test
   public void canCheckForMixin() {
     MixedClass cl = new MixedClass().with(TestMixin.class, new TestMixin());
-    Assertions.assertThat(cl.hasMixin(TestMixin.class)).isEqualTo(true);
+    Assertions.assertThat(cl.is(TestMixin.class)).isEqualTo(true);
   }
 
   @Test(expected = IllegalStateException.class)

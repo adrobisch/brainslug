@@ -1,9 +1,9 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.ContextAware;
+import brainslug.flow.context.BrainslugContext;
 
-public interface AsyncTriggerScheduler extends ContextAware {
-  public void start(AsyncTriggerSchedulerOptions taskSchedulerOptions);
+public interface AsyncTriggerScheduler {
+  public void start(BrainslugContext brainslugContext, AsyncTriggerSchedulerOptions taskSchedulerOptions);
   public void stop();
   public void schedule(AsyncTrigger asyncTrigger);
 }

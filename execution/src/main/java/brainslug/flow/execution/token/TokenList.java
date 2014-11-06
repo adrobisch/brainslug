@@ -6,7 +6,10 @@ import java.util.*;
 
 public class TokenList {
 
-  List<Token> tokenList;
+  List<Token> tokenList = new ArrayList<Token>();
+
+  public TokenList() {
+  }
 
   public TokenList(List<Token> tokenList) {
     this.tokenList = tokenList;

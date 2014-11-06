@@ -21,8 +21,13 @@ public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerSched
   }
 
   @Override
-  public synchronized void start(AsyncTriggerSchedulerOptions options) {
+  public synchronized void start(BrainslugContext context, AsyncTriggerSchedulerOptions options) {
+    if (options.disabled) {
+      return;
+    }
+
     this.options = options;
+    this.context = context;
 
     if (this.context == null) {
       throw new IllegalStateException("context must be set to start async task scheduler");
@@ -43,10 +48,5 @@ public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerSched
   }
 
   protected void internalStop() {
-  }
-
-  @Override
-  public void setContext(BrainslugContext context) {
-    this.context = context;
   }
 }

@@ -22,6 +22,10 @@ public class BrainslugContext {
   AsyncTriggerScheduler asyncTriggerScheduler;
   AsyncTriggerStore asyncTriggerStore;
   AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions;
+
+  AsyncFlowStartScheduler asyncFlowStartScheduler;
+  SchedulerOptions asyncFlowStartSchedulerOptions;
+
   DefinitionStore definitionStore;
   ListenerManager listenerManager;
   FlowExecutor flowExecutor;
@@ -44,7 +48,11 @@ public class BrainslugContext {
     withDefinitionStore(new HashMapDefinitionStore());
 
     withAsyncTriggerStore(new ArrayListTriggerStore())
-      .withAsyncTriggerScheduler(new ExecutorServiceScheduler());
+      .withAsyncTriggerSchedulerOptions(new AsyncTriggerSchedulerOptions())
+      .withAsyncTriggerScheduler(new ExecutorServiceAsyncTriggerScheduler());
+
+    withAsyncFlowStartSchedulerOptions(new SchedulerOptions())
+      .withAsyncFlowStartScheduler(new DefaultFlowStartScheduler());
 
     withListenerManager(new DefaultListenerManager());
     withExecutor(new TokenFlowExecutor(this));
@@ -54,12 +62,26 @@ public class BrainslugContext {
 
   public BrainslugContext withAsyncTriggerScheduler(AsyncTriggerScheduler asyncTriggerScheduler) {
     this.asyncTriggerScheduler = asyncTriggerScheduler;
-    asyncTriggerScheduler.setContext(this);
+    return this;
+  }
+
+  public BrainslugContext withAsyncTriggerSchedulerOptions(AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions) {
+    this.asyncTriggerSchedulerOptions = asyncTriggerSchedulerOptions;
     return this;
   }
 
   public BrainslugContext withAsyncTriggerStore(AsyncTriggerStore asyncTriggerStore) {
     this.asyncTriggerStore = asyncTriggerStore;
+    return this;
+  }
+
+  public BrainslugContext withAsyncFlowStartScheduler(AsyncFlowStartScheduler asyncFlowStartScheduler) {
+    this.asyncFlowStartScheduler = asyncFlowStartScheduler;
+    return this;
+  }
+
+  public BrainslugContext withAsyncFlowStartSchedulerOptions(SchedulerOptions asyncFlowStartSchedulerOptions) {
+    this.asyncFlowStartSchedulerOptions = asyncFlowStartSchedulerOptions;
     return this;
   }
 
@@ -134,12 +156,14 @@ public class BrainslugContext {
   }
 
   public BrainslugContext start() {
-    Preconditions.notNull(asyncTriggerScheduler).start(asyncTriggerSchedulerOptions);
+    Preconditions.notNull(asyncTriggerScheduler).start(this, asyncTriggerSchedulerOptions);
+    Preconditions.notNull(asyncFlowStartScheduler).start(asyncFlowStartSchedulerOptions, this, getDefinitionStore());
     return this;
   }
 
   public BrainslugContext stop() {
     Preconditions.notNull(asyncTriggerScheduler).stop();
+    Preconditions.notNull(asyncFlowStartScheduler).stop();
     return this;
   }
 

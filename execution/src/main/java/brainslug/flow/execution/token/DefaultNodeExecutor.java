@@ -20,15 +20,15 @@ public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNo
 
   @Override
   public FlowNodeExecutionResult execute(T node, ExecutionContext execution) {
-    consumeAllNodeTokens(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId());
+    consumeAllNodeTokens(execution.getTrigger());
     return takeAll(node);
   }
 
-  protected void consumeAllNodeTokens(Identifier instanceId, Identifier nodeId) {
-    Map<Identifier, List<Token>> nodeTokens = tokenStore.getNodeTokens(nodeId, instanceId).groupedBySourceNode();
+  protected void consumeAllNodeTokens(TriggerContext triggerContext) {
+    Map<Identifier, List<Token>> nodeTokens = tokenStore.getNodeTokens(triggerContext.getNodeId(), triggerContext.getInstanceId()).groupedBySourceNode();
 
     for (List<Token> tokens : nodeTokens.values()) {
-      removeTokens(instanceId, tokens);
+      removeTokens(triggerContext.getInstanceId(), tokens);
     }
   }
 

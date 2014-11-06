@@ -11,6 +11,10 @@ abstract public class FlowBuilder extends FlowBuilderSupport {
 
   abstract public void define();
 
+  public void flowId(Identifier id) {
+    this.id = id.stringValue();
+  }
+
   public String getId() {
     if (id == null) {
       id = generateId();
@@ -27,8 +31,10 @@ abstract public class FlowBuilder extends FlowBuilderSupport {
   }
 
   public FlowDefinition getDefinition() {
-    withDefinition(new FlowDefinition().id(new StringIdentifier(getId())).name(getName()));
+    withDefinition(new FlowDefinition());
     define();
+    definition.id(new StringIdentifier(getId())).name(getName());
+
     return definition;
   }
 }

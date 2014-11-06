@@ -4,6 +4,7 @@ import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,11 @@ public class HashMapDefinitionStore implements DefinitionStore {
 
   public void addDefinition(FlowDefinition flowDefinition) {
     flowDefinitions.put(flowDefinition.getId(), flowDefinition);
+  }
+
+  @Override
+  public Collection<FlowDefinition> getDefinitions() {
+    return flowDefinitions.values();
   }
 
   public FlowDefinition findById(Identifier id) {

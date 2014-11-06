@@ -138,6 +138,7 @@ public class AsyncTrigger {
 
     AsyncTrigger asyncTrigger = (AsyncTrigger) o;
 
+    if (id != asyncTrigger.id) return false;
     if (dueDate != asyncTrigger.dueDate) return false;
     if (maxRetries != asyncTrigger.maxRetries) return false;
     if (retries != asyncTrigger.retries) return false;
@@ -155,6 +156,7 @@ public class AsyncTrigger {
   @Override
   public int hashCode() {
     int result = nodeId != null ? nodeId.hashCode() : 0;
+    result = 31 * result + (id != null ? id.hashCode() : 0);
     result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
     result = 31 * result + (definitionId != null ? definitionId.hashCode() : 0);
     result = 31 * result + (int) (dueDate ^ (dueDate >>> 32));
@@ -168,7 +170,8 @@ public class AsyncTrigger {
   @Override
   public String toString() {
     return "AsyncTrigger{" +
-      "nodeId=" + nodeId +
+      "id=" + id +
+      ", nodeId=" + nodeId +
       ", instanceId=" + instanceId +
       ", definitionId=" + definitionId +
       ", dueDate=" + dueDate +

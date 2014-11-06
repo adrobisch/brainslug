@@ -5,13 +5,14 @@ import brainslug.flow.node.*;
 import brainslug.flow.expression.Expression;
 import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
-import brainslug.flow.node.marker.IntermediateEvent;
-import brainslug.flow.node.EventDefinition;
+import brainslug.flow.node.event.IntermediateEvent;
+import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.flow.path.AndDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.flow.path.FlowPathDefinition;
 import brainslug.flow.path.ThenDefinition;
 import brainslug.flow.node.task.AbstractTaskDefinition;
+import brainslug.util.Option;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.EndEvent;
@@ -56,8 +57,8 @@ public class BpmnModelTransformer {
 
   private void addNodes(Process process, FlowBuilder flowBuilder) {
     for (FlowNodeDefinition node : flowBuilder.getDefinition().getNodes()) {
-      if (node instanceof EventDefinition) {
-        addEvent((EventDefinition) node, process);
+      if (node instanceof AbstractEventDefinition) {
+        addEvent((AbstractEventDefinition) node, process);
         collectOutgoingFlows(node);
       }
       else if (node instanceof AbstractTaskDefinition) {
@@ -147,14 +148,14 @@ public class BpmnModelTransformer {
     }
   }
 
-  private void addEvent(EventDefinition event, Process process) {
-    if (event.hasMixin(brainslug.flow.node.marker.StartEvent.class)) {
+  private void addEvent(AbstractEventDefinition event, Process process) {
+    if (event.is(brainslug.flow.node.event.StartEvent.class)) {
       process.addFlowElement(createStartEvent(event));
     }
-    else if (event.hasMixin(brainslug.flow.node.marker.EndEvent.class)) {
+    else if (event.is(brainslug.flow.node.event.EndEvent.class)) {
       process.addFlowElement(createEndEvent(event));
     }
-    else if (event.hasMixin(IntermediateEvent.class)) {
+    else if (event.is(IntermediateEvent.class)) {
       process.addFlowElement(createIntermediateCatchEvent(event));
     }
     else {
@@ -162,7 +163,7 @@ public class BpmnModelTransformer {
     }
   }
 
-  private FlowElement createIntermediateCatchEvent(EventDefinition event) {
+  private FlowElement createIntermediateCatchEvent(AbstractEventDefinition event) {
     IntermediateCatchEvent catchEvent = new IntermediateCatchEvent();
     catchEvent.setId(event.getId().toString());
     catchEvent.setName(event.getDisplayName());
@@ -186,7 +187,7 @@ public class BpmnModelTransformer {
     return flow;
   }
 
-  protected StartEvent createStartEvent(EventDefinition event) {
+  protected StartEvent createStartEvent(AbstractEventDefinition event) {
     StartEvent startEvent = new StartEvent();
     startEvent.setId(event.getId().toString());
     startEvent.setName(event.getDisplayName());
@@ -200,7 +201,7 @@ public class BpmnModelTransformer {
     return exclusiveGateway;
   }
 
-  protected EndEvent createEndEvent(EventDefinition event) {
+  protected EndEvent createEndEvent(AbstractEventDefinition event) {
     EndEvent endEvent = new EndEvent();
     endEvent.setId(event.getId().toString());
     endEvent.setName(event.getDisplayName());
@@ -211,8 +212,12 @@ public class BpmnModelTransformer {
     ServiceTask serviceTask = new ServiceTask();
     serviceTask.setId(task.getId().toString());
     serviceTask.setName(task.getDisplayName());
-    serviceTask.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_CLASS);
-    serviceTask.setImplementation(task.getDelegateClass().getName());
+
+    if (Option.of(task.getDelegateClass()).isPresent()) {
+      serviceTask.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_CLASS);
+      serviceTask.setImplementation(task.getDelegateClass().getName());
+    }
+
     if (task.isAsync()) {
       serviceTask.setAsynchronous(true);
     }

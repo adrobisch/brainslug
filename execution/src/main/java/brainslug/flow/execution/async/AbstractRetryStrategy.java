@@ -13,6 +13,11 @@ public abstract class AbstractRetryStrategy implements RetryStrategy {
       public Date nextRetry(long retryCount, Date baseDate) {
         return new Date(baseDate.getTime() + intervalUnit.toMillis(intervalDuration));
       }
+
+      @Override
+      public String toString() {
+        return String.format("linear retry, duration: %s, unit: %s", intervalDuration, intervalDuration);
+      }
     };
   }
 
@@ -21,6 +26,11 @@ public abstract class AbstractRetryStrategy implements RetryStrategy {
       @Override
       public Date nextRetry(long retryCount, Date baseDate) {
         return new Date(baseDate.getTime() + intervalUnit.toMillis(intervalDuration * retryCount * retryCount));
+      }
+
+      @Override
+      public String toString() {
+        return String.format("quadratic retry, duration: %s, unit: %s", intervalDuration, intervalDuration);
       }
     };
   }

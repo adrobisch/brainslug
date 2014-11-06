@@ -1,17 +1,18 @@
 package brainslug.flow;
 
-import brainslug.flow.node.marker.EndEvent;
-import brainslug.flow.node.marker.IntermediateEvent;
-import brainslug.flow.node.marker.StartEvent;
+import brainslug.flow.node.event.*;
 import brainslug.flow.node.*;
+import brainslug.flow.node.event.timer.StartTimerDefinition;
 import brainslug.flow.node.task.GoalPredicate;
 import brainslug.flow.node.task.RetryStrategy;
+import brainslug.flow.node.task.Task;
 import brainslug.util.IdUtil;
 import brainslug.util.Option;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static brainslug.util.ID.*;
 
@@ -110,7 +111,7 @@ public class FlowBuilderTest {
       .hasTotalNodes(4)
       .hasTotalEdges(3)
       .hasNodesWithType(2, TaskDefinition.class)
-      .hasNodesWithType(2, EventDefinition.class)
+      .hasNodesWithType(2, AbstractEventDefinition.class)
       .hasEdge(StartEvent, TestTask)
       .hasEdge(TestTask, SecondTask)
       .hasEdge(SecondTask, End);
@@ -141,7 +142,7 @@ public class FlowBuilderTest {
         .hasTotalNodes(6)
         .hasTotalEdges(6)
         .hasNodesWithType(2, TaskDefinition.class)
-        .hasNodesWithType(2, EventDefinition.class)
+        .hasNodesWithType(2, AbstractEventDefinition.class)
         .hasNodesWithType(1, ChoiceDefinition.class)
         .hasNodesWithType(1, MergeDefinition.class)
         .hasNodesWithMarker(1, EndEvent.class)
@@ -175,7 +176,7 @@ public class FlowBuilderTest {
         .hasTotalNodes(6)
         .hasTotalEdges(6)
         .hasNodesWithType(2, TaskDefinition.class)
-        .hasNodesWithType(2, EventDefinition.class)
+        .hasNodesWithType(2, AbstractEventDefinition.class)
         .hasNodesWithType(1, ParallelDefinition.class)
         .hasNodesWithType(1, JoinDefinition.class)
         .hasNodesWithMarker(1, EndEvent.class)
@@ -205,7 +206,7 @@ public class FlowBuilderTest {
         .hasTotalNodes(3)
         .hasTotalEdges(2)
         .hasNodesWithType(2, TaskDefinition.class)
-        .hasNodesWithType(1, EventDefinition.class)
+        .hasNodesWithType(1, AbstractEventDefinition.class)
         .hasEdge(StartEvent, TestTask)
         .hasEdge(TestTask, SecondTask);
   }
@@ -245,7 +246,7 @@ public class FlowBuilderTest {
       .hasTotalNodes(12)
       .hasTotalEdges(11)
       .hasNodesWithType(6, TaskDefinition.class)
-      .hasNodesWithType(4, EventDefinition.class)
+      .hasNodesWithType(4, AbstractEventDefinition.class)
       .hasNodesWithType(1, ParallelDefinition.class)
       .hasNodesWithType(1, ChoiceDefinition.class)
       .hasNodesWithMarker(2, EndEvent.class)
@@ -283,8 +284,7 @@ public class FlowBuilderTest {
       }
     }.getDefinition();
 
-    FlowNodeDefinition node = goalFlow.getNode(IdUtil.id("simpleTask"));
-    Assertions.assertThat(node).isInstanceOf(TaskDefinition.class);
+    TaskDefinition node = goalFlow.getNode(IdUtil.id("simpleTask"), TaskDefinition.class);
 
     TaskDefinition taskNode = (TaskDefinition) node;
     Assertions.assertThat(taskNode.isRetryAsync()).isTrue();
@@ -308,7 +308,7 @@ public class FlowBuilderTest {
       }
     }.getDefinition();
 
-    TaskDefinition taskNode = (TaskDefinition) goalFlow.getNode(IdUtil.id("simpleTask"));
+    TaskDefinition taskNode = goalFlow.getNode(IdUtil.id("simpleTask"), TaskDefinition.class);
     Assertions.assertThat(taskNode.getGoal()).isEqualTo(Option.of(IdUtil.id("inlineGoal")));
   }
 
@@ -332,12 +332,34 @@ public class FlowBuilderTest {
       }
     }.getDefinition();
 
-    FlowNodeDefinition node = goalFlow.getNode(IdUtil.id("simpleTask"));
-    Assertions.assertThat(node).isInstanceOf(TaskDefinition.class);
+    TaskDefinition taskNode = goalFlow.getNode(IdUtil.id("simpleTask"), TaskDefinition.class);
 
-    TaskDefinition taskNode = (TaskDefinition) node;
     Assertions.assertThat(taskNode.isRetryAsync()).isTrue();
     Assertions.assertThat(taskNode.getRetryStrategy()).isNotNull();
+  }
+
+  @Test
+  public void buildFlowWithRecurringTimer() {
+    FlowBuilder recurringTimerFlow = new FlowBuilder() {
+      @Override
+      public void define() {
+        flowId(id("recurringTimerFlow"));
+
+        Task callee = new Task() {
+        };
+
+        start(event(id("start")), every(5, TimeUnit.SECONDS))
+          .execute(task(id("task"), callee));
+      }
+    };
+
+    assertThat(recurringTimerFlow.getDefinition())
+      .hasNodesWithMarker(1, StartEvent.class);
+
+    StartEvent startEvent = recurringTimerFlow.getDefinition().getNode(IdUtil.id("start"), EventDefinition.class).as(StartEvent.class);
+
+    Assertions.assertThat(startEvent.getStartTimerDefinition().get())
+      .isEqualTo(new StartTimerDefinition(5, TimeUnit.SECONDS));
   }
 
 }

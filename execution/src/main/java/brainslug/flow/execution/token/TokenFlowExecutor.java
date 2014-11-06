@@ -5,14 +5,13 @@ import brainslug.flow.execution.*;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.*;
-import brainslug.flow.node.marker.IntermediateEvent;
 import brainslug.flow.node.*;
+import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.util.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TokenFlowExecutor implements FlowExecutor {

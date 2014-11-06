@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class ExecutorServiceScheduler extends AbstractAsyncTriggerScheduler {
+public class ExecutorServiceAsyncTriggerScheduler extends AbstractAsyncTriggerScheduler {
 
-  private Logger log = LoggerFactory.getLogger(ExecutorServiceScheduler.class);
+  private Logger log = LoggerFactory.getLogger(ExecutorServiceAsyncTriggerScheduler.class);
 
   ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
   ExecutorService taskExecutorService = Executors.newCachedThreadPool();
@@ -19,10 +19,16 @@ public class ExecutorServiceScheduler extends AbstractAsyncTriggerScheduler {
   protected void internalStart() {
     log.info("starting async job scheduling with options: " + options);
 
-    FutureTask<List<Future<AsyncTriggerExecutionResult>>> executeTasks =
-      new FutureTask<List<Future<AsyncTriggerExecutionResult>>>(new ExecuteTasksCallable(context, options, taskExecutorService, asyncTriggerExecutor));
+    Runnable executeTasksRunnable = new Runnable() {
+      @Override
+      public void run() {
+        FutureTask<List<Future<AsyncTriggerExecutionResult>>> executeTasks =
+          new FutureTask<List<Future<AsyncTriggerExecutionResult>>>(new ExecuteTasksCallable(context, options, taskExecutorService, asyncTriggerExecutor));
+        executeTasks.run();
+      }
+    };
 
-    scheduledExecutorService.scheduleAtFixedRate(executeTasks,
+    scheduledExecutorService.scheduleAtFixedRate(executeTasksRunnable,
       options.getScheduleDelay(),
       options.getSchedulePeriod(),
       options.getScheduleUnit()
@@ -33,7 +39,7 @@ public class ExecutorServiceScheduler extends AbstractAsyncTriggerScheduler {
     return scheduledExecutorService;
   }
 
-  public ExecutorServiceScheduler withScheduledExecutorService(ScheduledExecutorService executorService) {
+  public ExecutorServiceAsyncTriggerScheduler withScheduledExecutorService(ScheduledExecutorService executorService) {
     this.scheduledExecutorService = executorService;
     return this;
   }
@@ -42,7 +48,7 @@ public class ExecutorServiceScheduler extends AbstractAsyncTriggerScheduler {
     return taskExecutorService;
   }
 
-  public ExecutorServiceScheduler withTaskExecutorService(ExecutorService taskExecutor) {
+  public ExecutorServiceAsyncTriggerScheduler withTaskExecutorService(ExecutorService taskExecutor) {
     this.taskExecutorService = taskExecutor;
     return this;
   }
@@ -51,7 +57,7 @@ public class ExecutorServiceScheduler extends AbstractAsyncTriggerScheduler {
     return asyncTriggerExecutor;
   }
 
-  public ExecutorServiceScheduler withAsyncTriggerExecutor(AsyncTriggerExecutor asyncTriggerExecutor) {
+  public ExecutorServiceAsyncTriggerScheduler withAsyncTriggerExecutor(AsyncTriggerExecutor asyncTriggerExecutor) {
     this.asyncTriggerExecutor = asyncTriggerExecutor;
     return this;
   }

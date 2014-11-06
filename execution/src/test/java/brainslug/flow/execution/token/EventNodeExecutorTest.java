@@ -4,10 +4,7 @@ import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.DefaultExecutionContext;
-import brainslug.flow.execution.ExecutionContext;
-import brainslug.flow.execution.FlowNodeExecutionResult;
-import brainslug.flow.execution.TriggerContext;
+import brainslug.flow.execution.*;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.flow.execution.expression.ContextPredicate;
@@ -23,11 +20,23 @@ import static brainslug.util.TestId.*;
 import static org.mockito.Mockito.*;
 
 public class EventNodeExecutorTest {
+  AsyncTriggerStore asyncTriggerStoreMock = mock(AsyncTriggerStore.class);
+
+  BrainslugContext brainslugContextWithMock = new BrainslugContext()
+    .withAsyncTriggerStore(asyncTriggerStoreMock)
+    .withTokenStore(tokenStoreMock());
+
+  EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor().withTokenStore(brainslugContextWithMock.getTokenStore()));
+
+  TokenStore tokenStoreMock() {
+    TokenStore tokenStoreMock = mock(TokenStore.class);
+    when(tokenStoreMock.getNodeTokens(any(Identifier.class), any(Identifier.class))).thenReturn(new TokenList());
+    return tokenStoreMock;
+  }
 
   @Test
   public void shouldWaitForTriggerAtIntermediateEvent() {
     // given:
-    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
     FlowDefinition eventFlow = eventFlow();
     DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
 
@@ -41,7 +50,6 @@ public class EventNodeExecutorTest {
   @Test
   public void shouldContinueOnSignalingTrigger() {
     // given:
-    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
     FlowDefinition eventFlow = eventFlow();
     DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext().signaling(true), new BrainslugContext());
 
@@ -56,7 +64,6 @@ public class EventNodeExecutorTest {
   @Test
   public void shouldContinueOnSignalingTriggerIfPredicateIsFalse() {
     // given:
-    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
     FlowDefinition eventFlow = eventFlow();
 
     DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext().signaling(true), new BrainslugContext());
@@ -74,7 +81,6 @@ public class EventNodeExecutorTest {
   @Test
   public void shouldContinueOnSignalingTriggerIfPredicateIsTrue() {
     // given:
-    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
     FlowDefinition eventFlow = eventFlow();
 
     DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext().signaling(true), new BrainslugContext());
@@ -92,7 +98,6 @@ public class EventNodeExecutorTest {
   @Test
   public void shouldContinueOnNonSignalingTriggerIfPredicateIsTrue() {
     // given:
-    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
     FlowDefinition eventFlow = eventFlow();
 
     DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
@@ -110,7 +115,6 @@ public class EventNodeExecutorTest {
   @Test
   public void shouldNotContinueOnNonSignalingTriggerIfPredicateIsFalse() {
     // given:
-    EventNodeExecutor eventNodeExecutor = new EventNodeExecutor();
     FlowDefinition eventFlow = eventFlow();
 
     DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
@@ -127,13 +131,9 @@ public class EventNodeExecutorTest {
   @Test
   public void shouldStoreAsyncTriggerForElapsedTimerDefinition() {
     // given:
-    AsyncTriggerStore asyncTriggerStoreMock = mock(AsyncTriggerStore.class);
-    EventNodeExecutor eventNodeExecutor = spy(new EventNodeExecutor());
-
     FlowDefinition eventFlow = timerEventFlow();
     EventDefinition timerEventNode = eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class);
 
-    BrainslugContext brainslugContextWithMock = new BrainslugContext().withAsyncTriggerStore(asyncTriggerStoreMock);
     DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), brainslugContextWithMock);
 
     // when:

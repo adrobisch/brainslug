@@ -4,6 +4,7 @@ import brainslug.flow.execution.*;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.*;
 import brainslug.flow.FlowDefinition;
+import brainslug.flow.execution.async.AsyncTriggerErrorDetails;
 import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.task.*;
 import brainslug.util.Option;
@@ -21,27 +22,66 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
 
   @Override
   public brainslug.flow.execution.FlowNodeExecutionResult execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
-    consumeAllNodeTokens(execution.getTrigger().getInstanceId(), execution.getTrigger().getNodeId());
+    consumeAllNodeTokens(execution.getTrigger());
 
     if (taskDefinition.getGoal().isPresent() && goalIsFulfilled((Identifier) taskDefinition.getGoal().get(), execution)) {
       return takeAll(taskDefinition);
     } else if (taskDefinition.isAsync() && !execution.getTrigger().isAsync()) {
       scheduleAsyncTask(taskDefinition, execution);
       return takeNone();
-    } else if (taskDefinition.getDelegateClass() != null) {
-      return executeDelegateClass(taskDefinition, execution);
-    } else if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
+    } else if (isExecutable(taskDefinition)) {
+      return executeWithOptionalAsyncRetry(taskDefinition, execution);
+    } else {
+      log.warn("executing task node without execution definition, " +
+        "please specify the task node execution by using a delegate class or call definition to actually do something in this task");
+      return takeAll(taskDefinition);
+    }
+  }
+
+  protected FlowNodeExecutionResult executeWithOptionalAsyncRetry(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
+    try {
+      if (Option.of(taskDefinition.getDelegateClass()).isPresent()) {
+        return executeDelegateClass(taskDefinition, execution);
+      } else if (Option.of(taskDefinition.getMethodCall()).isPresent()) {
+        return executeMethodCall(taskDefinition, execution);
+      }
+      throw new IllegalStateException("this method should only be called with executable " + taskDefinition);
+    } catch (Exception e) {
+      log.error(String.format("error during task (%s) execution: ", taskDefinition), e);
+      if (taskDefinition.isRetryAsync()) {
+        return scheduleRetry(e, taskDefinition, execution);
+      }
+      return takeNone();
+    }
+  }
+
+  private FlowNodeExecutionResult scheduleRetry(Exception e, AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
+    execution.getBrainslugContext().getAsyncTriggerScheduler()
+      .schedule(
+        new AsyncTrigger()
+          .incrementRetries()
+          .withErrorDetails(new AsyncTriggerErrorDetails(e))
+          .withNodeId(taskDefinition.getId())
+          .withInstanceId(execution.getTrigger().getInstanceId())
+          .withDefinitionId(execution.getTrigger().getDefinitionId())
+      );
+    return new FlowNodeExecutionResult().failed(true);
+  }
+
+  protected boolean isExecutable(AbstractTaskDefinition taskDefinition) {
+    return taskDefinition.getDelegateClass() != null || taskDefinition.getMethodCall() != null;
+  }
+
+  protected FlowNodeExecutionResult executeMethodCall(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
+    if (taskDefinition.getMethodCall() instanceof HandlerCallDefinition) {
       final Object callee = ((HandlerCallDefinition) taskDefinition.getMethodCall()).getCallee();
       executeDelegate(callee, execution);
       return takeAll(taskDefinition);
     } else if (taskDefinition.getMethodCall() instanceof ServiceCallDefinition) {
       executeServiceMethodCall(taskDefinition, (ServiceCallDefinition) taskDefinition.getMethodCall(), execution);
       return takeAll(taskDefinition);
-    } else {
-      log.warn("executing task node without execution definition, " +
-        "please specify the task node execution by using a delegate class or call definition to actually do something in this task");
-      return takeAll(taskDefinition);
     }
+    throw new IllegalArgumentException("unable to execute method call: " + taskDefinition.getMethodCall());
   }
 
   private FlowNodeExecutionResult executeDelegateClass(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {

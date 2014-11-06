@@ -30,7 +30,7 @@ public class MixableBase<SelfType> implements Mixable<SelfType> {
   }
 
   @Override
-  public boolean hasMixin(Class mixinClass) {
+  public boolean is(Class mixinClass) {
     return mixins.get(mixinClass) != null;
   }
 }

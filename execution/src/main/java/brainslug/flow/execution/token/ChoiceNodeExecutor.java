@@ -9,6 +9,8 @@ public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceDefinition> {
 
   @Override
   public FlowNodeExecutionResult execute(ChoiceDefinition choiceDefinition, ExecutionContext execution) {
+    consumeAllNodeTokens(execution.getTrigger());
+
     for (ThenDefinition thenPath : choiceDefinition.getThenPaths()) {
       if (execution.getBrainslugContext().getPredicateEvaluator().evaluate(thenPath.getPredicateDefinition(), execution)) {
         return new FlowNodeExecutionResult().withNext(thenPath.getFirstNode());

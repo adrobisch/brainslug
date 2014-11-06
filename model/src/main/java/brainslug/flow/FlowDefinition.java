@@ -1,9 +1,7 @@
 package brainslug.flow;
 
-import brainslug.flow.expression.Predicate;
 import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.flow.node.task.GoalPredicate;
 import brainslug.util.Option;
 
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ public class FlowDefinition {
     return flowNodeDefinition;
   }
 
-  public FlowNodeDefinition getNode(Identifier id) {
+  public FlowNodeDefinition<?> getNode(Identifier id) {
     for (FlowNodeDefinition node: nodes) {
       if(node.getId().equals(id)) {
         return node;
@@ -42,7 +40,7 @@ public class FlowDefinition {
 
   public <T extends FlowNodeDefinition> T getNode(Identifier id, Class<T> clazz) {
     FlowNodeDefinition<?> node = getNode(id);
-    if (!node.getClass().isAssignableFrom(clazz)) {
+    if (!clazz.isAssignableFrom(node.getClass())) {
       throw new IllegalArgumentException("Requested node should have type " + clazz.getName());
     }
     return (T) node;

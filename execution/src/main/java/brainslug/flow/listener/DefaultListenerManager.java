@@ -1,6 +1,5 @@
 package brainslug.flow.listener;
 
-import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.execution.TriggerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ public class DefaultListenerManager implements ListenerManager {
 
   Logger log = LoggerFactory.getLogger(DefaultListenerManager.class);
 
-  BrainslugContext context;
   Map<EventType, Set<Listener>> listeners = Collections.synchronizedMap(new HashMap<EventType, Set<Listener>>());
 
   synchronized public void notifyListeners(EventType type, TriggerContext context) {
@@ -46,10 +44,5 @@ public class DefaultListenerManager implements ListenerManager {
         break;
       }
     }
-  }
-
-  @Override
-  public void setContext(BrainslugContext context) {
-    this.context = context;
   }
 }

@@ -6,13 +6,16 @@ import brainslug.flow.execution.TriggerContext;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.EventDefinition;
-import brainslug.flow.node.marker.IntermediateEvent;
+import brainslug.flow.node.event.IntermediateEvent;
+import brainslug.flow.node.event.timer.TimerDefinition;
 
 import java.util.Date;
 
 public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
   @Override
   public FlowNodeExecutionResult execute(EventDefinition eventDefinition, ExecutionContext execution) {
+    consumeAllNodeTokens(execution.getTrigger());
+
     if (eventDefinition.getContinuePredicate().isPresent() &&
       predicateIsFulfilled(eventDefinition.getContinuePredicate().get(), execution)) {
       return takeAll(eventDefinition);
@@ -38,7 +41,7 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
   }
 
   long getElapsedTimeDueDate(EventDefinition eventDefinition) {
-    EventDefinition.TimerDefinition timerDefinition = eventDefinition.getElapsedTimeDefinition().get();
+    TimerDefinition timerDefinition = eventDefinition.getElapsedTimeDefinition().get();
     return getCurrentTime() + timerDefinition.getUnit().toMillis(timerDefinition.getDuration());
   }
 
@@ -47,7 +50,7 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
   }
 
   protected boolean waitingForSignal(EventDefinition eventDefinition, TriggerContext triggerContext) {
-    return eventDefinition.hasMixin(IntermediateEvent.class) && !triggerContext.isSignaling();
+    return eventDefinition.is(IntermediateEvent.class) && !triggerContext.isSignaling();
   }
 
   protected boolean predicateIsFulfilled(PredicateDefinition eventPredicate, ExecutionContext execution) {

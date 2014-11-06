@@ -34,7 +34,7 @@ public class FlowDefinitionAssert extends AbstractAssert<FlowDefinitionAssert, F
   public FlowDefinitionAssert hasNodesWithMarker(int expectedCount, Class<?> markerClass) {
     int actualCount = 0;
     for(FlowNodeDefinition node : actual.getNodes()){
-      if (node.hasMixin(markerClass)) {
+      if (node.is(markerClass)) {
         actualCount++;
       }
     }
