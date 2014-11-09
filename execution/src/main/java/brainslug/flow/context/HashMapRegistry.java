@@ -9,7 +9,7 @@ public class HashMapRegistry implements Registry {
   @Override
   public <T> T getService(Class<T> serviceClass) {
     if(registry.get(serviceClass) == null) {
-      throw new IllegalStateException("no service with class " + serviceClass + " registered");
+      throw new IllegalStateException("no method with class " + serviceClass + " registered");
     }
     return (T) registry.get(serviceClass);
   }
@@ -17,7 +17,7 @@ public class HashMapRegistry implements Registry {
   @Override
   public <T> void registerService(Class<T> serviceClass, T serviceInstance) {
     if(registry.get(serviceClass) != null) {
-      throw new IllegalStateException("service class already registered " + serviceClass);
+      throw new IllegalStateException("method class already registered " + serviceClass);
     }
     registry.put(serviceClass, serviceInstance);
   }

@@ -1,8 +1,10 @@
 package brainslug.flow.execution;
 
+import brainslug.flow.context.ExecutionProperty;
+
 import java.util.Arrays;
 
-public class ExecutionProperty {
+public class DefaultExecutionProperty implements ExecutionProperty {
   protected String key;
   protected String valueType;
 
@@ -13,10 +15,10 @@ public class ExecutionProperty {
   protected Double doubleValue;
   protected byte[] byteArrayValue;
 
-  public ExecutionProperty() {
+  public DefaultExecutionProperty() {
   }
 
-  public ExecutionProperty(String key, String valueType, String stringValue, Long longValue, Double doubleValue, byte[] byteArrayValue) {
+  public DefaultExecutionProperty(String key, String valueType, String stringValue, Long longValue, Double doubleValue, byte[] byteArrayValue) {
     this.key = key;
     this.valueType = valueType;
     this.stringValue = stringValue;
@@ -25,20 +27,22 @@ public class ExecutionProperty {
     this.byteArrayValue = byteArrayValue;
   }
 
+  @Override
   public Object getObjectValue() {
     return objectValue;
   }
 
-  public ExecutionProperty withObjectValue(Object propertyValue) {
+  public DefaultExecutionProperty withObjectValue(Object propertyValue) {
     this.objectValue = propertyValue;
     return this;
   }
 
+  @Override
   public String getKey() {
     return key;
   }
 
-  public ExecutionProperty withKey(String key) {
+  public DefaultExecutionProperty withKey(String key) {
     this.key = key;
     return this;
   }
@@ -48,7 +52,7 @@ public class ExecutionProperty {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    ExecutionProperty property = (ExecutionProperty) o;
+    DefaultExecutionProperty property = (DefaultExecutionProperty) o;
 
     if (!Arrays.equals(byteArrayValue, property.byteArrayValue)) return false;
     if (doubleValue != null ? !doubleValue.equals(property.doubleValue) : property.doubleValue != null) return false;
@@ -86,6 +90,7 @@ public class ExecutionProperty {
       '}';
   }
 
+  @Override
   public <T> T as(Class<T> clazz) {
     if (objectValue != null) {
       return (T) objectValue;

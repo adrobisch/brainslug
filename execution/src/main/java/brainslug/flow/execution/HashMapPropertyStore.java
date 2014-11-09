@@ -1,6 +1,7 @@
 package brainslug.flow.execution;
 
 import brainslug.flow.Identifier;
+import brainslug.flow.context.ExecutionProperties;
 import brainslug.util.Option;
 
 import java.util.Collections;
@@ -18,6 +19,6 @@ public class HashMapPropertyStore implements PropertyStore {
 
   @Override
   public ExecutionProperties loadProperties(Identifier<?> instanceId) {
-    return Option.of(propertiesByInstance.get(instanceId)).orElse(new ExecutionProperties());
+    return Option.of(propertiesByInstance.get(instanceId)).orElse(new DefaultExecutionProperties());
   }
 }

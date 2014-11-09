@@ -1,19 +1,21 @@
 package brainslug.flow.execution;
 
 import brainslug.flow.Identifier;
-import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.ExecutionContext;
+import brainslug.flow.context.Registry;
+import brainslug.flow.context.TriggerContext;
 
 public class DefaultExecutionContext implements ExecutionContext {
 
+  Registry registry;
   TriggerContext trigger;
-  BrainslugContext brainslugContext;
 
-  public DefaultExecutionContext(TriggerContext trigger, BrainslugContext brainslugContext) {
+  public DefaultExecutionContext(TriggerContext trigger, Registry registry) {
     this.trigger = trigger;
-    this.brainslugContext = brainslugContext;
+    this.registry = registry;
   }
 
-  public TriggerContext<?> getTrigger() {
+  public TriggerContext getTrigger() {
     return trigger;
   }
 
@@ -29,12 +31,6 @@ public class DefaultExecutionContext implements ExecutionContext {
 
   @Override
   public <T> T service(Class<T> clazz) {
-    return getBrainslugContext().getRegistry().getService(clazz);
-  }
-
-  // direct access should not be need
-  @Deprecated
-  public BrainslugContext getBrainslugContext() {
-    return brainslugContext;
+    return registry.getService(clazz);
   }
 }

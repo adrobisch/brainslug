@@ -8,8 +8,6 @@ import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
 
-import java.sql.Blob;
-
 import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
 public class QInstancePropertyEntity extends EntityPathBase<InstancePropertyEntity> {

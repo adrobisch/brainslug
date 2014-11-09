@@ -1,14 +1,15 @@
 package brainslug.flow.execution.async;
 
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.TriggerContext;
+import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AsyncTriggerExecutor {
   private Logger log = LoggerFactory.getLogger(AsyncTriggerExecutor.class);
 
-  public AsyncTriggerExecutionResult execute(AsyncTrigger asyncTrigger, BrainslugContext context) {
+  public AsyncTriggerExecutionResult execute(AsyncTrigger asyncTrigger, DefaultBrainslugContext context) {
     log.debug("executing async task: {}", asyncTrigger);
 
     AsyncTriggerExecutionResult result = trigger(asyncTrigger, context);
@@ -23,7 +24,7 @@ public class AsyncTriggerExecutor {
   protected AsyncTriggerExecutionResult trigger(AsyncTrigger asyncTrigger, BrainslugContext context) {
     try {
       context.trigger(
-        new TriggerContext()
+        new Trigger()
           .instanceId(asyncTrigger.getInstanceId())
           .definitionId(asyncTrigger.getDefinitionId())
           .nodeId(asyncTrigger.getNodeId())

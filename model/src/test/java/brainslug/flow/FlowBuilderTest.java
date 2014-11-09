@@ -1,7 +1,11 @@
 package brainslug.flow;
 
-import brainslug.flow.node.event.*;
+import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.node.*;
+import brainslug.flow.node.event.AbstractEventDefinition;
+import brainslug.flow.node.event.EndEvent;
+import brainslug.flow.node.event.IntermediateEvent;
+import brainslug.flow.node.event.StartEvent;
 import brainslug.flow.node.event.timer.StartTimerDefinition;
 import brainslug.flow.node.task.GoalPredicate;
 import brainslug.flow.node.task.RetryStrategy;
@@ -14,13 +18,12 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static brainslug.util.ID.*;
-
 import static brainslug.util.FlowDefinitionAssert.assertThat;
+import static brainslug.util.ID.*;
 
 public class FlowBuilderTest {
 
-  class MyService {
+  interface MyService {
   }
 
   @Test(expected = IllegalStateException.class)
@@ -127,10 +130,10 @@ public class FlowBuilderTest {
       public void define() {
         start(event(id(StartEvent)))
             .choice(id(Choice))
-            .when(constant(meaningOfLife).isEqualTo(42))
+            .when(eq(constant(meaningOfLife), 42))
               .execute(task(id(SecondTask)))
               .or()
-            .when(constant(meaningOfLife).isEqualTo(43))
+            .when(eq(constant(meaningOfLife), 43))
               .execute(task(id(ThirdTask)));
 
         merge(id(Merge), id(SecondTask), id(ThirdTask)).end(event(id(EndEvent2)));
@@ -222,12 +225,12 @@ public class FlowBuilderTest {
 
         after(id(TestTask))
           .choice(id(Choice))
-            .when(constant(meaningOfLife).isEqualTo(42))
+            .when(eq(constant(meaningOfLife), 42))
               .execute(task(id(SecondTask)))
                 .then()
               .execute(task(id(FourthTask)))
             .or()
-            .when(constant(meaningOfLife).isEqualTo(43))
+            .when(eq(constant(meaningOfLife), 43))
               .execute(task(id(ThirdTask)))
               .end(event(id(End)));
 
@@ -346,6 +349,9 @@ public class FlowBuilderTest {
         flowId(id("recurringTimerFlow"));
 
         Task callee = new Task() {
+          @Override
+          public void execute(ExecutionContext o) {
+          }
         };
 
         start(event(id("start")), every(5, TimeUnit.SECONDS))

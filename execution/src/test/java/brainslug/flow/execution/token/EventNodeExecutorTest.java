@@ -3,8 +3,12 @@ package brainslug.flow.execution.token;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
-import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.*;
+import brainslug.flow.context.BrainslugContextBuilder;
+import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.Trigger;
+import brainslug.flow.execution.DefaultExecutionContext;
+import brainslug.flow.context.ExecutionContext;
+import brainslug.flow.execution.FlowNodeExecutionResult;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.flow.execution.expression.ContextPredicate;
@@ -22,11 +26,13 @@ import static org.mockito.Mockito.*;
 public class EventNodeExecutorTest {
   AsyncTriggerStore asyncTriggerStoreMock = mock(AsyncTriggerStore.class);
 
-  BrainslugContext brainslugContextWithMock = new BrainslugContext()
+  DefaultBrainslugContext brainslugContextWithMock = new BrainslugContextBuilder()
     .withAsyncTriggerStore(asyncTriggerStoreMock)
-    .withTokenStore(tokenStoreMock());
+    .withTokenStore(tokenStoreMock())
+    .build();
 
-  EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor().withTokenStore(brainslugContextWithMock.getTokenStore()));
+  EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor(brainslugContextWithMock.getAsyncTriggerStore(), brainslugContextWithMock.getPredicateEvaluator())
+    .withTokenOperations(new TokenOperations(brainslugContextWithMock.getTokenStore())));
 
   TokenStore tokenStoreMock() {
     TokenStore tokenStoreMock = mock(TokenStore.class);
@@ -38,7 +44,7 @@ public class EventNodeExecutorTest {
   public void shouldWaitForTriggerAtIntermediateEvent() {
     // given:
     FlowDefinition eventFlow = eventFlow();
-    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger(), new BrainslugContextBuilder().build().getRegistry());
 
     // when:
     FlowNodeExecutionResult executionResult = eventNodeExecutor.execute(eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class), execution);
@@ -51,7 +57,7 @@ public class EventNodeExecutorTest {
   public void shouldContinueOnSignalingTrigger() {
     // given:
     FlowDefinition eventFlow = eventFlow();
-    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext().signaling(true), new BrainslugContext());
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
 
     // when:
     FlowNodeExecutionResult executionResult = eventNodeExecutor.execute(eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class), execution);
@@ -66,7 +72,7 @@ public class EventNodeExecutorTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext().signaling(true), new BrainslugContext());
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, false);
 
     // when:
@@ -83,7 +89,7 @@ public class EventNodeExecutorTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext().signaling(true), new BrainslugContext());
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, true);
 
     // when:
@@ -100,7 +106,7 @@ public class EventNodeExecutorTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger(), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, true);
 
     // when:
@@ -117,7 +123,7 @@ public class EventNodeExecutorTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), new BrainslugContext());
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger(), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, false);
 
     // when:
@@ -134,7 +140,7 @@ public class EventNodeExecutorTest {
     FlowDefinition eventFlow = timerEventFlow();
     EventDefinition timerEventNode = eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class);
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new TriggerContext(), brainslugContextWithMock);
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger(), brainslugContextWithMock.getRegistry());
 
     // when:
     when(eventNodeExecutor.getCurrentTime()).thenReturn(42l);

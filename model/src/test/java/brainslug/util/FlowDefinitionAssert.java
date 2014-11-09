@@ -1,9 +1,10 @@
 package brainslug.util;
 
-import brainslug.flow.*;
+import brainslug.flow.EnumIdentifier;
 import brainslug.flow.FlowDefinition;
-import brainslug.flow.path.FlowEdgeDefinition;
+import brainslug.flow.Identifier;
 import brainslug.flow.node.FlowNodeDefinition;
+import brainslug.flow.path.FlowEdgeDefinition;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 

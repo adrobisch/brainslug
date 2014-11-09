@@ -1,23 +1,21 @@
 package brainslug.bpmn;
 
-import brainslug.flow.*;
-import brainslug.flow.node.*;
-import brainslug.flow.expression.Expression;
 import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
-import brainslug.flow.node.event.IntermediateEvent;
+import brainslug.flow.FlowBuilder;
+import brainslug.flow.expression.Expression;
+import brainslug.flow.node.*;
 import brainslug.flow.node.event.AbstractEventDefinition;
+import brainslug.flow.node.event.IntermediateEvent;
+import brainslug.flow.node.task.AbstractTaskDefinition;
 import brainslug.flow.path.AndDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.flow.path.FlowPathDefinition;
 import brainslug.flow.path.ThenDefinition;
-import brainslug.flow.node.task.AbstractTaskDefinition;
 import brainslug.util.Option;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
-import org.activiti.bpmn.model.EndEvent;
 import org.activiti.bpmn.model.Process;
-import org.activiti.bpmn.model.StartEvent;
 
 import java.util.ArrayList;
 import java.util.List;

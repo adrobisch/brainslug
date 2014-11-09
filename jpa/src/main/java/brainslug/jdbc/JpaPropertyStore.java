@@ -1,8 +1,10 @@
 package brainslug.jdbc;
 
 import brainslug.flow.Identifier;
-import brainslug.flow.execution.ExecutionProperties;
-import brainslug.flow.execution.ExecutionProperty;
+import brainslug.flow.context.ExecutionProperties;
+import brainslug.flow.context.ExecutionProperty;
+import brainslug.flow.execution.DefaultExecutionProperties;
+import brainslug.flow.execution.DefaultExecutionProperty;
 import brainslug.flow.execution.PropertyStore;
 import brainslug.jdbc.entity.InstancePropertyEntity;
 import brainslug.jdbc.entity.query.QInstancePropertyEntity;
@@ -67,10 +69,10 @@ public class JpaPropertyStore implements PropertyStore {
 
   @Override
   public ExecutionProperties loadProperties(Identifier<?> instanceId) {
-    return new ExecutionProperties().fromList(
+    return new DefaultExecutionProperties().fromList(
       database.query().from(QInstancePropertyEntity.instancePropertyEntity)
         .where(QInstancePropertyEntity.instancePropertyEntity.instanceId.eq(instanceId.stringValue()))
-        .list(ConstructorExpression.create(ExecutionProperty.class,
+        .list(ConstructorExpression.create(DefaultExecutionProperty.class,
             QInstancePropertyEntity.instancePropertyEntity.propertyKey,
             QInstancePropertyEntity.instancePropertyEntity.valueType,
             QInstancePropertyEntity.instancePropertyEntity.stringValue,

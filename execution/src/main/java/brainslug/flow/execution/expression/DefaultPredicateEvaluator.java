@@ -1,15 +1,12 @@
 package brainslug.flow.execution.expression;
 
-import brainslug.flow.execution.Execute;
-import brainslug.flow.execution.ExecutionContext;
-import brainslug.flow.node.task.HandlerCallDefinition;
-import brainslug.flow.node.task.ServiceCallDefinition;
+import brainslug.flow.context.Registry;
+import brainslug.flow.execution.CallDefinitionExecutor;
+import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.expression.EqualDefinition;
 import brainslug.flow.expression.Expression;
 import brainslug.flow.expression.Property;
-import brainslug.util.ReflectionUtil;
-
-import java.lang.reflect.Method;
+import brainslug.flow.node.task.CallDefinition;
 
 public class DefaultPredicateEvaluator implements PredicateEvaluator {
 
@@ -37,41 +34,19 @@ public class DefaultPredicateEvaluator implements PredicateEvaluator {
     if (equalDefinition.getActual() instanceof PropertyPredicate) {
       return ((PropertyPredicate) equalDefinition.getActual()).isFulfilled(context.getTrigger().getProperties());
     }
-    if (equalDefinition.getActual() instanceof ServicePredicate) {
-      return ((ServicePredicate) equalDefinition.getActual()).isFulfilled(context.getBrainslugContext().getRegistry());
-    }
     if (equalDefinition.getActual() instanceof Property) {
       return propertyValue((Property) equalDefinition.getActual(), context);
     }
     if (equalDefinition.getActual() instanceof Expression) {
       return ((Expression) equalDefinition.getActual()).getValue();
     }
-    if (equalDefinition.getActual() instanceof ServiceCallDefinition) {
-      return invokeServiceMethod((ServiceCallDefinition) equalDefinition.getActual(), context);
-    }
-    if (equalDefinition.getActual() instanceof HandlerCallDefinition) {
-      return invokeHandlerMethod((HandlerCallDefinition) equalDefinition.getActual());
+    if (equalDefinition.getActual() instanceof CallDefinition) {
+      return executeCall((CallDefinition) equalDefinition.getActual(), context);
     }
     throw new UnsupportedOperationException("unable to evaluate " + equalDefinition);
   }
 
-  private Object invokeServiceMethod(ServiceCallDefinition methodDefinition, ExecutionContext context) {
-    try {
-      Method method = methodDefinition.getServiceClass().getMethod(methodDefinition.getMethodName());
-      Object methodResult = method.invoke(context.getBrainslugContext().getRegistry().getService(methodDefinition.getServiceClass()));
-      return methodResult;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private Object invokeHandlerMethod(HandlerCallDefinition methodDefinition) {
-    try {
-      Method executeMethod = ReflectionUtil.getFirstMethodAnnotatedWith(methodDefinition.getCallee().getClass(), Execute.class);
-      Object methodResult = executeMethod.invoke(methodDefinition.getCallee(), methodDefinition.getArguments().toArray());
-      return methodResult;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  private Object executeCall(CallDefinition actual, ExecutionContext context) {
+    return new CallDefinitionExecutor().execute(actual, context);
   }
 }

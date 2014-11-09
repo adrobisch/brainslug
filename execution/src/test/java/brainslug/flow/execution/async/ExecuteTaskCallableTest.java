@@ -1,6 +1,6 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.DefaultBrainslugContext;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -17,8 +17,8 @@ public class ExecuteTaskCallableTest {
   AsyncTriggerStore asyncTriggerStore = mock(AsyncTriggerStore.class);
   AbstractRetryStrategy retryStrategy = mock(AbstractRetryStrategy.class);
 
-  BrainslugContext brainslugContext() {
-    BrainslugContext context = mock(BrainslugContext.class);
+  DefaultBrainslugContext brainslugContext() {
+    DefaultBrainslugContext context = mock(DefaultBrainslugContext.class);
     when(context.getAsyncTriggerStore()).thenReturn(asyncTriggerStore);
     return context;
   }
@@ -26,7 +26,7 @@ public class ExecuteTaskCallableTest {
   @Test
   public void shouldIncrementRetriesOnFailedExecution() {
     // given:
-    BrainslugContext context = brainslugContext();
+    DefaultBrainslugContext context = brainslugContext();
     AsyncTrigger asyncTriggerWithRetriesLeft = taskMock(5);
 
     when(asyncTriggerExecutor.execute(asyncTriggerWithRetriesLeft, context))
@@ -45,7 +45,7 @@ public class ExecuteTaskCallableTest {
   @Test(expected = IllegalStateException.class)
   public void shouldThrowExceptionWhenNoRetriesLeft() {
     // given:
-    BrainslugContext context = brainslugContext();
+    DefaultBrainslugContext context = brainslugContext();
     AsyncTrigger asyncTriggerWithNoRetriesLeft = taskMock(0);
 
     // when:

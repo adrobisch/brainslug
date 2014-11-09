@@ -1,14 +1,20 @@
 package brainslug.flow.execution.token;
 
 import brainslug.AbstractExecutionTest;
+import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
-import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.*;
+import brainslug.flow.Identifier;
+import brainslug.flow.context.BrainslugContextBuilder;
+import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.ExecutionProperties;
+import brainslug.flow.context.Trigger;
+import brainslug.flow.execution.DefaultExecutionContext;
+import brainslug.flow.execution.DefaultExecutionProperties;
+import brainslug.flow.execution.FlowNodeExecutionResult;
+import brainslug.flow.execution.FlowNodeExecutor;
 import brainslug.flow.execution.expression.PropertyPredicate;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.Listener;
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.Identifier;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.util.IdUtil;
 import org.assertj.core.api.Assertions;
@@ -17,8 +23,6 @@ import org.mockito.InOrder;
 
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
-import static brainslug.util.TestId.CHOICE;
-import static brainslug.util.TestId.CHOICEID;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -30,12 +34,12 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     Listener listener = choiceFlowWithListener();
     // when:
 
-    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), ExecutionProperties.with("foo", "bar"));
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), DefaultExecutionProperties.with("foo", "bar"));
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new Trigger().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK)).definitionId(CHOICEID).instanceId(instanceId));
     eventOrder.verifyNoMoreInteractions();
   }
 
@@ -45,21 +49,21 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     Listener listener = choiceFlowWithListener();
     // when:
 
-    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), ExecutionProperties.with("foo", "oof"));
+    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), DefaultExecutionProperties.with("foo", "oof"));
     // then:
     InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new TriggerContext().nodeId(id(TASK2)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new Trigger().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK2)).definitionId(CHOICEID).instanceId(instanceId));
     eventOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void shouldEvaluatePropertyPredicate() {
     // given:
-    BrainslugContext brainslugContext = new BrainslugContext();
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor().withTokenStore(brainslugContext.getTokenStore());
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new TriggerContext(), brainslugContext);
+    DefaultBrainslugContext brainslugContext = new BrainslugContextBuilder().build();
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(context.getPredicateEvaluator()).withTokenOperations(new TokenOperations(brainslugContext.getTokenStore()));
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), context.getRegistry());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(true);
     // when:
@@ -74,9 +78,9 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldTakeOtherwisePathIfNoneMatches() {
     // given:
-    BrainslugContext brainslugContext = new BrainslugContext();
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor().withTokenStore(brainslugContext.getTokenStore());
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new TriggerContext(), brainslugContext);
+    DefaultBrainslugContext brainslugContext = new BrainslugContextBuilder().build();
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(context.getPredicateEvaluator()).withTokenOperations(new TokenOperations(brainslugContext.getTokenStore()));
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), context.getRegistry());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(false);
 
@@ -120,9 +124,9 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
         @Override
         public void define() {
           start(event(id(START))).choice(id(CHOICE))
-            .when(property(id("foo")).isEqualTo("bar")).execute(task(id(TASK)))
+            .when(eq(property(id("foo")), "bar")).execute(task(id(TASK)))
             .or()
-            .when(property(id("foo")).isEqualTo("oof")).execute(task(id(TASK2)))
+            .when(eq(property(id("foo")), "oof")).execute(task(id(TASK2)))
             .otherwise()
             .end(id("otherwise"));
         }

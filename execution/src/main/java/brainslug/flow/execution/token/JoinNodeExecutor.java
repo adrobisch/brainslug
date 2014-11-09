@@ -1,20 +1,20 @@
 package brainslug.flow.execution.token;
 
-import brainslug.flow.execution.ExecutionContext;
-import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.flow.Identifier;
+import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.node.JoinDefinition;
+import brainslug.flow.path.FlowEdgeDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class JoinNodeExecutor extends DefaultNodeExecutor<JoinDefinition> {
+public class JoinNodeExecutor extends DefaultNodeExecutor<JoinNodeExecutor, JoinDefinition> {
 
   @Override
   public brainslug.flow.execution.FlowNodeExecutionResult execute(JoinDefinition joinDefinition, ExecutionContext execution) {
     Identifier instanceId = execution.getTrigger().getInstanceId();
-    Map<Identifier, List<Token>> joinTokens = tokenStore.getNodeTokens(joinDefinition.getId(), instanceId).groupedBySourceNode();
+    Map<Identifier, List<Token>> joinTokens = tokenOperations.getNodeTokensGroupedBySource(joinDefinition.getId(), instanceId);
     List<Token> consumedTokens = new ArrayList<Token>();
     for (FlowEdgeDefinition edge : joinDefinition.getIncoming()) {
       List<Token> edgeTokens = joinTokens.get(edge.getSource().getId());
@@ -24,7 +24,7 @@ public class JoinNodeExecutor extends DefaultNodeExecutor<JoinDefinition> {
         consumedTokens.addAll(edgeTokens);
       }
     }
-    removeTokens(instanceId, consumedTokens);
+    tokenOperations.removeTokens(instanceId, consumedTokens);
     return takeAll(joinDefinition);
   }
 

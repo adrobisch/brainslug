@@ -1,9 +1,9 @@
 package brainslug.flow.renderer;
 
-import brainslug.flow.*;
+import brainslug.flow.FlowBuilder;
 import brainslug.flow.node.ChoiceDefinition;
-import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
+import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.flow.path.ThenDefinition;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.util.mxCellRenderer;

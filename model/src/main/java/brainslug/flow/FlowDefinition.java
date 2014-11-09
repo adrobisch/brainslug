@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A FlowDefinition is used to describe paths of actions for
+ * a desired outcome. It consists of a set of nodes which are typed to define their behaviour
+ * and connected according to the sequence of execution.
+ */
 public class FlowDefinition {
 
   private Identifier id;

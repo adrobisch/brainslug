@@ -28,14 +28,15 @@ public class ReflectionUtilTest {
     }
   }
 
-  @Test(expected = NoSuchMethodError.class)
-  public void shouldThrowWhenNoMethodWithAnnotationFound() {
-    ReflectionUtil.getFirstMethodAnnotatedWith(ClassWithOutAnnotation.class, MyAnnotation.class);
+  @Test
+  public void shouldReturnNotPresentIfNoMethodFound() {
+    assertThat(ReflectionUtil.getFirstMethodAnnotatedWith(ClassWithOutAnnotation.class, MyAnnotation.class).isPresent()).isFalse();
   }
 
   @Test
   public void shouldFindMethodWithAnnotation() {
-    Method method = ReflectionUtil.getFirstMethodAnnotatedWith(ClassWithAnnotation.class, MyAnnotation.class);
-    assertThat(method.getName()).isEqualTo("methodWithAnnotation");
+    Option<Method> method = ReflectionUtil.getFirstMethodAnnotatedWith(ClassWithAnnotation.class, MyAnnotation.class);
+    assertThat(method.isPresent()).isTrue();
+    assertThat(method.get().getName()).isEqualTo("methodWithAnnotation");
   }
 }

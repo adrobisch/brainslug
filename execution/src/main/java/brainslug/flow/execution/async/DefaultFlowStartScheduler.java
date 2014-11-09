@@ -3,7 +3,6 @@ package brainslug.flow.execution.async;
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.DefinitionStore;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.event.StartEvent;
 import brainslug.flow.node.event.timer.StartTimerDefinition;
@@ -24,11 +23,11 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
   SchedulerOptions schedulerOptions;
 
   @Override
-  public void start(SchedulerOptions schedulerOptions, BrainslugContext brainslugContext, DefinitionStore definitionStore) {
+  public void start(SchedulerOptions schedulerOptions, BrainslugContext brainslugContext, Collection<FlowDefinition> definitions) {
     this.schedulerOptions = schedulerOptions;
     this.context = brainslugContext;
 
-    this.timedDefinitions = getFlowDefinitionsWithStartTimer(definitionStore);
+    this.timedDefinitions = getFlowDefinitionsWithStartTimer(definitions);
 
     startScheduler();
   }
@@ -45,10 +44,10 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
   public void stop() {
   }
 
-  public Set<TimedFlowDefinition> getFlowDefinitionsWithStartTimer(DefinitionStore definitionStore) {
+  public Set<TimedFlowDefinition> getFlowDefinitionsWithStartTimer(Collection<FlowDefinition> definitions) {
     Set<TimedFlowDefinition> definitionsWithTimer = new HashSet<TimedFlowDefinition>();
-    for (FlowDefinition definition: definitionStore.getDefinitions()) {
-      for (FlowNodeDefinition<?> node: definition.getNodes()) {
+    for (FlowDefinition definition : definitions) {
+      for (FlowNodeDefinition<?> node : definition.getNodes()) {
         if (node.is(StartEvent.class) &&
           node.as(StartEvent.class).getStartTimerDefinition().isPresent()) {
 
@@ -91,14 +90,17 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
     @Override
     public void run() {
       log.debug("checking for due flows...");
+      try {
+        for (TimedFlowDefinition definition : timedDefinitions) {
+          if (isDue(definition)) {
+            context.startFlow(definition.getFlowDefinition().getId(),
+              definition.getStartNode().getId());
 
-      for (TimedFlowDefinition definition: timedDefinitions) {
-        if (isDue(definition)) {
-          context.startFlow(definition.getFlowDefinition().getId(),
-            definition.getStartNode().getId());
-
-          lastStart.put(definition.getFlowDefinition().getId(), new Date().getTime());
+            lastStart.put(definition.getFlowDefinition().getId(), new Date().getTime());
+          }
         }
+      } catch (Exception e) {
+        log.error("error during starting timed definitions", e);
       }
     }
 

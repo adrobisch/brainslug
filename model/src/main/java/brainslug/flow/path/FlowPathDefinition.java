@@ -2,13 +2,13 @@ package brainslug.flow.path;
 
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
+import brainslug.flow.node.ChoiceDefinition;
 import brainslug.flow.node.EventDefinition;
+import brainslug.flow.node.FlowNodeDefinition;
+import brainslug.flow.node.ParallelDefinition;
 import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.flow.node.event.EndEvent;
 import brainslug.flow.node.event.IntermediateEvent;
-import brainslug.flow.node.ChoiceDefinition;
-import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.flow.node.ParallelDefinition;
 import brainslug.flow.node.task.AbstractTaskDefinition;
 
 import java.util.LinkedList;

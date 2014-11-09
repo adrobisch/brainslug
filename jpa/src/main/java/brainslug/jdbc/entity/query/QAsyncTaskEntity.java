@@ -1,12 +1,13 @@
 package brainslug.jdbc.entity.query;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 import brainslug.jdbc.entity.AsyncTaskEntity;
-import com.mysema.query.types.path.*;
-
-import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.Path;
+import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.path.EntityPathBase;
+import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.StringPath;
+
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
 public class QAsyncTaskEntity extends EntityPathBase<AsyncTaskEntity> {
 

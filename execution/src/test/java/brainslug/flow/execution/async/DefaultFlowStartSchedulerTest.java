@@ -3,6 +3,8 @@ package brainslug.flow.execution.async;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.Identifier;
 import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.BrainslugContextBuilder;
+import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.util.IdUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -13,9 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class DefaultFlowStartSchedulerTest {
   @Test
@@ -23,7 +23,7 @@ public class DefaultFlowStartSchedulerTest {
     DefaultFlowStartScheduler flowStartScheduler = new DefaultFlowStartScheduler();
     BrainslugContext context = getBrainslugContextWithFlows();
 
-    Set<DefaultFlowStartScheduler.TimedFlowDefinition> flowDefinitionsWithStartTimer = flowStartScheduler.getFlowDefinitionsWithStartTimer(context.getDefinitionStore());
+    Set<DefaultFlowStartScheduler.TimedFlowDefinition> flowDefinitionsWithStartTimer = flowStartScheduler.getFlowDefinitionsWithStartTimer(context.getDefinitions());
     Assertions.assertThat(flowDefinitionsWithStartTimer)
       .hasSize(1);
 
@@ -40,7 +40,7 @@ public class DefaultFlowStartSchedulerTest {
     BrainslugContext context = getBrainslugContextWithFlows();
     DefaultFlowStartScheduler flowStartScheduler = new DefaultFlowStartScheduler();
 
-    flowStartScheduler.start(new SchedulerOptions().withSchedulePeriod(1), context, context.getDefinitionStore());
+    flowStartScheduler.start(new SchedulerOptions().withSchedulePeriod(1), context, context.getDefinitions());
 
     await().until(flowWasStarted(context, IdUtil.id("withTimer"), IdUtil.id("start"), times(2)));
   }
@@ -61,21 +61,24 @@ public class DefaultFlowStartSchedulerTest {
   }
 
   private BrainslugContext getBrainslugContextWithFlows() {
-    return spy(new BrainslugContext().addFlowDefinition(new FlowBuilder() {
+    DefaultBrainslugContext object = new BrainslugContextBuilder().build().addFlowDefinition(new FlowBuilder() {
 
-        @Override
-        public void define() {
-          flowId(id("withTimer"));
+      @Override
+      public void define() {
+        flowId(id("withTimer"));
 
-          start(event(id("start")), every(1, TimeUnit.SECONDS));
-        }
-      }.getDefinition()).addFlowDefinition(new FlowBuilder() {
+        start(event(id("start")), every(1, TimeUnit.SECONDS));
+      }
+    }.getDefinition()).addFlowDefinition(new FlowBuilder() {
 
-        @Override
-        public void define() {
-          start(event(id("start")));
-        }
-      }.getDefinition()));
+      @Override
+      public void define() {
+        start(event(id("start")));
+      }
+    }.getDefinition());
+
+    return spy(object);
+
   }
 
 }

@@ -200,9 +200,9 @@ public class JGraphRendererTest {
       public void define() {
         start(event(id("start")))
           .choice(id("choice")).display("Fish or Ships?")
-            .when(expression("Fish").isTrue()).execute(task(id("task2")))
+            .when(isTrue(expression("Fish"))).execute(task(id("task2")))
               .or()
-            .when(expression("Ships").isTrue()).execute(task(id("task3")));
+            .when(isTrue(expression("Ships"))).execute(task(id("task3")));
       }
     };
   }
@@ -213,9 +213,9 @@ public class JGraphRendererTest {
       public void define() {
         start(event(id("start")))
             .choice(id("choice")).display("Fish or Ships?")
-            .when(expression("Fish").isTrue()).execute(task(id("task2")))
+            .when(isTrue(expression("Fish"))).execute(task(id("task2")))
               .or()
-            .when(expression("Ships").isTrue()).execute(task(id("task3")));
+            .when(isTrue(expression("Ships"))).execute(task(id("task3")));
         merge(id("merge"), id("task2"), id("task3"));
       }
     };
@@ -227,9 +227,9 @@ public class JGraphRendererTest {
       public void define() {
         start(event(id("start")))
             .choice(id("choice")).display("Fish or Ships?")
-            .when(expression("Fish").isTrue()).execute(task(id("task2")))
+            .when(isTrue(expression("Fish"))).execute(task(id("task2")))
               .or()
-            .when(expression("Ships").isTrue()).execute(task(id("task3")));
+            .when(isTrue(expression("Ships"))).execute(task(id("task3")));
         merge(id("merge"), id("task2"), id("task3"));
 
         after(id("task2")).waitFor(event(id("something"))).end(event(id("end2")));
@@ -243,9 +243,9 @@ public class JGraphRendererTest {
       public void define() {
         start(event(id("start")))
             .choice(id("choice")).display("Fish or Ships?")
-            .when(expression("Fish").isTrue()).execute(task(id("task2")))
+            .when(isTrue(expression("Fish"))).execute(task(id("task2")))
             .or()
-            .when(expression("Ships").isTrue()).execute(task(id("task3")));
+            .when(isTrue(expression("Ships"))).execute(task(id("task3")));
         join(id("join"), id("task2"), id("task3")).end(event(id("end")));
       }
     };

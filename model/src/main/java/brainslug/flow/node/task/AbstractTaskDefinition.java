@@ -2,7 +2,6 @@ package brainslug.flow.node.task;
 
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.Identifier;
-import brainslug.util.Mixable;
 import brainslug.util.Option;
 
 abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefinition> extends FlowNodeDefinition<SelfType> {
@@ -10,43 +9,140 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
   protected Class<?> delegateClass;
   protected boolean async;
   protected boolean retryAsync;
-  protected Mixable marker;
   protected CallDefinition methodCall;
   protected Identifier goalId;
   protected RetryStrategy retryStrategy;
 
+  /**
+   * sets a delegate class to be executed as action for this task
+   *
+   * <p>
+   * Example:
+   *
+   * <pre>
+   * {@code @Override public void define() {
+      start(event(id(START)))
+      .execute(task(id(TASK)).delegate(Delegate.class))
+      .end(event(id(END)));
+      }
+   * }
+   * </pre>
+   * </p>
+   *
+   * @param delegateClass type of the delegate class for lookup in the {@link brainslug.flow.context.Registry}
+   * @return the task definition
+   *
+   */
   public SelfType delegate(Class<?> delegateClass) {
     this.delegateClass = delegateClass;
-
     return self();
   }
 
+  /**
+   * sets a method invocation as action for this task
+   *
+   * <p>
+   * Example:
+   *
+   * <pre>
+   * {@code @Override public void define() {
+      start(event(id(START)))
+      .execute(task(id(TASK)).call(method(TestService.class).name("getString")))
+      .end(event(id(END)));
+      }
+   * }
+   * </pre>
+   * </p>
+   *
+   * @param methodCall the method invocation
+   * @return the task definition
+   *
+   */
   public SelfType call(CallDefinition methodCall) {
     this.methodCall = methodCall;
-
     return self();
   }
 
+  /**
+   * flag the task for async execution. The execution will be paused
+   * and continued asynchronously when reaching this task.
+   *
+   * <p>
+   * Example:
+   *
+   * <pre>
+   * {@code @Override public void define() {
+      start(event(id(START)))
+      .execute(task(id(TASK)).async(true))
+      .end(event(id(END)));
+      }
+   * }
+   * </pre>
+   * </p>
+   *
+   * @param async true if task execution should be async
+   * @return the task definition
+   *
+   */
   public SelfType async(boolean async) {
     this.async = async;
-
     return self();
   }
 
+  /**
+   * flag the task for async execution in case of error. The execution will be paused
+   * and continued asynchronously when the execution of this task fails.
+   *
+   * Be aware that this will not be possible int transactional environments if the transaction
+   * is already set to rollback because of the error.
+   *
+   * <p>
+   * Example:
+   *
+   * <pre>
+   * {@code @Override public void define() {
+  start(event(id(START)))
+  .execute(task(id(TASK)).retryAsync(true))
+  .end(event(id(END)));
+  }
+   * }
+   * </pre>
+   * </p>
+   *
+   * @param retryAsync true if task execution should be scheduled for async retry
+   * @return the task definition
+   *
+   */
   public SelfType retryAsync(boolean retryAsync) {
     this.retryAsync = retryAsync;
-
     return self();
   }
 
+  /**
+   * set the retry strategy in case of async execution.
+   *
+   * <p>
+   * Example:
+   *
+   * <pre>
+   * {@code new FlowBuilder() {
+      @Override
+      public void define() {
+      GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
+
+      start(id("start"))
+      .execute(task(id("simpleTask")).retryAsync(true).retryStrategy(retryStrategy))
+      .end(id("end"));
+      }
+    }
+   * }
+   * </pre>
+   * </p>
+   * @param retryStrategy the retry strategy
+   * @return this task definition with retryStrategy defined
+   */
   public SelfType retryStrategy(RetryStrategy retryStrategy) {
     this.retryStrategy = retryStrategy;
-    return self();
-  }
-
-  public SelfType marker(Mixable marker) {
-    this.marker = marker;
-
     return self();
   }
 
@@ -65,16 +161,16 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
         public void define() {
           GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
 
-          start(event(id(START)))
-          .execute(task(id(TASK), simpleTask).goal(testGoal))
-          .end(event(id(END)));
+          start(event(id("START")))
+          .execute(task(id("TASK"), simpleTask).goal(testGoal))
+          .end(event(id("END")));
         }
      }
    * }
    * </pre>
    * </p>
    * @param goal the goal this task belongs to
-   * @return this event definition with goal defined
+   * @return this task definition with goal defined
    */
   public SelfType goal(GoalDefinition goal) {
     this.goalId = goal.getId();
@@ -92,10 +188,6 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
 
   public CallDefinition getMethodCall() {
     return methodCall;
-  }
-
-  public Mixable getMarker() {
-    return marker;
   }
 
   public Option<Identifier> getGoal() {

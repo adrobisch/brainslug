@@ -1,18 +1,25 @@
 package brainslug.flow.execution.token;
 
-import brainslug.flow.execution.ExecutionContext;
+import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.execution.FlowNodeExecutionResult;
+import brainslug.flow.execution.expression.PredicateEvaluator;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.flow.path.ThenDefinition;
 
-public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceDefinition> {
+public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceNodeExecutor, ChoiceDefinition> {
+
+  private PredicateEvaluator predicateEvaluator;
+
+  public ChoiceNodeExecutor(PredicateEvaluator predicateEvaluator) {
+    this.predicateEvaluator = predicateEvaluator;
+  }
 
   @Override
   public FlowNodeExecutionResult execute(ChoiceDefinition choiceDefinition, ExecutionContext execution) {
-    consumeAllNodeTokens(execution.getTrigger());
+    removeIncomingTokens(execution.getTrigger());
 
     for (ThenDefinition thenPath : choiceDefinition.getThenPaths()) {
-      if (execution.getBrainslugContext().getPredicateEvaluator().evaluate(thenPath.getPredicateDefinition(), execution)) {
+      if (predicateEvaluator.evaluate(thenPath.getPredicateDefinition(), execution)) {
         return new FlowNodeExecutionResult().withNext(thenPath.getFirstNode());
       }
     }

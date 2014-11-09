@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Identifies a method which is meant for execution in a {@link brainslug.flow.node.task.HandlerCallDefinition} callee.
  * Arguments for this method will provided from the {@link brainslug.flow.context.Registry}.
- * Its also possible to obtain the {@link brainslug.flow.execution.ExecutionContext} this way.
+ * Its also possible to obtain the {@link brainslug.flow.context.ExecutionContext} this way.
  *
  * @see brainslug.flow.execution.token.TaskNodeExecutor and the corresponding test
  */

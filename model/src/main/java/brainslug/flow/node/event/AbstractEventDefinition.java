@@ -13,11 +13,26 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
 
   private TimerDefinition elapsedTimeDefinition;
 
+  /**
+   * sets a predicate which is checked to determine whether the execution
+   * should be continued immediately for this event, without waiting
+   * for a signaling trigger.
+   *
+   * @param continuePredicate the predicate to be checked
+   * @return the event definition
+   */
   public Self continueIf(PredicateDefinition continuePredicate) {
     this.continuePredicate = continuePredicate;
     return (Self) this;
   }
 
+  /**
+   * defined this event as timed event, causing the execution
+   * to wait for the given duration. the trigger will be asynchronously.
+   *
+   * @param duration the duration to be waited before
+   * @return the event definition
+   */
   public Self elapsedTime(long duration, TimeUnit unit) {
     this.elapsedTimeDefinition = new TimerDefinition(duration, unit);
     return (Self) this;

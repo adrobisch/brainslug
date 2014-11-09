@@ -1,11 +1,11 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.DefaultBrainslugContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerScheduler {
-  protected BrainslugContext context;
+  protected DefaultBrainslugContext context;
   protected AtomicBoolean running = new AtomicBoolean(false);
   protected AsyncTriggerSchedulerOptions options;
 
@@ -21,7 +21,7 @@ public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerSched
   }
 
   @Override
-  public synchronized void start(BrainslugContext context, AsyncTriggerSchedulerOptions options) {
+  public synchronized void start(DefaultBrainslugContext context, AsyncTriggerSchedulerOptions options) {
     if (options.disabled) {
       return;
     }

@@ -1,8 +1,8 @@
 package brainslug.flow;
 
 import brainslug.flow.node.EventDefinition;
-import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
+import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.flow.path.FlowPathDefinition;
 import org.junit.Test;
 

@@ -1,15 +1,15 @@
 package brainslug.quartz;
 
-import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.ExecutionContext;
-import brainslug.flow.execution.SimpleTask;
-import brainslug.flow.execution.async.AsyncTrigger;
-import brainslug.flow.execution.async.AsyncTriggerSchedulerOptions;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
-import static com.jayway.awaitility.Awaitility.*;
-
+import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.BrainslugContextBuilder;
+import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.ExecutionContext;
+import brainslug.flow.execution.SimpleTask;
+import brainslug.flow.execution.async.AsyncTrigger;
+import brainslug.flow.execution.async.AsyncTriggerSchedulerOptions;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.quartz.JobDetail;
@@ -21,6 +21,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import java.util.concurrent.Callable;
 
 import static brainslug.util.IdUtil.id;
+import static com.jayway.awaitility.Awaitility.await;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -49,7 +50,7 @@ public class QuartzSchedulerTest {
 
   private QuartzScheduler quartzSchedulerWithContextMock(Scheduler scheduler) {
     QuartzScheduler quartzScheduler = new QuartzScheduler(scheduler);
-    quartzScheduler.start(mock(BrainslugContext.class), new AsyncTriggerSchedulerOptions());
+    quartzScheduler.start(mock(DefaultBrainslugContext.class), new AsyncTriggerSchedulerOptions());
     return quartzScheduler;
   }
 
@@ -69,7 +70,9 @@ public class QuartzSchedulerTest {
 
     Scheduler quartzScheduler = createQuartzScheduler();
 
-    BrainslugContext context = new BrainslugContext().withAsyncTriggerScheduler(new QuartzScheduler(quartzScheduler))
+    BrainslugContext context = new BrainslugContextBuilder()
+        .withAsyncTriggerScheduler(new QuartzScheduler(quartzScheduler))
+        .build()
         .addFlowDefinition(asyncTaskFlow).start();
     // when:
     context.startFlow(asyncTaskFlow.getId(), id("start"));
@@ -96,7 +99,7 @@ public class QuartzSchedulerTest {
     }
   }
 
-  class SimpleAsyncTask extends SimpleTask {
+  class SimpleAsyncTask implements SimpleTask {
     boolean called;
 
     @Override

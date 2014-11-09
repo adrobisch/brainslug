@@ -1,3 +1,6 @@
+# Tasks
+brainslug allows to define the task in a flow to be defined
+
 # Registry
 
 The brainslug context has a `Registry` where singletons of service classes can be registered:

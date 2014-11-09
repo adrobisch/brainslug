@@ -1,6 +1,6 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.node.task.RetryStrategy;
 
 import java.util.Date;
@@ -9,10 +9,10 @@ import java.util.concurrent.Callable;
 public class ExecuteTaskCallable implements Callable<AsyncTriggerExecutionResult> {
   RetryStrategy retryStrategy;
   AsyncTriggerExecutor asyncTriggerExecutor;
-  BrainslugContext context;
+  DefaultBrainslugContext context;
   AsyncTrigger asyncTrigger;
 
-  ExecuteTaskCallable(BrainslugContext context, AsyncTrigger asyncTrigger, AsyncTriggerExecutor asyncTriggerExecutor, RetryStrategy retryStrategy) {
+  ExecuteTaskCallable(DefaultBrainslugContext context, AsyncTrigger asyncTrigger, AsyncTriggerExecutor asyncTriggerExecutor, RetryStrategy retryStrategy) {
     this.context = context;
     this.asyncTrigger = asyncTrigger;
     this.asyncTriggerExecutor = asyncTriggerExecutor;

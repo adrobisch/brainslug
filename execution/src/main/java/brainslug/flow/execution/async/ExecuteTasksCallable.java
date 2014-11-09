@@ -1,6 +1,6 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.TaskDefinition;
 import brainslug.flow.node.task.RetryStrategy;
@@ -19,11 +19,11 @@ public class ExecuteTasksCallable implements Callable<List<Future<AsyncTriggerEx
   private AsyncTriggerExecutor asyncTriggerExecutor;
   private Logger log = LoggerFactory.getLogger(ExecuteTasksCallable.class);
 
-  BrainslugContext context;
+  DefaultBrainslugContext context;
   AsyncTriggerSchedulerOptions options;
   ExecutorService taskExecutorService;
 
-  ExecuteTasksCallable(BrainslugContext context,
+  ExecuteTasksCallable(DefaultBrainslugContext context,
                        AsyncTriggerSchedulerOptions options,
                        ExecutorService taskExecutorService,
                        AsyncTriggerExecutor asyncTriggerExecutor) {

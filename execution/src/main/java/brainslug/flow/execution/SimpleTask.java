@@ -1,7 +1,8 @@
 package brainslug.flow.execution;
 
+import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.node.task.Task;
 
-public abstract class SimpleTask implements Task {
-  public abstract void execute(ExecutionContext context);
+public interface SimpleTask extends Task<ExecutionContext> {
+  public void execute(ExecutionContext context);
 }

@@ -1,10 +1,11 @@
-package brainslug.flow.execution;
+package brainslug.flow.context;
 
 import brainslug.flow.EnumIdentifier;
 import brainslug.flow.Identifier;
 import brainslug.flow.StringIdentifier;
+import brainslug.flow.execution.DefaultExecutionProperties;
 
-public class TriggerContext<T extends TriggerContext> {
+public class Trigger<T extends Trigger> implements TriggerContext {
 
   protected Identifier definitionId;
   protected Identifier instanceId;
@@ -14,14 +15,17 @@ public class TriggerContext<T extends TriggerContext> {
 
   protected ExecutionProperties properties;
 
+  @Override
   public Identifier getDefinitionId() {
     return definitionId;
   }
 
+  @Override
   public Identifier getInstanceId() {
     return instanceId;
   }
 
+  @Override
   public Identifier getNodeId() {
     return nodeId;
   }
@@ -68,6 +72,10 @@ public class TriggerContext<T extends TriggerContext> {
     return self();
   }
 
+  public void setProperties(ExecutionProperties properties) {
+    this.properties = properties;
+  }
+
   public T property(Object value) {
     setProperty(value.getClass().getName(), value);
     return self();
@@ -78,42 +86,51 @@ public class TriggerContext<T extends TriggerContext> {
     return self();
   }
 
+  @Override
   public void setProperty(String key, Object value) {
     getProperties().put(key, value);
   }
 
+  @Override
   public <P> P getProperty(String key, Class<P> type) {
     return getProperties().get(key, type);
   }
 
+  @Override
   public <P> P getProperty(Class<P> type) {
     return type.cast(getProperties().getProperty(type));
   }
 
+  @Override
   public ExecutionProperties getProperties() {
     if (properties == null) {
-      properties = new ExecutionProperties();
+      properties = new DefaultExecutionProperties();
     }
     return properties;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public Boolean isAsync() {
     return async;
   }
 
+  @Override
   public Boolean isSignaling() {
     return signaling;
   }
 
   /**
-   * TODO: should we include the properties into equals?
+   * TODO: should we include the setProperties into equals?
    */
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    TriggerContext that = (TriggerContext) o;
+    Trigger that = (Trigger) o;
 
     if (definitionId != null ? !definitionId.equals(that.definitionId) : that.definitionId != null) return false;
     if (instanceId != null ? !instanceId.equals(that.instanceId) : that.instanceId != null) return false;

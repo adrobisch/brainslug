@@ -1,41 +1,32 @@
 package brainslug.flow.execution.token;
 
-import brainslug.flow.execution.*;
-import brainslug.flow.path.FlowEdgeDefinition;
+import brainslug.flow.context.ExecutionContext;
+import brainslug.flow.context.TriggerContext;
+import brainslug.flow.execution.FlowNodeExecutionResult;
+import brainslug.flow.execution.FlowNodeExecutor;
 import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.path.FlowEdgeDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNodeExecutor<T> {
+public class DefaultNodeExecutor<SelfType, T extends FlowNodeDefinition> implements FlowNodeExecutor<T> {
 
-  protected TokenStore tokenStore;
+  protected TokenOperations tokenOperations;
 
-  public DefaultNodeExecutor<T> withTokenStore(TokenStore tokenStore) {
-    this.tokenStore = tokenStore;
-    return this;
+  public SelfType withTokenOperations(TokenOperations tokenOperations) {
+    this.tokenOperations = tokenOperations;
+    return (SelfType) this;
   }
 
   @Override
   public FlowNodeExecutionResult execute(T node, ExecutionContext execution) {
-    consumeAllNodeTokens(execution.getTrigger());
+    removeIncomingTokens(execution.getTrigger());
     return takeAll(node);
   }
 
-  protected void consumeAllNodeTokens(TriggerContext triggerContext) {
-    Map<Identifier, List<Token>> nodeTokens = tokenStore.getNodeTokens(triggerContext.getNodeId(), triggerContext.getInstanceId()).groupedBySourceNode();
-
-    for (List<Token> tokens : nodeTokens.values()) {
-      removeTokens(triggerContext.getInstanceId(), tokens);
-    }
-  }
-
-  protected void removeTokens(Identifier instanceId, List<Token> tokens) {
-    for (Token token : tokens) {
-      tokenStore.removeToken(instanceId, token.getId());
-    }
+  protected void removeIncomingTokens(TriggerContext trigger) {
+    tokenOperations.removeFirstIncomingTokens(trigger.getNodeId(), trigger.getInstanceId());
   }
 
   protected FlowNodeExecutionResult takeAll(FlowNodeDefinition<?> node) {

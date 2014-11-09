@@ -1,9 +1,7 @@
 package brainslug.flow.node.task;
 
-/**
- * Marker interface for the inline creation of task handlers to be used
- * in a {@link HandlerCallDefinition}.
- *
- */
-public interface Task {
+import brainslug.flow.context.ExecutionContext;
+
+public interface Task<T extends ExecutionContext> {
+  public void execute(T taskContext);
 }

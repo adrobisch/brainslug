@@ -1,18 +1,17 @@
 package brainslug.quartz;
 
+import brainslug.flow.Identifier;
 import brainslug.flow.context.BrainslugContext;
-import brainslug.flow.execution.TriggerContext;
+import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.async.AbstractAsyncTriggerScheduler;
 import brainslug.flow.execution.async.AsyncTrigger;
-import brainslug.flow.Identifier;
+import org.quartz.*;
+import org.quartz.spi.JobFactory;
+import org.quartz.spi.TriggerFiredBundle;
 
 import static brainslug.util.IdUtil.id;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
-
-import org.quartz.*;
-import org.quartz.spi.JobFactory;
-import org.quartz.spi.TriggerFiredBundle;
 
 public class QuartzScheduler extends AbstractAsyncTriggerScheduler {
   protected static final String INSTANCE_ID = "instanceId";
@@ -75,7 +74,7 @@ public class QuartzScheduler extends AbstractAsyncTriggerScheduler {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-      brainslugContext.trigger(new TriggerContext()
+      brainslugContext.trigger(new Trigger()
           .instanceId(instanceId)
           .nodeId(taskNodeId)
           .definitionId(definitionId)
@@ -94,14 +93,14 @@ public class QuartzScheduler extends AbstractAsyncTriggerScheduler {
         .storeDurably()
         .build();
 
-    Trigger trigger = newTrigger()
+    org.quartz.Trigger trigger = newTrigger()
         .startNow()
         .build();
 
     scheduleInQuartz(job, trigger);
   }
 
-  private void scheduleInQuartz(JobDetail job, Trigger trigger) {
+  private void scheduleInQuartz(JobDetail job, org.quartz.Trigger trigger) {
     try {
       quartz.scheduleJob(job, trigger);
     } catch (SchedulerException e) {

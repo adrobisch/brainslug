@@ -1,8 +1,8 @@
 package brainslug.flow.node;
 
+import brainslug.flow.expression.EqualDefinition;
 import brainslug.flow.path.FlowPathDefinition;
 import brainslug.flow.path.ThenDefinition;
-import brainslug.flow.expression.EqualDefinition;
 
 import java.util.ArrayList;
 import java.util.List;

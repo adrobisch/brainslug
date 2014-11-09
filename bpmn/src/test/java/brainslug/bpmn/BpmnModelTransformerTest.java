@@ -8,11 +8,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static brainslug.util.FlowElementAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BpmnModelTransformerTest {
 
@@ -190,7 +193,7 @@ public class BpmnModelTransformerTest {
             .when(juel("foo == '42'").isTrue()).then()
             .execute(userTask(id("task1")).display("Task 1"))
               .or()
-            .when(expression("bar").isTrue()).then()
+            .when(isTrue(expression("bar"))).then()
             .execute(userTask(id("task2")).display("Task 2"));
         merge(id("merge"), id("task1"), id("task2")).end(event(id("end")));
       }
@@ -265,10 +268,10 @@ public class BpmnModelTransformerTest {
       public void define() {
         start(event(id("start")))
             .choice(id("choice")).display("Foo or Bar")
-            .when(expression("foo").isTrue()).then()
+            .when(isTrue(expression("foo"))).then()
               .execute(userTask(id("task1")).display("Task 1"))
                 .or()
-              .when(expression("bar").isTrue()).then()
+              .when(isTrue(expression("bar"))).then()
             .execute(userTask(id("task2")).display("Task 2"));
         merge(id("merge"), id("task1"), id("task2"));
       }

@@ -1,12 +1,14 @@
 package brainslug.flow.execution.token;
 
-import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.Identifier;
+import brainslug.flow.context.*;
 import brainslug.flow.execution.*;
+import brainslug.flow.execution.async.AsyncTriggerScheduler;
+import brainslug.flow.execution.async.AsyncTriggerStore;
+import brainslug.flow.execution.expression.PredicateEvaluator;
 import brainslug.flow.listener.EventType;
-import brainslug.flow.execution.TriggerContext;
-import brainslug.flow.*;
+import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.node.*;
-import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.util.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,31 +18,62 @@ import java.util.Map;
 
 public class TokenFlowExecutor implements FlowExecutor {
 
+  private TokenOperations tokenOperations;
+
   private Logger log = LoggerFactory.getLogger(TokenFlowExecutor.class);
 
-  protected BrainslugContext context;
   protected TokenStore tokenStore;
+  protected DefinitionStore definitionStore;
+  protected PropertyStore propertyStore;
+  protected ListenerManager listenerManager;
+  protected Registry registry;
+  protected PredicateEvaluator predicateEvaluator;
+  protected AsyncTriggerStore asyncTriggerStore;
+  protected AsyncTriggerScheduler asyncTriggerScheduler;
+  protected CallDefinitionExecutor callDefinitionExecutor;
 
   Map<Class<? extends FlowNodeDefinition>, FlowNodeExecutor> nodeExecutors = new HashMap<Class<? extends FlowNodeDefinition>, FlowNodeExecutor>();
 
-  public TokenFlowExecutor(BrainslugContext brainslugContext) {
-    this.context = brainslugContext;
-    this.tokenStore = context.getTokenStore();
+
+  public TokenFlowExecutor(TokenStore tokenStore,
+                           DefinitionStore definitionStore,
+                           PropertyStore propertyStore,
+                           ListenerManager listenerManager,
+                           Registry registry,
+                           PredicateEvaluator predicateEvaluator,
+                           AsyncTriggerStore asyncTriggerStore,
+                           AsyncTriggerScheduler asyncTriggerScheduler,
+                           CallDefinitionExecutor callDefinitionExecutor) {
+    this.tokenStore = tokenStore;
+    this.definitionStore = definitionStore;
+    this.propertyStore = propertyStore;
+    this.listenerManager = listenerManager;
+    this.registry = registry;
+    this.predicateEvaluator = predicateEvaluator;
+    this.asyncTriggerStore = asyncTriggerStore;
+    this.asyncTriggerScheduler = asyncTriggerScheduler;
+    this.callDefinitionExecutor = callDefinitionExecutor;
+
+    this.tokenOperations = new TokenOperations(tokenStore);
 
     addNodeExecutorMappings();
   }
 
   protected void addNodeExecutorMappings() {
-    nodeExecutors.put(EventDefinition.class, new EventNodeExecutor().withTokenStore(tokenStore));
-    nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
-    nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor().withTokenStore(tokenStore));
-    nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor().withTokenStore(tokenStore));
-    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor().withTokenStore(tokenStore));
-    nodeExecutors.put(TaskDefinition.class, new TaskNodeExecutor().withTokenStore(tokenStore));
+    nodeExecutors.put(EventDefinition.class, new EventNodeExecutor(asyncTriggerStore, predicateEvaluator).withTokenOperations(tokenOperations));
+    nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor<DefaultNodeExecutor, ParallelDefinition>().withTokenOperations(tokenOperations));
+    nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor<DefaultNodeExecutor, MergeDefinition>().withTokenOperations(tokenOperations));
+    nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(tokenOperations));
+    nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor().withTokenOperations(tokenOperations));
+    nodeExecutors.put(TaskDefinition.class, createTaskNodeExecutor());
+  }
+
+  protected TaskNodeExecutor createTaskNodeExecutor() {
+    return new TaskNodeExecutor(definitionStore, predicateEvaluator, callDefinitionExecutor, asyncTriggerScheduler).withTokenOperations(tokenOperations);
   }
 
   FlowNodeDefinition<?> getNode(Identifier definitionId, Identifier nodeId) {
-    FlowNodeDefinition<?> node = context.getDefinitionStore().findById(definitionId).getNode(nodeId);
+    FlowNodeDefinition<?> node = definitionStore.findById(definitionId).getNode(nodeId);
     if (node == null) {
       throw new IllegalArgumentException(String.format("node for does not exist %s", nodeId));
     }
@@ -56,15 +89,15 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   @Override
-  public Identifier startFlow(TriggerContext<?> trigger) {
+  public Identifier startFlow(TriggerContext trigger) {
     FlowNodeDefinition<?> startNode = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
 
     Identifier instanceId = tokenStore.createInstance(trigger.getDefinitionId());
     tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier>empty());
 
-    context.getPropertyStore().storeProperties(trigger.getInstanceId(), trigger.getProperties());
+    propertyStore.storeProperties(trigger.getInstanceId(), trigger.getProperties());
 
-    context.trigger(new TriggerContext()
+    trigger(new Trigger()
       .nodeId(startNode.getId())
       .definitionId(trigger.getDefinitionId())
       .instanceId(instanceId)
@@ -78,60 +111,98 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   @Override
-  public void trigger(TriggerContext<?> triggerContext) {
-    log.debug("triggering {}", triggerContext);
+  public void trigger(TriggerContext trigger) {
+    log.debug("triggering {}", trigger);
 
-    FlowNodeDefinition node = getNode(triggerContext.getDefinitionId(), triggerContext.getNodeId());
+    FlowNodeDefinition node = getNode(trigger.getDefinitionId(), trigger.getNodeId());
     FlowNodeExecutor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
 
-    ExecutionContext executionContext = createExecutionContext(triggerContext);
+    ExecutionContext executionContext = createExecutionContext(trigger);
 
-    context.getListenerManager().notifyListeners(EventType.BEFORE_EXECUTION, triggerContext);
+    listenerManager.notifyListeners(EventType.BEFORE_EXECUTION, trigger);
 
     FlowNodeExecutionResult executionResult = nodeExecutor.execute(node, executionContext);
-    context.getPropertyStore().storeProperties(triggerContext.getInstanceId(), triggerContext.getProperties());
+    propertyStore.storeProperties(trigger.getInstanceId(), trigger.getProperties());
 
-    context.getListenerManager().notifyListeners(EventType.AFTER_EXECUTION, triggerContext);
+    listenerManager.notifyListeners(EventType.AFTER_EXECUTION, trigger);
 
-    triggerNext(triggerContext, node, executionResult);
+    triggerNext(trigger, node, executionResult);
   }
 
   // TODO: create ExecutionContextFactory, which contains merging
-  protected ExecutionContext createExecutionContext(TriggerContext triggerContext) {
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(triggerContext, context);
+  protected ExecutionContext createExecutionContext(TriggerContext trigger) {
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(trigger, registry);
 
-    if(triggerContext.getInstanceId() != null) {
-      executionContext.getTrigger().properties(mergeProperties(triggerContext, executionContext));
+    if(trigger.getInstanceId() != null) {
+      executionContext.getTrigger().setProperties(mergeProperties(trigger, executionContext));
     }
 
     return executionContext;
   }
 
-  protected ExecutionProperties mergeProperties(TriggerContext triggerContext, DefaultExecutionContext executionContext) {
-    ExecutionProperties properties = context.getPropertyStore()
+  protected ExecutionProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
+    ExecutionProperties properties = propertyStore
         .loadProperties(executionContext.getTrigger().getInstanceId());
-    properties.putAll(triggerContext.getProperties());
+
+    properties.putAll(trigger.getProperties());
     return properties;
   }
 
-  protected void triggerNext(TriggerContext triggerContext, FlowNodeDefinition<?> node, FlowNodeExecutionResult flowNodeExecutionResult) {
+  protected void triggerNext(TriggerContext trigger, FlowNodeDefinition<?> node, FlowNodeExecutionResult flowNodeExecutionResult) {
     for (FlowNodeDefinition nextNode : flowNodeExecutionResult.getNextNodes()) {
-      addToken(triggerContext, node, nextNode);
-      trigger(createTriggerContextForNextNode(triggerContext, nextNode));
+      addToken(trigger, node, nextNode);
+      trigger(createTriggerContextForNextNode(trigger, nextNode));
     }
   }
 
-  protected TriggerContext createTriggerContextForNextNode(TriggerContext<?> event, FlowNodeDefinition nextNode) {
-    return new TriggerContext()
+  protected Trigger createTriggerContextForNextNode(TriggerContext event, FlowNodeDefinition nextNode) {
+    return new Trigger()
           .nodeId(nextNode.getId())
           .definitionId(event.getDefinitionId())
           .instanceId(event.getInstanceId())
           .properties(event.getProperties());
   }
 
-  protected void addToken(TriggerContext triggerContext, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
-    if (triggerContext.getInstanceId() != null) {
-      tokenStore.addToken(triggerContext.getInstanceId(), nextNode.getId(), Option.of(node.getId()));
+  protected void addToken(TriggerContext trigger, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
+    if (trigger.getInstanceId() != null) {
+      tokenStore.addToken(trigger.getInstanceId(), nextNode.getId(), Option.of(node.getId()));
     }
+  }
+
+  public void setTokenStore(TokenStore tokenStore) {
+    this.tokenStore = tokenStore;
+    this.tokenOperations = new TokenOperations(tokenStore);
+  }
+
+  public void setDefinitionStore(DefinitionStore definitionStore) {
+    this.definitionStore = definitionStore;
+  }
+
+  public void setPropertyStore(PropertyStore propertyStore) {
+    this.propertyStore = propertyStore;
+  }
+
+  public void setListenerManager(ListenerManager listenerManager) {
+    this.listenerManager = listenerManager;
+  }
+
+  public void setRegistry(Registry registry) {
+    this.registry = registry;
+  }
+
+  public void setPredicateEvaluator(PredicateEvaluator predicateEvaluator) {
+    this.predicateEvaluator = predicateEvaluator;
+  }
+
+  public void setAsyncTriggerStore(AsyncTriggerStore asyncTriggerStore) {
+    this.asyncTriggerStore = asyncTriggerStore;
+  }
+
+  public void setAsyncTriggerScheduler(AsyncTriggerScheduler asyncTriggerScheduler) {
+    this.asyncTriggerScheduler = asyncTriggerScheduler;
+  }
+
+  public void setCallDefinitionExecutor(CallDefinitionExecutor callDefinitionExecutor) {
+    this.callDefinitionExecutor = callDefinitionExecutor;
   }
 }

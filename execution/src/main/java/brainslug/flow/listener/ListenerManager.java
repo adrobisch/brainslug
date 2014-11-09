@@ -1,6 +1,6 @@
 package brainslug.flow.listener;
 
-import brainslug.flow.execution.TriggerContext;
+import brainslug.flow.context.TriggerContext;
 
 public interface ListenerManager {
   public void notifyListeners(EventType type, TriggerContext context);
