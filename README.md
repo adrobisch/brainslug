@@ -13,6 +13,31 @@ Download
 
 The current version is available in the [maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cbrainslug)
 
+Hello World
+===========
+
+```java
+FlowDefinition helloWorldFlow = new FlowBuilder() {
+  @Override
+  public void define() {
+    flowId(id("helloFlow"));
+
+    start(id("start")).execute(task(id("helloTask"), new SimpleTask() {
+      @Override
+      public void execute(ExecutionContext context) {
+        System.out.println("Hello World!");
+      }
+    }));
+  }
+}.getDefinition();
+
+//  create brainslug context with defaults
+BrainslugContext context = new BrainslugContextBuilder().build();
+context.addFlowDefinition(helloWorldFlow);
+
+context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
+```
+
 Documentation
 =============
 
