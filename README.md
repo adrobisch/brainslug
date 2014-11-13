@@ -38,6 +38,10 @@ context.addFlowDefinition(helloWorldFlow);
 context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
 ```
 
+Rendered as:
+
+![hello_flow](docs/images/hello_flow.png)
+
 Documentation
 =============
 
