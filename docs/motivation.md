@@ -16,8 +16,7 @@ To some degree they share some strong assumptions:
 * You are living in a container (Tomcat / Spring, Java Enterprise Edition / JBoss)
 * XML based descriptions / configurations
 
-Those points make them look heavy-weight and inflexible. 
-*brainslug* aims to provide a small workflow library in Java without these strings attached.
+*brainslug* aims to provide a **small** workflow library for the JVM without these strings attached.
 
 # Design Goals
 
@@ -26,4 +25,4 @@ A developer using brainslug should be able to:
 * no external dependencies in the core parts (model and execution), except for logging  
 * understand the execution model by reading the code
 * customize all aspects the library (including persistence and transaction management)
-* be so confident, the never want so buy commercial (sometimes called *enterprise*) support
+* not want to buy commercial (sometimes called *enterprise*) support

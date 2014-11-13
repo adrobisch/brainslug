@@ -62,3 +62,5 @@ The token includes the information which node execution lead to the creation of 
 
   context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
 ```
+
+will execute the `helloFlow` and thus print `Hello World!` on the console.
