@@ -143,11 +143,10 @@ public class FlowBuilderSupport {
    *
    * execution will continue for every token that triggers this merge node.
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override public void define() {
+   * {@code {@literal @}Override public void define() {
       start(event(id(START)))
       .choice(id(CHOICE))
       .when(eq(constant(x) ,"test")).execute(task(id(TASK)))
@@ -159,7 +158,6 @@ public class FlowBuilderSupport {
       }
    * }
    * </pre>
-   * </p>
    *
    * @param mergeId the id of the new merge node
    * @param ids of the nodes to be merged
@@ -179,11 +177,10 @@ public class FlowBuilderSupport {
    * execution will continue only if a token exists for
    * every joined node during the execution of the join node.
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override public void define() {
+   * {@code {@literal @}Override public void define() {
       start(event(id(StartEvent)))
       .parallel(id(Parallel))
       .execute(task(id(SecondTask)))
@@ -195,7 +192,6 @@ public class FlowBuilderSupport {
       }
    * }
    * </pre>
-   * </p>
    *
    * @param joinId the id of the new join node
    * @param ids of the nodes to be merged
@@ -222,14 +218,13 @@ public class FlowBuilderSupport {
   /**
    * create a task definition with the given task to be executed
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override
+   * {@code {@literal @}Override
       public void define() {
         Task callee = new Task() {
-          @Override
+          {@literal @}Override
           public void execute(ExecutionContext o) {
           }
         };
@@ -239,7 +234,6 @@ public class FlowBuilderSupport {
       }
    * }
    * </pre>
-   * </p>
    *
    * @param id the task id
    * @param callee the callee task
@@ -304,11 +298,10 @@ public class FlowBuilderSupport {
   /**
    * create a service proxy to be user for type-safe call definitions.
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override
+   * {@code {@literal @}Override
       public void define() {
       TestService testService = service(TestService.class);
 
@@ -319,7 +312,6 @@ public class FlowBuilderSupport {
       }
    * }
    * </pre>
-   * </p>
    *
    * @param clazz the interface type to proxy
    * @param <T> the type of the interface
@@ -336,11 +328,10 @@ public class FlowBuilderSupport {
   /**
    * create a goal definition with the given id.
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override
+   * {@code {@literal @}Override
       public void define() {
         start(id("start"))
          .execute(task(id("simpleTask"))
@@ -349,7 +340,7 @@ public class FlowBuilderSupport {
         .end(id("end"));
 
         goal(id("taskExecuted")).check(predicate(new GoalPredicate<Void>() {
-          @Override
+          {@literal @}Override
           public boolean isFulfilled(Void aVoid) {
             return true;
           }
@@ -357,7 +348,6 @@ public class FlowBuilderSupport {
       }
    * }
    * </pre>
-   * </p>
    *
    * @param id the goal id
    * @return the goal definition

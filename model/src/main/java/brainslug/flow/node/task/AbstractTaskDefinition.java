@@ -16,18 +16,15 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
   /**
    * sets a delegate class to be executed as action for this task
    *
-   * <p>
    * Example:
-   *
    * <pre>
-   * {@code @Override public void define() {
-      start(event(id(START)))
-      .execute(task(id(TASK)).delegate(Delegate.class))
-      .end(event(id(END)));
-      }
+   * {@code {@literal @}Override public void define() {
+   *   start(event(id(START)))
+   *   .execute(task(id(TASK)).delegate(Delegate.class))
+   *   .end(event(id(END)));
+   *   }
    * }
    * </pre>
-   * </p>
    *
    * @param delegateClass type of the delegate class for lookup in the {@link brainslug.flow.context.Registry}
    * @return the task definition
@@ -41,18 +38,16 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
   /**
    * sets a method invocation as action for this task
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override public void define() {
-      start(event(id(START)))
-      .execute(task(id(TASK)).call(method(TestService.class).name("getString")))
-      .end(event(id(END)));
-      }
+   * {@code {@literal @}Override public void define() {
+   *   start(event(id(START)))
+   *   .execute(task(id(TASK)).call(method(TestService.class).name("getString")))
+   *   .end(event(id(END)));
+   *   }
    * }
    * </pre>
-   * </p>
    *
    * @param methodCall the method invocation
    * @return the task definition
@@ -67,18 +62,16 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
    * flag the task for async execution. The execution will be paused
    * and continued asynchronously when reaching this task.
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override public void define() {
-      start(event(id(START)))
-      .execute(task(id(TASK)).async(true))
-      .end(event(id(END)));
-      }
+   * {@code {@literal @}Override public void define() {
+   *   start(event(id(START)))
+   *   .execute(task(id(TASK)).async(true))
+   *   .end(event(id(END)));
+   *   }
    * }
    * </pre>
-   * </p>
    *
    * @param async true if task execution should be async
    * @return the task definition
@@ -96,18 +89,16 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
    * Be aware that this will not be possible int transactional environments if the transaction
    * is already set to rollback because of the error.
    *
-   * <p>
    * Example:
    *
    * <pre>
-   * {@code @Override public void define() {
-  start(event(id(START)))
-  .execute(task(id(TASK)).retryAsync(true))
-  .end(event(id(END)));
-  }
+   * {@code {@literal @}Override public void define() {
+   *   start(event(id(START)))
+   *   .execute(task(id(TASK)).retryAsync(true))
+   *   .end(event(id(END)));
+   *   }
    * }
    * </pre>
-   * </p>
    *
    * @param retryAsync true if task execution should be scheduled for async retry
    * @return the task definition
@@ -121,23 +112,21 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
   /**
    * set the retry strategy in case of async execution.
    *
-   * <p>
    * Example:
    *
    * <pre>
    * {@code new FlowBuilder() {
-      @Override
-      public void define() {
-      GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
-
-      start(id("start"))
-      .execute(task(id("simpleTask")).retryAsync(true).retryStrategy(retryStrategy))
-      .end(id("end"));
-      }
-    }
+   *   {@literal @}Override
+   *   public void define() {
+   *   GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
+   *
+   *   start(id("start"))
+   *   .execute(task(id("simpleTask")).retryAsync(true).retryStrategy(retryStrategy))
+   *   .end(id("end"));
+   *   }
+   * }
    * }
    * </pre>
-   * </p>
    * @param retryStrategy the retry strategy
    * @return this task definition with retryStrategy defined
    */
@@ -152,23 +141,23 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
    * not fulfilled yet.
    *
    * Goals must have a predicate to check the state of fulfilment.
-   * <p>
+   *
    * Example:
    *
    * <pre>
    * {@code new FlowBuilder() {
-        @Override
-        public void define() {
-          GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
-
-          start(event(id("START")))
-          .execute(task(id("TASK"), simpleTask).goal(testGoal))
-          .end(event(id("END")));
-        }
-     }
+   *     {@literal @}Override
+   *     public void define() {
+   *       GoalDefinition testGoal = goal(id("aGoal")).check(predicate(goalCondition));
+   *
+   *       start(event(id("START")))
+   *       .execute(task(id("TASK"), simpleTask).goal(testGoal))
+   *       .end(event(id("END")));
+   *     }
+   *  }
    * }
    * </pre>
-   * </p>
+   *
    * @param goal the goal this task belongs to
    * @return this task definition with goal defined
    */

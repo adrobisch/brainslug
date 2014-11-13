@@ -31,6 +31,7 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
    * to wait for the given duration. the trigger will be asynchronously.
    *
    * @param duration the duration to be waited before
+   * @param unit the unit of the duration
    * @return the event definition
    */
   public Self elapsedTime(long duration, TimeUnit unit) {
