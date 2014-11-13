@@ -9,19 +9,19 @@ A flow definition is constructed using the `FlowBuilder` DSL and is internally r
 ## Example
 
 ```java
-  FlowDefinition helloWorldFlow = new FlowBuilder() {
-    @Override
-    public void define() {
-      flowId(id("helloFlow"));
+FlowDefinition helloWorldFlow = new FlowBuilder() {
+  @Override
+  public void define() {
+    flowId(id("helloFlow"));
 
-      start(id("start")).execute(task(id("helloTask"), new SimpleTask() {
-        @Override
-        public void execute(ExecutionContext context) {
-          System.out.println("Hello World!");
-        }
-      }));
-    }
-  }.getDefinition();
+    start(id("start")).execute(task(id("helloTask"), new SimpleTask() {
+      @Override
+      public void execute(ExecutionContext context) {
+        System.out.println("Hello World!");
+      }
+    }));
+  }
+}.getDefinition();
 ```
 
 brainslug provides a set of predefined node types to define the [control flow](control-flow).
@@ -56,11 +56,11 @@ The token includes the information which node execution lead to the creation of 
 ## Example
 
 ```java
-  //  create brainslug context with defaults
-  BrainslugContext context = new DefaultBrainslugContext().build();
-  context.addFlowDefinition(helloWorldFlow);
+//  create brainslug context with defaults
+BrainslugContext context = new BrainslugContextBuilder().build();
+context.addFlowDefinition(helloWorldFlow);
 
-  context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
+context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
 ```
 
 will execute the `helloFlow` and thus print `Hello World!` on the console.

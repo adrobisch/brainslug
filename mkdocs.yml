@@ -4,6 +4,7 @@ pages:
 - [basics.md, "Basics"]
 - [control-flow.md, "Control Flow"]
 - [task.md, "Tasks"]
+- [jpa-support.md, "JPA Support"]
 - [bpmn.md, "BPMN Support"]
 - [motivation.md, "Motivation and Design Goals"]
 theme: readthedocs
