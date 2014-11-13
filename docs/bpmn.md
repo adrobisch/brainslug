@@ -5,10 +5,10 @@ brainslug is able to export flow definitions to BPMN 2.0 as rendered image or XM
 ## Renderer Example
 
 ```java
-    JGraphRenderer renderer = new JGraphRenderer(new GraphFactory());
-    FileOutputStream outputStream = ...
-    FlowBuilder flowBuilder = ...
-    renderer.render(flowBuilder, outputStream, Format.PNG);
+JGraphRenderer renderer = new JGraphRenderer(new GraphFactory());
+FileOutputStream outputStream = ...
+FlowBuilder flowBuilder = ...
+renderer.render(flowBuilder, outputStream, Format.PNG);
 ```
 
 ![task_flow](images/task_flow.png)
@@ -18,21 +18,21 @@ also see: [JGraphRendererTest](https://github.com/adrobisch/brainslug/blob/maste
 ## XML Definitions export
 
 ```java
-    FlowBuilder flowBuilder =  
-      new FlowBuilder() {
-        @Override
-        public void define() {
-          start(event(id("start")))
-            .execute(task(id("task")).display("A Task"))
-            .execute(task(id("task2")).display("Another Task"))
-          .end(event(id("end")));
-        }
-      };
+FlowBuilder flowBuilder =
+  new FlowBuilder() {
+    @Override
+    public void define() {
+      start(event(id("start")))
+        .execute(task(id("task")).display("A Task"))
+        .execute(task(id("task2")).display("Another Task"))
+      .end(event(id("end")));
+    }
+  };
 ```
 
 ```
-    BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
-    String bpmnXml = bpmnModelTransformer.toBpmnXml(flowBuilder);
+BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
+String bpmnXml = bpmnModelTransformer.toBpmnXml(flowBuilder);
 ```
 
 will produce

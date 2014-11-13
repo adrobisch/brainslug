@@ -23,14 +23,31 @@ This services may be accessed by via the `ExecutionContext`:
 FlowBuilder flowBuilder = new FlowBuilder() {
   @Override
   public void define() {
-    flowId(id("parallel_flow"));
+    flowId(id("task_flow"));
 
     start(event(id("start")).display("Start"))
       .execute(task(id("task"), new Task() {
         @Override
         public void execute(ExecutionContext ctx) {
-          ctx.service(MyService.class).doSomething();;
+          ctx.service(MyService.class).doSomething();
         }
+      }).display("Do Something"))
+    .end(event(id("end")).display("End"));
+  }
+};
+```
+
+Starting with **Java 8** this might be done using a lambda expression:
+
+```java
+FlowBuilder flowBuilder = new FlowBuilder() {
+  @Override
+  public void define() {
+    flowId(id("task_flow"));
+
+    start(event(id("start")).display("Start"))
+      .execute(task(id("task"), ctx -> {
+          ctx.service(MyService.class).doSomething();
       }).display("Do Something"))
     .end(event(id("end")).display("End"));
   }
@@ -72,7 +89,7 @@ public interface MyService {
 FlowBuilder flowBuilder = new FlowBuilder() {
   @Override
   public void define() {
-    flowId(id("parallel_flow"));
+    flowId(id("task_flow"));
 
     MyService service = service(MyService.class);
 
