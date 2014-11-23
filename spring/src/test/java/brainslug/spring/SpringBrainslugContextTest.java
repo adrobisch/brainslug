@@ -1,9 +1,11 @@
 package brainslug.spring;
 
 import brainslug.flow.FlowBuilder;
+import brainslug.flow.FlowDefinition;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.execution.SimpleTask;
+import brainslug.util.IdUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -12,7 +14,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+
 import static brainslug.util.IdUtil.id;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -20,10 +26,24 @@ import static org.mockito.Mockito.verify;
 public class SpringBrainslugContextTest {
 
   @Autowired
+  BrainslugContext brainslugContext;
+
+  @Autowired
   ApplicationContext applicationContext;
 
   @Autowired
   TestService testService;
+
+  @Test
+  public void shouldAddFlowBuilderBeansToContext() {
+    Collection<FlowDefinition> definitions = brainslugContext.getDefinitions();
+
+    assertThat(definitions)
+      .hasSize(1);
+
+    assertThat(definitions.iterator().next().getId())
+      .isEqualTo(IdUtil.id("springTestFlow"));
+  }
 
   @Test
   public void shouldFindSpringBeansInRegistry() {
@@ -35,7 +55,7 @@ public class SpringBrainslugContextTest {
 
       @Override
       public void define() {
-        flowId(id("springTestFlow"));
+        flowId(id("inlineFlow"));
 
         start(event(id("start")))
           .execute(task(id("callSpringBean"), new SimpleTask() {
@@ -47,9 +67,14 @@ public class SpringBrainslugContextTest {
       }
     }.getDefinition());
 
-    context.startFlow(id("springTestFlow"), id("start"));
+    context.startFlow(id("inlineFlow"), id("start"));
 
     verify(testService).foo();
+  }
+
+  @Test
+  public void shouldIntegrateWithLifecycle() {
+    verify(testService).bar();
   }
 
 }

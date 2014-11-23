@@ -1,6 +1,3 @@
-# Tasks
-brainslug allows to define the action to be taken for a task using several mechanisms.
-
 # Registry
 
 The brainslug context has a `Registry` where singletons of service classes can be registered:
@@ -17,7 +14,9 @@ Delegate delegateService = context.getRegistry().getService(Delegate.class);
 
 This services may be accessed by via the `ExecutionContext`:
 
-# Inline Task Definition
+# Ways to define a task
+
+## Inline Task Definition
 
 ```java
 FlowBuilder flowBuilder = new FlowBuilder() {
@@ -54,7 +53,7 @@ FlowBuilder flowBuilder = new FlowBuilder() {
 };
 ```
 
-# Delegate class:
+## Delegate class:
 
 If you do not want to specify the method by name, you can use the `Execute`-annotation to define which
 method you want be executed for a task:
@@ -76,7 +75,7 @@ new FlowBuilder() {
 }
 ```
 
-# Typesafe Service Call Definition
+## Typesafe Service Call Definition
 
 It possible to define service calls using a proxy-based approach similar to Mockito.
 
@@ -105,7 +104,7 @@ FlowBuilder flowBuilder = new FlowBuilder() {
 In this case, the call to the service will be made at execution using the recorded argument values.
 This will be done using reflection on the instance of the service, which must be available in the `Registry`.
 
-# Service Call
+## Service Call
 
 You may use service call definition, to directly define the invocation of a method during flow node definition.
 

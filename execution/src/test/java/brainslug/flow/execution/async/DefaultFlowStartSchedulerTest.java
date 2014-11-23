@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.verification.VerificationMode;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +24,7 @@ public class DefaultFlowStartSchedulerTest {
     DefaultFlowStartScheduler flowStartScheduler = new DefaultFlowStartScheduler();
     BrainslugContext context = getBrainslugContextWithFlows();
 
-    Set<DefaultFlowStartScheduler.TimedFlowDefinition> flowDefinitionsWithStartTimer = flowStartScheduler.getFlowDefinitionsWithStartTimer(context.getDefinitions());
+    List<DefaultFlowStartScheduler.TimedFlowDefinition> flowDefinitionsWithStartTimer = flowStartScheduler.addFlowDefinitionsWithStartTimer(context.getDefinitions());
     Assertions.assertThat(flowDefinitionsWithStartTimer)
       .hasSize(1);
 

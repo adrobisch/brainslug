@@ -360,4 +360,8 @@ public class FlowBuilderSupport {
     return new GoalDefinition(definition).id(id).check(goalPredicate);
   }
 
+  public GoalDefinition check(Identifier id, Predicate<?> goalPredicate) {
+    return new GoalDefinition(definition).id(id).check(new PredicateDefinition<Predicate>(goalPredicate));
+  }
+
 }

@@ -1,6 +1,5 @@
 package brainslug.flow.execution;
 
-import brainslug.flow.Identifier;
 import brainslug.flow.builder.ServiceCallInvocationSupport;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.expression.Expression;

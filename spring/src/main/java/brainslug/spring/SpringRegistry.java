@@ -17,6 +17,6 @@ public class SpringRegistry implements Registry {
 
   @Override
   public <T> void registerService(Class<T> serviceClass, T serviceInstance) {
-    throw new UnsupportedOperationException("you can not register service in a spring context");
+    throw new UnsupportedOperationException("you can not register a service in a spring context, create a bean instead.");
   }
 }

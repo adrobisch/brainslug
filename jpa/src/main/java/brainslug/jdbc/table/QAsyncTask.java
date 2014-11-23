@@ -30,6 +30,8 @@ public class QAsyncTask extends com.mysema.query.sql.RelationalPathBase<QAsyncTa
 
     public final NumberPath<Long> dueDate = createNumber("dueDate", Long.class);
 
+    public final StringPath errorDetailsId = createString("errorDetailsId");
+
     public final StringPath id = createString("id");
 
     public final StringPath instanceId = createString("instanceId");
@@ -43,6 +45,8 @@ public class QAsyncTask extends com.mysema.query.sql.RelationalPathBase<QAsyncTa
     public final NumberPath<Long> version = createNumber("version", Long.class);
 
     public final com.mysema.query.sql.PrimaryKey<QAsyncTask> constraintCb = createPrimaryKey(id);
+
+    public final com.mysema.query.sql.ForeignKey<QAsyncTaskErrorDetails> constraintCbf = createForeignKey(errorDetailsId, "ID");
 
     public QAsyncTask(String variable) {
         super(QAsyncTask.class, forVariable(variable), "PUBLIC", "ASYNC_TASK");
@@ -65,15 +69,16 @@ public class QAsyncTask extends com.mysema.query.sql.RelationalPathBase<QAsyncTa
     }
 
     public void addMetadata() {
-        addMetadata(created, ColumnMetadata.named("CREATED").withIndex(5).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(created, ColumnMetadata.named("CREATED").withIndex(6).ofType(Types.BIGINT).withSize(19).notNull());
         addMetadata(definitionId, ColumnMetadata.named("DEFINITION_ID").withIndex(4).ofType(Types.VARCHAR).withSize(40).notNull());
-        addMetadata(dueDate, ColumnMetadata.named("DUE_DATE").withIndex(6).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(dueDate, ColumnMetadata.named("DUE_DATE").withIndex(7).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(errorDetailsId, ColumnMetadata.named("ERROR_DETAILS_ID").withIndex(5).ofType(Types.VARCHAR).withSize(40));
         addMetadata(id, ColumnMetadata.named("ID").withIndex(1).ofType(Types.VARCHAR).withSize(40).notNull());
         addMetadata(instanceId, ColumnMetadata.named("INSTANCE_ID").withIndex(3).ofType(Types.VARCHAR).withSize(40).notNull());
-        addMetadata(maxRetries, ColumnMetadata.named("MAX_RETRIES").withIndex(8).ofType(Types.BIGINT).withSize(19).notNull());
-        addMetadata(retries, ColumnMetadata.named("RETRIES").withIndex(7).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(maxRetries, ColumnMetadata.named("MAX_RETRIES").withIndex(9).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(retries, ColumnMetadata.named("RETRIES").withIndex(8).ofType(Types.BIGINT).withSize(19).notNull());
         addMetadata(taskNodeId, ColumnMetadata.named("TASK_NODE_ID").withIndex(2).ofType(Types.VARCHAR).withSize(40).notNull());
-        addMetadata(version, ColumnMetadata.named("VERSION").withIndex(9).ofType(Types.BIGINT).withSize(19).notNull());
+        addMetadata(version, ColumnMetadata.named("VERSION").withIndex(10).ofType(Types.BIGINT).withSize(19).notNull());
     }
 
 }

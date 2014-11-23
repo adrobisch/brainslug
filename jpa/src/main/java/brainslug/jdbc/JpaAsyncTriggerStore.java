@@ -2,9 +2,11 @@ package brainslug.jdbc;
 
 import brainslug.flow.Identifier;
 import brainslug.flow.execution.async.AsyncTrigger;
+import brainslug.flow.execution.async.AsyncTriggerErrorDetails;
 import brainslug.flow.execution.async.AsyncTriggerQuery;
 import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.jdbc.entity.AsyncTaskEntity;
+import brainslug.jdbc.entity.AsyncTaskErrorDetailsEntity;
 import brainslug.jdbc.entity.query.QAsyncTaskEntity;
 import brainslug.util.IdGenerator;
 import brainslug.util.IdUtil;
@@ -14,6 +16,8 @@ import com.mysema.query.types.ConstructorExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.List;
 
@@ -68,10 +72,26 @@ public class JpaAsyncTriggerStore implements AsyncTriggerStore {
       taskEntity
     );
 
+    database.flush();
+
     return asyncTrigger
       .withId(IdUtil.id(taskEntity.getId()))
       .withVersion(taskEntity.getVersion())
       .withCreatedDate(createdDate);
+  }
+
+  private AsyncTaskErrorDetailsEntity mapErrorDetails(AsyncTaskErrorDetailsEntity errorDetailsEntity, AsyncTriggerErrorDetails asyncTriggerErrorDetails) {
+    return errorDetailsEntity
+      .withExceptionType(asyncTriggerErrorDetails.getException().getClass().getName())
+      .withMessage(asyncTriggerErrorDetails.getException().getMessage())
+      .withStackTrace(stackTraceToString(asyncTriggerErrorDetails.getException()).getBytes());
+  }
+
+  String stackTraceToString(Throwable throwable) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    throwable.printStackTrace(pw);
+    return sw.toString(); // stack trace as a string
   }
 
   protected AsyncTrigger updatedTask(AsyncTrigger existingTask, AsyncTrigger updatedTask) {
@@ -84,10 +104,33 @@ public class JpaAsyncTriggerStore implements AsyncTriggerStore {
       .withMaxRetries(updatedTask.getMaxRetries())
       .withDueDate(updatedTask.getDueDate());
 
+    addErrorDetails(updatedTask.getErrorDetails(), taskEntity);
+
     database.insertOrUpdate(taskEntity);
     database.flush();
 
     return updatedTask.withVersion(taskEntity.getVersion());
+  }
+
+  private void addErrorDetails(Option<AsyncTriggerErrorDetails> errorDetails, AsyncTaskEntity taskEntity) {
+    if (taskEntity.getErrorDetails() != null && errorDetails.isPresent()) {
+      mapErrorDetails(taskEntity.getErrorDetails(), errorDetails.get());
+    } else if (errorDetails.isPresent()) {
+      taskEntity.withErrorDetails(createErrorDetails(errorDetails));
+    }
+  }
+
+  private AsyncTaskErrorDetailsEntity createErrorDetails(Option<AsyncTriggerErrorDetails> errorDetails) {
+    AsyncTaskErrorDetailsEntity errorDetailsEntity = new AsyncTaskErrorDetailsEntity()
+      .withId(idGenerator.generateId().stringValue())
+      .withCreated(new Date().getTime());
+
+    mapErrorDetails(errorDetailsEntity,
+      errorDetails.get()
+    );
+
+    database.insertOrUpdate(errorDetailsEntity);
+    return errorDetailsEntity;
   }
 
   @Override

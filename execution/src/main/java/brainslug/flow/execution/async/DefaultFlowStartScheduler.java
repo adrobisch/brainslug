@@ -10,30 +10,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
-  private BrainslugContext context;
-  private Set<TimedFlowDefinition> timedDefinitions;
+  private  BrainslugContext context;
+  private List<TimedFlowDefinition> timedDefinitions = new CopyOnWriteArrayList<TimedFlowDefinition>();
   private Map<Identifier, Long> lastStart = new ConcurrentHashMap<Identifier, Long>();
 
   ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
   SchedulerOptions schedulerOptions;
+  ScheduledFuture<?> scheduledFuture;
 
   @Override
-  public void start(SchedulerOptions schedulerOptions, BrainslugContext brainslugContext, Collection<FlowDefinition> definitions) {
+  public synchronized void start(SchedulerOptions schedulerOptions, BrainslugContext brainslugContext, Collection<FlowDefinition> definitions) {
     this.schedulerOptions = schedulerOptions;
     this.context = brainslugContext;
 
-    this.timedDefinitions = getFlowDefinitionsWithStartTimer(definitions);
+    addFlowDefinitionsWithStartTimer(definitions);
 
     startScheduler();
   }
 
   private void startScheduler() {
-    scheduledExecutorService.scheduleAtFixedRate(new StartDueDefinitionsRunnable(),
+    scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(new StartDueDefinitionsRunnable(),
       schedulerOptions.getScheduleDelay(),
       schedulerOptions.getSchedulePeriod(),
       schedulerOptions.getScheduleUnit()
@@ -41,22 +40,24 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
   }
 
   @Override
-  public void stop() {
+  public synchronized void stop() {
+    if (scheduledFuture !=  null && !scheduledFuture.isDone()) {
+      scheduledFuture.cancel(false);
+    }
   }
 
-  public Set<TimedFlowDefinition> getFlowDefinitionsWithStartTimer(Collection<FlowDefinition> definitions) {
-    Set<TimedFlowDefinition> definitionsWithTimer = new HashSet<TimedFlowDefinition>();
+  public List<TimedFlowDefinition> addFlowDefinitionsWithStartTimer(Collection<FlowDefinition> definitions) {
     for (FlowDefinition definition : definitions) {
       for (FlowNodeDefinition<?> node : definition.getNodes()) {
         if (node.is(StartEvent.class) &&
           node.as(StartEvent.class).getStartTimerDefinition().isPresent()) {
 
-          definitionsWithTimer.add(new TimedFlowDefinition(definition, node.as(StartEvent.class)
+          timedDefinitions.add(new TimedFlowDefinition(definition, node.as(StartEvent.class)
             .getStartTimerDefinition().get(), node));
         }
       }
     }
-    return definitionsWithTimer;
+    return timedDefinitions;
   }
 
   class TimedFlowDefinition {
@@ -92,15 +93,23 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
       log.debug("checking for due flows...");
       try {
         for (TimedFlowDefinition definition : timedDefinitions) {
-          if (isDue(definition)) {
-            context.startFlow(definition.getFlowDefinition().getId(),
-              definition.getStartNode().getId());
-
-            lastStart.put(definition.getFlowDefinition().getId(), new Date().getTime());
-          }
+          startFlowIfDue(definition);
         }
-      } catch (Exception e) {
-        log.error("error during starting timed definitions", e);
+      } catch (Exception timedStartException) {
+        log.error("error during while starting timed definitions", timedStartException);
+      }
+    }
+
+    private void startFlowIfDue(TimedFlowDefinition definition) {
+      try {
+        if (isDue(definition)) {
+          context.startFlow(definition.getFlowDefinition().getId(),
+            definition.getStartNode().getId());
+
+          lastStart.put(definition.getFlowDefinition().getId(), new Date().getTime());
+        }
+      } catch (Exception exceptionDuringStart) {
+        log.error("error during start of " + definition.getFlowDefinition().getName(), exceptionDuringStart);
       }
     }
 
@@ -131,5 +140,9 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
   public DefaultFlowStartScheduler withSchedulerOptions(SchedulerOptions schedulerOptions) {
     this.schedulerOptions = schedulerOptions;
     return this;
+  }
+
+  public List<TimedFlowDefinition> getTimedDefinitions() {
+    return timedDefinitions;
   }
 }

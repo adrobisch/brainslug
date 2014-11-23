@@ -2,7 +2,9 @@ package brainslug.jdbc;
 
 import brainslug.flow.Identifier;
 import brainslug.flow.execution.async.AsyncTrigger;
+import brainslug.flow.execution.async.AsyncTriggerErrorDetails;
 import brainslug.flow.execution.async.AsyncTriggerQuery;
+import brainslug.jdbc.entity.AsyncTaskEntity;
 import brainslug.util.IdUtil;
 import brainslug.util.Option;
 import org.assertj.core.api.Assertions;
@@ -28,6 +30,25 @@ public class JpaAsyncTriggerStoreTest extends AbstractDatabaseTest {
     Assertions.assertThat(storedTask.getVersion()).isEqualTo(0);
     Assertions.assertThat(storedTask.getId().get().stringValue()).isEqualTo("newTaskId");
     Assertions.assertThat(storedTask.getCreatedDate()).isNotEqualTo(0);
+  }
+
+  @Test
+  public void shouldUpdateTaskWithErrorDetails() throws Exception {
+    when(idGeneratorMock.generateId()).thenReturn(IdUtil.id("newTaskId"));
+
+    JpaAsyncTriggerStore asyncTaskStore = createJdbcAsyncTaskStore();
+
+    AsyncTrigger storedTask = storeTask(asyncTaskStore);
+
+    storedTask.withErrorDetails(new AsyncTriggerErrorDetails(new RuntimeException("a error")));
+    asyncTaskStore.storeTrigger(storedTask);
+
+    AsyncTaskEntity entity = asyncTaskStore.getTaskEntity(storedTask.getId().get());
+
+    Assertions.assertThat(entity.getErrorDetails()).isNotNull();
+    Assertions.assertThat(entity.getErrorDetails().getMessage()).isEqualTo("a error");
+    Assertions.assertThat(entity.getErrorDetails().getExceptionType()).isEqualTo("java.lang.RuntimeException");
+    Assertions.assertThat(new String(entity.getErrorDetails().getStackTrace())).isNotEmpty();
   }
 
   @Test
@@ -59,12 +80,15 @@ public class JpaAsyncTriggerStoreTest extends AbstractDatabaseTest {
   }
 
   private AsyncTrigger storeTask(JpaAsyncTriggerStore asyncTaskStore) {
-    return asyncTaskStore.storeTrigger(new AsyncTrigger()
+    return asyncTaskStore.storeTrigger(testTrigger());
+  }
+
+  private AsyncTrigger testTrigger() {
+    return new AsyncTrigger()
         .withNodeId(IdUtil.id("taskNodeId"))
         .withDefinitionId(IdUtil.id("definitionId"))
         .withDueDate(new Date(100).getTime())
-        .withInstanceId(IdUtil.id("instanceId"))
-    );
+        .withInstanceId(IdUtil.id("instanceId"));
   }
 
   @Test

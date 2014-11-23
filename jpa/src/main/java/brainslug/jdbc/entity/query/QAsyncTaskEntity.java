@@ -1,10 +1,12 @@
 package brainslug.jdbc.entity.query;
 
 import brainslug.jdbc.entity.AsyncTaskEntity;
+import brainslug.jdbc.entity.AsyncTaskErrorDetailsEntity;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
 
 import static com.mysema.query.types.PathMetadataFactory.forVariable;
@@ -18,6 +20,8 @@ public class QAsyncTaskEntity extends EntityPathBase<AsyncTaskEntity> {
     public final NumberPath<Long> created = createNumber("created", Long.class);
 
     public final StringPath definitionId = createString("definitionId");
+
+    public final SimplePath<AsyncTaskErrorDetailsEntity> errorDetails = createSimple("errorDetails", AsyncTaskErrorDetailsEntity.class);
 
     public final NumberPath<Long> dueDate = createNumber("dueDate", Long.class);
 

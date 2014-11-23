@@ -38,6 +38,10 @@ public class AsyncTaskEntity {
   @Column(name = "TASK_NODE_ID")
   protected String taskNodeId;
 
+  @OneToOne
+  @JoinColumn(name = "ERROR_DETAILS_ID")
+  protected AsyncTaskErrorDetailsEntity errorDetails;
+
   @Version
   @Column(name = "VERSION")
   protected Long version;
@@ -120,6 +124,15 @@ public class AsyncTaskEntity {
 
   public AsyncTaskEntity withVersion(Long version) {
     this.version = version;
+    return this;
+  }
+
+  public AsyncTaskErrorDetailsEntity getErrorDetails() {
+    return errorDetails;
+  }
+
+  public AsyncTaskEntity withErrorDetails(AsyncTaskErrorDetailsEntity errorDetails) {
+    this.errorDetails = errorDetails;
     return this;
   }
 
