@@ -23,11 +23,18 @@ public class SpringBrainslugConfiguration {
   @Bean
   public BrainslugContext brainslugContext() {
     SpringBrainslugContext context = getBrainslugContextBuilder()
-      .withApplicationContext(applicationContext).build();
+      .withAsyncTriggerExecutor(springAsyncTriggerExecutor())
+      .withApplicationContext(applicationContext)
+      .build();
 
     addFlowDefinitions(context);
 
     return context;
+  }
+
+  @Bean
+  public SpringAsyncTriggerExecutor springAsyncTriggerExecutor() {
+    return new SpringAsyncTriggerExecutor();
   }
 
   private SpringBrainslugContextBuilder getBrainslugContextBuilder() {

@@ -23,7 +23,7 @@ public class ExecutorServiceAsyncTriggerScheduler extends AbstractAsyncTriggerSc
       @Override
       public void run() {
         FutureTask<List<Future<AsyncTriggerExecutionResult>>> executeTasks =
-          new FutureTask<List<Future<AsyncTriggerExecutionResult>>>(new ExecuteTasksCallable(context, options, taskExecutorService, asyncTriggerExecutor));
+          new FutureTask<List<Future<AsyncTriggerExecutionResult>>>(new ExecuteTasksCallable(context, asyncTriggerStore, options, taskExecutorService, asyncTriggerExecutor));
         executeTasks.run();
       }
     };

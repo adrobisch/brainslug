@@ -4,15 +4,12 @@ import brainslug.AbstractExecutionTest;
 import brainslug.flow.EnumIdentifier;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.Identifier;
-import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.BrainslugContext;
+import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Trigger;
-import brainslug.flow.context.TriggerContext;
-import brainslug.flow.execution.FlowExecutor;
-import brainslug.flow.listener.EventType;
-import brainslug.flow.listener.Listener;
+import brainslug.flow.execution.SimpleTask;
 import brainslug.util.IdUtil;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import static brainslug.util.IdUtil.id;
@@ -25,43 +22,43 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldExecuteParallel() {
     // given:
-    context.addFlowDefinition(new FlowBuilder() {
+    when(definitionStore.findById(id(PARALLELID))).thenReturn(new FlowBuilder() {
       @Override
       public void define() {
+
+        flowId(id(PARALLELID));
+
         start(event(id(START))).parallel(id(PARALLEL))
           .execute(task(id(TASK)))
             .and()
           .execute(task(id(TASK2)));
       }
-
-      @Override
-      public String getId() {
-        return PARALLELID.name();
-      }
-
     }.getDefinition());
 
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
+    TokenFlowExecutor tokenFlowExecutor = tokenFlowExecutorWithMocks();
+
     // when:
-    Identifier instanceId = context.startFlow(id(PARALLELID), id(START));
+    Trigger trigger = new Trigger().definitionId(id(PARALLELID)).nodeId(id(START));
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
+
     // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(PARALLELID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(PARALLEL)).definitionId(PARALLELID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK)).definitionId(PARALLELID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK2)).definitionId(PARALLELID).instanceId(instanceId));
-    eventOrder.verifyNoMoreInteractions();
+    InOrder eventOrder = inOrder(tokenFlowExecutor);
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(START)).definitionId(PARALLELID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(PARALLEL)).definitionId(PARALLELID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(TASK)).definitionId(PARALLELID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(TASK2)).definitionId(PARALLELID).instanceId(instanceId));
   }
 
   @Test
   public void shouldExecuteMerge() {
     // given:
-    context.addFlowDefinition(new FlowBuilder() {
+    when(definitionStore.findById(id(MERGEID))).thenReturn(new FlowBuilder() {
       String x = "test";
 
       @Override
       public void define() {
+        flowId(id(MERGEID));
+
         start(event(id(START)))
           .choice(id(CHOICE))
           .when(eq(constant(x) ,"test")).execute(task(id(TASK)))
@@ -72,33 +69,31 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
           .end(event(id(END)));
       }
 
-      @Override
-      public String getId() {
-        return MERGEID.name();
-      }
-
     }.getDefinition());
 
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
+    TokenFlowExecutor tokenFlowExecutor = tokenFlowExecutorWithMocks();
+
     // when:
-    Identifier instanceId = context.startFlow(id(MERGEID), id(START));
+    Trigger trigger = new Trigger().definitionId(id(MERGEID)).nodeId(id(START));
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
+
     // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(MERGEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(CHOICE)).definitionId(MERGEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK)).definitionId(MERGEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(MERGE)).definitionId(MERGEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(END)).definitionId(MERGEID).instanceId(instanceId));
-    eventOrder.verifyNoMoreInteractions();
+    InOrder eventOrder = inOrder(tokenFlowExecutor);
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(START)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(CHOICE)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(TASK)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(MERGE)).definitionId(MERGEID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(END)).definitionId(MERGEID).instanceId(instanceId));
   }
 
   @Test
   public void shouldExecuteJoin() {
     // given:
-    context.addFlowDefinition(new FlowBuilder() {
+    when(definitionStore.findById(id(JOINID))).thenReturn(new FlowBuilder() {
       @Override
       public void define() {
+        flowId(id(JOINID));
+
         start(event(id(START)))
           .parallel(id(PARALLEL))
           .execute(task(id(TASK)))
@@ -109,35 +104,29 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
           .end(event(id(END)));
       }
 
-      @Override
-      public String getId() {
-        return JOINID.name();
-      }
-
     }.getDefinition());
 
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
+    TokenFlowExecutor tokenFlowExecutor = tokenFlowExecutorWithMocks();
+
     // when:
-    Identifier instanceId = context.startFlow(new EnumIdentifier(JOINID), new EnumIdentifier(START));
+    Trigger trigger = new Trigger().definitionId(id(JOINID)).nodeId(id(START));
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
 
     // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(PARALLEL)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(JOIN)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK2)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(JOIN)).definitionId(JOINID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(END)).definitionId(JOINID).instanceId(instanceId));
-
-    eventOrder.verifyNoMoreInteractions();
+    InOrder eventOrder = inOrder(tokenFlowExecutor);
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(START)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(PARALLEL)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(TASK)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(JOIN)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(TASK2)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(JOIN)).definitionId(JOINID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(END)).definitionId(JOINID).instanceId(instanceId));
   }
 
   @Test
   public void shouldEvaluateServiceCallResultInChoice() {
     // given:
-    context.addFlowDefinition(new FlowBuilder() {
+    when(definitionStore.findById(id(CHOICEID))).thenReturn(new FlowBuilder() {
       String x = "test";
 
       @Override
@@ -150,46 +139,41 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
           .when(eq(constant(x), "test2")).execute(task(id(TASK2)));
       }
 
-      @Override
-      public String getId() {
-        return CHOICEID.name();
-      }
-
     }.getDefinition());
 
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
-    // when:
-    Identifier instanceId = context.startFlow(id(CHOICEID), id(START));
-    // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK)).definitionId(CHOICEID).instanceId(instanceId));
+    TokenFlowExecutor tokenFlowExecutor = tokenFlowExecutorWithMocks();
 
-    eventOrder.verifyNoMoreInteractions();
+    // when:
+    Trigger trigger = new Trigger().definitionId(id(CHOICEID)).nodeId(id(START));
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
+
+    // then:
+    InOrder eventOrder = inOrder(tokenFlowExecutor);
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
+    eventOrder.verify(tokenFlowExecutor).trigger(new Trigger().nodeId(id(TASK)).definitionId(CHOICEID).instanceId(instanceId));
   }
 
   @Test
   public void shouldPassPropertiesOnStartByTrigger() {
     // given:
-    DefaultBrainslugContext contextSpy = spy(context);
+    BrainslugContext contextSpy = spy(context);
 
     FlowBuilder flow = new FlowBuilder() {
       @Override
       public void define() {
-        start(event(id("start")));
+        start(event(id("start")))
+          .execute(task(id("propertyTask"), new SimpleTask() {
+            @Override
+            public void execute(ExecutionContext context) {
+              assertThat(context.getTrigger().getProperty("key", String.class)).isEqualTo("value");
+            }
+          }));
       }
     };
     contextSpy.addFlowDefinition(flow.getDefinition());
-    FlowExecutor executor = spy(context.getFlowExecutor());
 
     // when:
-    executor.startFlow(new Trigger().nodeId(IdUtil.id("start")).definitionId(flow.getId()).property("key", "value"));
-    ArgumentCaptor<TriggerContext> triggerCaptor = ArgumentCaptor.forClass(TriggerContext.class);
-
-    // then:
-    verify(executor).trigger(triggerCaptor.capture());
-    assertThat(triggerCaptor.getValue().getProperties().get("key", String.class)).isEqualTo("value");
+    context.trigger(new Trigger().nodeId(IdUtil.id("start")).definitionId(flow.getId()).property("key", "value"));
   }
 }

@@ -62,7 +62,7 @@ public class DefaultFlowStartSchedulerTest {
   }
 
   private BrainslugContext getBrainslugContextWithFlows() {
-    DefaultBrainslugContext object = new BrainslugContextBuilder().build().addFlowDefinition(new FlowBuilder() {
+    BrainslugContext object = new BrainslugContextBuilder().build().addFlowDefinition(new FlowBuilder() {
 
       @Override
       public void define() {

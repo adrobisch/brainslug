@@ -4,73 +4,73 @@ import brainslug.AbstractExecutionTest;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
-import brainslug.flow.context.BrainslugContextBuilder;
-import brainslug.flow.context.DefaultBrainslugContext;
-import brainslug.flow.context.ExecutionProperties;
-import brainslug.flow.context.Trigger;
+import brainslug.flow.context.*;
 import brainslug.flow.execution.DefaultExecutionContext;
 import brainslug.flow.execution.DefaultExecutionProperties;
 import brainslug.flow.execution.FlowNodeExecutionResult;
 import brainslug.flow.execution.FlowNodeExecutor;
+import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
+import brainslug.flow.execution.expression.PredicateEvaluator;
 import brainslug.flow.execution.expression.PropertyPredicate;
-import brainslug.flow.listener.EventType;
-import brainslug.flow.listener.Listener;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.util.IdUtil;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.mockito.InOrder;
 
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
-import static org.mockito.Mockito.inOrder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
 
   @Test
   public void shouldExecuteChoiceTruePath() {
     // given:
-    Listener listener = choiceFlowWithListener();
-    // when:
+    ChoiceNodeExecutor choiceNodeExecutor = createChoiceNodeExecutor();
 
-    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), DefaultExecutionProperties.with("foo", "bar"));
+    FlowDefinition flowDefinition = choiceFlow();
+    Trigger trigger = new Trigger().property("foo", "bar");
+    DefaultExecutionContext execution = new DefaultExecutionContext(trigger, registryWithServiceMock());
+
+    // when:
+    FlowNodeExecutionResult result = choiceNodeExecutor.execute(flowDefinition.getNode(id(CHOICE), ChoiceDefinition.class), execution);
+
     // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verifyNoMoreInteractions();
+    assertThat(result.getNextNodes().size()).isEqualTo(1);
+    assertThat(result.getNextNodes().get(0).getId()).isEqualTo(id(TASK));
   }
 
   @Test
   public void shouldExecuteChoiceFalsePath() {
     // given:
-    Listener listener = choiceFlowWithListener();
-    // when:
+    ChoiceNodeExecutor choiceNodeExecutor = createChoiceNodeExecutor();
 
-    Identifier instanceId = context.startFlow(id(CHOICEID), id(START), DefaultExecutionProperties.with("foo", "oof"));
+    FlowDefinition flowDefinition = choiceFlow();
+    Trigger trigger = new Trigger().property("foo", "oof");
+    DefaultExecutionContext execution = new DefaultExecutionContext(trigger, registryWithServiceMock());
+
+    // when:
+    FlowNodeExecutionResult result = choiceNodeExecutor.execute(flowDefinition.getNode(id(CHOICE), ChoiceDefinition.class), execution);
+
     // then:
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(CHOICE)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK2)).definitionId(CHOICEID).instanceId(instanceId));
-    eventOrder.verifyNoMoreInteractions();
+    assertThat(result.getNextNodes().size()).isEqualTo(1);
+    assertThat(result.getNextNodes().get(0).getId()).isEqualTo(id(TASK2));
   }
 
   @Test
   public void shouldEvaluatePropertyPredicate() {
     // given:
-    DefaultBrainslugContext brainslugContext = new BrainslugContextBuilder().build();
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(context.getPredicateEvaluator()).withTokenOperations(new TokenOperations(brainslugContext.getTokenStore()));
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), context.getRegistry());
+    BrainslugContext brainslugContext = new BrainslugContextBuilder().build();
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(new TokenOperations(tokenStore));
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(true);
     // when:
     FlowNodeExecutionResult executionResult = choiceNodeExecutor.execute(flowDefinition.getNode(IdUtil.id("choice"), ChoiceDefinition.class), executionContext);
 
     // then:
-    Assertions.assertThat(executionResult.getNextNodes())
+    assertThat(executionResult.getNextNodes())
       .hasSize(1)
       .contains(flowDefinition.getNode(id("task")));
   }
@@ -78,9 +78,8 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldTakeOtherwisePathIfNoneMatches() {
     // given:
-    DefaultBrainslugContext brainslugContext = new BrainslugContextBuilder().build();
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(context.getPredicateEvaluator()).withTokenOperations(new TokenOperations(brainslugContext.getTokenStore()));
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), context.getRegistry());
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(new TokenOperations(tokenStore));
+    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(false);
 
@@ -88,9 +87,17 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     FlowNodeExecutionResult executionResult = choiceNodeExecutor.execute(flowDefinition.getNode(IdUtil.id("choice"), ChoiceDefinition.class), executionContext);
 
     // then:
-    Assertions.assertThat(executionResult.getNextNodes())
+    assertThat(executionResult.getNextNodes())
       .hasSize(1)
       .containsOnly(flowDefinition.getNode(id("end")));
+  }
+
+  ChoiceNodeExecutor createChoiceNodeExecutor() {
+    PredicateEvaluator mock = new DefaultPredicateEvaluator();
+    TokenOperations tokenOperations = mock(TokenOperations.class);
+
+    return new ChoiceNodeExecutor(mock)
+      .withTokenOperations(tokenOperations);
   }
 
   private FlowDefinition propertyPredicateFlow(final boolean predicateFulfilled) {
@@ -109,14 +116,11 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     }.getDefinition();
   }
 
-  private Listener choiceFlowWithListener() {
+  private BrainslugContext contextWithChoiceFlow() {
     FlowDefinition definition = choiceFlow();
 
     context.addFlowDefinition(definition);
-
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
-    return listener;
+    return spy(context);
   }
 
   private FlowDefinition choiceFlow() {

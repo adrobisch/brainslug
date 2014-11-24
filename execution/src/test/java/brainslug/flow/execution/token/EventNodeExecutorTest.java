@@ -1,16 +1,13 @@
 package brainslug.flow.execution.token;
 
+import brainslug.AbstractExecutionTest;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
-import brainslug.flow.context.BrainslugContextBuilder;
-import brainslug.flow.context.DefaultBrainslugContext;
-import brainslug.flow.context.Trigger;
+import brainslug.flow.context.*;
 import brainslug.flow.execution.DefaultExecutionContext;
-import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.execution.FlowNodeExecutionResult;
 import brainslug.flow.execution.async.AsyncTrigger;
-import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.flow.execution.expression.ContextPredicate;
 import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.EventDefinition;
@@ -23,23 +20,7 @@ import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
 import static org.mockito.Mockito.*;
 
-public class EventNodeExecutorTest {
-  AsyncTriggerStore asyncTriggerStoreMock = mock(AsyncTriggerStore.class);
-
-  DefaultBrainslugContext brainslugContextWithMock = new BrainslugContextBuilder()
-    .withAsyncTriggerStore(asyncTriggerStoreMock)
-    .withTokenStore(tokenStoreMock())
-    .build();
-
-  EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor(brainslugContextWithMock.getAsyncTriggerStore(), brainslugContextWithMock.getPredicateEvaluator())
-    .withTokenOperations(new TokenOperations(brainslugContextWithMock.getTokenStore())));
-
-  TokenStore tokenStoreMock() {
-    TokenStore tokenStoreMock = mock(TokenStore.class);
-    when(tokenStoreMock.getNodeTokens(any(Identifier.class), any(Identifier.class))).thenReturn(new TokenList());
-    return tokenStoreMock;
-  }
-
+public class EventNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldWaitForTriggerAtIntermediateEvent() {
     // given:
@@ -140,7 +121,7 @@ public class EventNodeExecutorTest {
     FlowDefinition eventFlow = timerEventFlow();
     EventDefinition timerEventNode = eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class);
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger(), brainslugContextWithMock.getRegistry());
+    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger(), registryWithServiceMock());
 
     // when:
     when(eventNodeExecutor.getCurrentTime()).thenReturn(42l);
@@ -150,11 +131,20 @@ public class EventNodeExecutorTest {
     // then:
     Assertions.assertThat(executionResult.getNextNodes()).isEmpty();
 
-    verify(asyncTriggerStoreMock).storeTrigger(
+    verify(asyncTriggerStore).storeTrigger(
       new AsyncTrigger()
       .withNodeId(id(INTERMEDIATE))
       .withDueDate(5042l)
     );
+  }
+
+  EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor(asyncTriggerStore, predicateEvaluator)
+    .withTokenOperations(new TokenOperations(tokenStoreMock())));
+
+  TokenStore tokenStoreMock() {
+    TokenStore tokenStoreMock = mock(TokenStore.class);
+    when(tokenStoreMock.getNodeTokens(any(Identifier.class), any(Identifier.class))).thenReturn(new TokenList());
+    return tokenStoreMock;
   }
 
   private EventDefinition eventDefinitionWithPredicate(FlowDefinition eventFlow, final boolean predicateFulfilled) {

@@ -8,7 +8,6 @@ import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.context.TriggerContext;
-import brainslug.flow.execution.HashMapDefinitionStore;
 import brainslug.util.IdUtil;
 import org.junit.Test;
 import org.mockito.verification.VerificationMode;
@@ -28,17 +27,17 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
   public static final String ASYNC_TASK_FLOW = "taskFlow";
   public static final String WAIT_EVENT_FLOW = "waitFlow";
 
-  final DefaultBrainslugContext contextMockWithDefinitions() {
-    DefaultBrainslugContext context = mock(DefaultBrainslugContext.class);
-    AsyncTriggerStore asyncTriggerStore = new ArrayListTriggerStore();
+  AsyncTriggerStore asyncTriggerStore = spy(new ArrayListTriggerStore());
 
-    when(context.getAsyncTriggerStore()).thenReturn(asyncTriggerStore);
-    HashMapDefinitionStore definitionStore = new HashMapDefinitionStore();
+  final BrainslugContext contextMockWithDefinitions() {
+    BrainslugContext context = mock(DefaultBrainslugContext.class);
 
-    definitionStore.addDefinition(taskFlow());
-    definitionStore.addDefinition(waitEventFlow());
+    FlowDefinition taskFlow = taskFlow();
+    FlowDefinition waitEventFlow = waitEventFlow();
 
-    when(context.getDefinitionStore()).thenReturn(definitionStore);
+    when(context.getDefinitionById(taskFlow.getId())).thenReturn(taskFlow);
+    when(context.getDefinitionById(waitEventFlow.getId())).thenReturn(waitEventFlow);
+
     return context;
   }
 
@@ -69,7 +68,7 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
   @Test
   public void shouldTriggerTaskNodeExecution() {
     // given:
-    DefaultBrainslugContext contextMock = contextMockWithDefinitions();
+    BrainslugContext contextMock = contextMockWithDefinitions();
     ExecutorServiceAsyncTriggerScheduler executorServiceScheduler = schedulerWithContext(contextMock);
     Identifier instanceId = IdUtil.id("instance");
 
@@ -93,7 +92,7 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
   @Test
   public void shouldScheduleExecutionMoreThanOnce() {
     // given:
-    DefaultBrainslugContext contextMock = contextMockWithDefinitions();
+    BrainslugContext contextMock = contextMockWithDefinitions();
     ExecutorServiceAsyncTriggerScheduler executorServiceScheduler = schedulerWithContext(contextMock);
     Identifier instanceId = IdUtil.id("instance");
 
@@ -124,7 +123,7 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
   @Test
   public void shouldTriggerEventNodeExecution() {
     // given:
-    DefaultBrainslugContext contextMock = contextMockWithDefinitions();
+    BrainslugContext contextMock = contextMockWithDefinitions();
     ExecutorServiceAsyncTriggerScheduler executorServiceScheduler = schedulerWithContext(contextMock);
     Identifier instanceId = IdUtil.id("instance");
 
@@ -145,10 +144,11 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
     await().until(contextWasTriggered(contextMock, expectedTrigger, times(1)));
   }
 
-  ExecutorServiceAsyncTriggerScheduler schedulerWithContext(DefaultBrainslugContext context) {
+  ExecutorServiceAsyncTriggerScheduler schedulerWithContext(BrainslugContext context) {
     ExecutorServiceAsyncTriggerScheduler executorServiceScheduler = new ExecutorServiceAsyncTriggerScheduler();
 
     executorServiceScheduler.start(context,
+      asyncTriggerStore,
       new AsyncTriggerSchedulerOptions()
         .withMaxTaskCount(1)
         .withScheduleDelay(500)

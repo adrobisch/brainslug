@@ -12,8 +12,9 @@ import brainslug.flow.listener.ListenerManager;
 import brainslug.util.IdGenerator;
 import brainslug.util.UuidGenerator;
 
-public abstract class AbstractBrainslugContextBuilder<SelfType, T extends BrainslugContext> {
-  protected AsyncTriggerScheduler asyncTriggerScheduler = new ExecutorServiceAsyncTriggerScheduler();
+public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractBrainslugContextBuilder, T extends BrainslugContext> {
+
+  protected AsyncTriggerExecutor asyncTriggerExecutor = new AsyncTriggerExecutor();
   protected AsyncTriggerStore asyncTriggerStore = new ArrayListTriggerStore();
   protected AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions = new AsyncTriggerSchedulerOptions();
 
@@ -30,10 +31,17 @@ public abstract class AbstractBrainslugContextBuilder<SelfType, T extends Brains
 
   protected FlowExecutor flowExecutor;
   protected TokenStore tokenStore;
+  protected AsyncTriggerScheduler asyncTriggerScheduler;
 
   public T build() {
     if (tokenStore == null) {
       withTokenStore(new HashMapTokenStore(idGenerator));
+    }
+
+    if (asyncTriggerScheduler == null) {
+      withAsyncTriggerScheduler(new ExecutorServiceAsyncTriggerScheduler()
+        .withAsyncTriggerExecutor(asyncTriggerExecutor)
+      );
     }
 
     if (flowExecutor == null) {
@@ -101,6 +109,11 @@ public abstract class AbstractBrainslugContextBuilder<SelfType, T extends Brains
 
   public SelfType withExecutor(FlowExecutor newFlowExecutor) {
     this.flowExecutor = newFlowExecutor;
+    return self();
+  }
+
+  public SelfType withAsyncTriggerExecutor(AsyncTriggerExecutor asyncTriggerExecutor) {
+    this.asyncTriggerExecutor = asyncTriggerExecutor;
     return self();
   }
 

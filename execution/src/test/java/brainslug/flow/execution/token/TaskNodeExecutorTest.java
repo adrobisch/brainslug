@@ -3,24 +3,20 @@ package brainslug.flow.execution.token;
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.context.ExecutionContext;
+import brainslug.flow.context.Registry;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.CallDefinitionExecutor;
 import brainslug.flow.execution.DefaultExecutionContext;
 import brainslug.flow.execution.Execute;
-import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.execution.SimpleTask;
 import brainslug.flow.execution.async.AsyncTrigger;
-import brainslug.flow.execution.async.AsyncTriggerScheduler;
 import brainslug.flow.execution.expression.ContextPredicate;
-import brainslug.flow.listener.EventType;
-import brainslug.flow.listener.Listener;
 import brainslug.flow.node.TaskDefinition;
 import brainslug.flow.node.task.Delegate;
 import brainslug.flow.node.task.GoalDefinition;
 import brainslug.util.IdUtil;
 import org.junit.Test;
-import org.mockito.InOrder;
 
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
@@ -42,21 +38,18 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
     }.getDefinition();
 
-    context.addFlowDefinition(serviceCallFlow);
+    TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    Identifier instanceId = context.startFlow(serviceCallFlow.getId(), id(START));
+    DefaultExecutionContext instance = new DefaultExecutionContext(new Trigger()
+      .definitionId(serviceCallFlow.getId())
+      .nodeId(id(TASK))
+      .instanceId(id("instance")), registryWithServiceMock());
+
+    taskNodeExecutor.execute(serviceCallFlow.getNode(id(TASK), TaskDefinition.class), instance);
 
     // then:
     verify(testServiceMock).getString();
-
-    InOrder eventOrder = inOrder(listener);
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(START)).definitionId(serviceCallFlow.getId()).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(TASK)).definitionId(serviceCallFlow.getId()).instanceId(instanceId));
-    eventOrder.verify(listener).notify(new Trigger().nodeId(id(END)).definitionId(serviceCallFlow.getId()).instanceId(instanceId));
-    eventOrder.verifyNoMoreInteractions();
   }
 
   @Test
@@ -76,12 +69,15 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
     }.getDefinition();
 
-    context.addFlowDefinition(serviceCallFlow);
+    TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
-    Listener listener = mock(Listener.class);
-    context.getListenerManager().addListener(EventType.BEFORE_EXECUTION, listener);
     // when:
-    context.startFlow(serviceCallFlow.getId(), id(START));
+    DefaultExecutionContext instance = new DefaultExecutionContext(new Trigger()
+      .definitionId(serviceCallFlow.getId())
+      .nodeId(id(TASK))
+      .instanceId(id("instance")), registryWithServiceMock());
+
+    taskNodeExecutor.execute(serviceCallFlow.getNode(id(TASK), TaskDefinition.class), instance);
 
     // then:
     verify(testServiceMock).getString();
@@ -91,27 +87,41 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void supportsHandlerCallDefinitionWithArgumentInjection() {
     // given:
-    final Delegate testHandler = new Delegate() {
+    class TestDelegate implements Delegate {
       @Execute
-      public void execute(TestService testService1, ExecutionContext context) {
+      public void execute(TestService testService, ExecutionContext context) {
         // then:
-        assertThat(testService1.getString()).isEqualTo("a String");
+        assertThat(testService.getString()).isEqualTo("a String");
         assertThat(context).isNotNull();
       }
-    };
+    }
+
+    final TestDelegate testDelegate = spy(new TestDelegate());
 
     FlowDefinition handlerFlow = new FlowBuilder() {
       @Override
       public void define() {
         start(event(id(START)))
-          .execute(task(id(TASK)).delegate(Delegate.class))
+          .execute(task(id(TASK)).delegate(TestDelegate.class))
         .end(event(id(END)));
       }
     }.getDefinition();
 
-    context.addFlowDefinition(handlerFlow);
+    TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
+
+    Registry registry = registryWithServiceMock();
+    when(registry.getService(TestDelegate.class)).thenReturn(testDelegate);
+
     // when:
-    context.startFlow(handlerFlow.getId(), id(START));
+    DefaultExecutionContext instance = new DefaultExecutionContext(new Trigger()
+      .definitionId(handlerFlow.getId())
+      .nodeId(id(TASK))
+      .instanceId(id("instance")), registry);
+
+    taskNodeExecutor.execute(handlerFlow.getNode(id(TASK), TaskDefinition.class), instance);
+
+    // then:
+    verify(testDelegate).execute(any(TestService.class), any(ExecutionContext.class));
   }
 
   @Test
@@ -125,7 +135,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     }
 
     TestDelegate delegateInstance = spy(new TestDelegate());
-    context.getRegistry().registerService(Delegate.class, delegateInstance);
+    context.registerService(Delegate.class, delegateInstance);
 
     FlowDefinition delegateFlow = new FlowBuilder() {
       @Override
@@ -146,9 +156,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void asyncTaskIsDelegatedToScheduler() {
     // given:
-    AsyncTriggerScheduler asyncTriggerSchedulerMock = mock(AsyncTriggerScheduler.class);
-    TaskNodeExecutor taskNodeExecutor = (TaskNodeExecutor) new TaskNodeExecutor(context.getDefinitionStore(), context.getPredicateEvaluator(), context.getCallDefinitionExecutor(), asyncTriggerSchedulerMock)
-      .withTokenOperations(new TokenOperations(context.getTokenStore()));
+    TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
     FlowDefinition asyncTaskFlow = new FlowBuilder() {
       @Override
@@ -163,16 +171,23 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     }.getDefinition();
 
     context.addFlowDefinition(asyncTaskFlow);
+
     // when:
     taskNodeExecutor.execute(asyncTaskFlow.getNode(id(TASK), TaskDefinition.class), new DefaultExecutionContext(new Trigger()
     .definitionId(asyncTaskFlow.getId())
       .nodeId(id(TASK))
-      .instanceId(id("instance")), context.getRegistry()));
+      .instanceId(id("instance")), registryWithServiceMock()));
+
     // then:
-    verify(asyncTriggerSchedulerMock).schedule(new AsyncTrigger()
+    verify(asyncTriggerScheduler).schedule(new AsyncTrigger()
       .withNodeId(id(TASK))
       .withInstanceId(id("instance"))
       .withDefinitionId(id(ASYNCID)));
+  }
+
+  private TaskNodeExecutor createTaskNodeExecutor() {
+    return new TaskNodeExecutor(definitionStore, predicateEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler)
+        .withTokenOperations(new TokenOperations(tokenStore));
   }
 
   @Test
@@ -204,10 +219,10 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   private void taskNodeTriggered(GoalFlow goalFlow) {
     DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger()
       .definitionId(goalFlow.getGoalFlow().getId())
-      .nodeId(id(TASK)), context.getRegistry());
+      .nodeId(id(TASK)), registryWithServiceMock());
 
-    new TaskNodeExecutor(context.getDefinitionStore(), context.getPredicateEvaluator(), new CallDefinitionExecutor(), context.getAsyncTriggerScheduler())
-        .withTokenOperations(new TokenOperations(context.getTokenStore()))
+    new TaskNodeExecutor(definitionStore, predicateEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler)
+        .withTokenOperations(new TokenOperations(tokenStore))
         .execute((TaskDefinition) goalFlow.getGoalFlow().getNode(IdUtil.id(TASK)), executionContext);
   }
 
@@ -249,7 +264,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
 
       }.getDefinition();
 
-      context.addFlowDefinition(goalFlow);
+      when(definitionStore.findById(goalFlow.getId())).thenReturn(goalFlow);
 
       return this;
     }

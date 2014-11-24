@@ -52,13 +52,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP-java6</artifactId>
-            <version>2.0.1</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
@@ -69,13 +62,14 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>3.0</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -89,12 +83,14 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -128,21 +124,21 @@
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
             <version>3.9.3</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-hibernate3</artifactId>
             <version>3.9.3</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
             <version>3.9.3</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -211,7 +207,7 @@
                     <jdbcDriver>org.h2.Driver</jdbcDriver>
                     <jdbcUrl>${schema.db}</jdbcUrl>
                     <jdbcUser>sa</jdbcUser>
-                    <packageName>brainslug.jdbc.table</packageName>
+                    <packageName>brainslug.jpa.table</packageName>
                     <targetFolder>${project.basedir}/src/main/java</targetFolder>
                 </configuration>
                 <dependencies>

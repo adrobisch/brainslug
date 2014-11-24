@@ -5,11 +5,11 @@ import brainslug.flow.FlowDefinition;
 import brainslug.flow.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.BrainslugContextBuilder;
-import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.execution.SimpleTask;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerSchedulerOptions;
+import brainslug.flow.execution.async.AsyncTriggerStore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.quartz.JobDetail;
@@ -50,7 +50,7 @@ public class QuartzSchedulerTest {
 
   private QuartzScheduler quartzSchedulerWithContextMock(Scheduler scheduler) {
     QuartzScheduler quartzScheduler = new QuartzScheduler(scheduler);
-    quartzScheduler.start(mock(DefaultBrainslugContext.class), new AsyncTriggerSchedulerOptions());
+    quartzScheduler.start(mock(BrainslugContext.class), mock(AsyncTriggerStore.class), new AsyncTriggerSchedulerOptions());
     return quartzScheduler;
   }
 

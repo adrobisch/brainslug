@@ -6,9 +6,10 @@ import brainslug.util.Option;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ArrayListTriggerStore implements AsyncTriggerStore {
-  List<AsyncTrigger> triggers = new ArrayList<AsyncTrigger>();
+  List<AsyncTrigger> triggers = new CopyOnWriteArrayList<AsyncTrigger>();
 
   @Override
   public AsyncTrigger storeTrigger(AsyncTrigger asyncTrigger) {
@@ -18,6 +19,14 @@ public class ArrayListTriggerStore implements AsyncTriggerStore {
       triggers.add(asyncTrigger);
       return asyncTrigger;
     }
+  }
+
+  @Override
+  public AsyncTrigger updateTrigger(AsyncTrigger asyncTrigger) {
+    if (triggers.contains(asyncTrigger)) {
+      return asyncTrigger.incrementVersion();
+    }
+    throw new IllegalArgumentException("trigger cant  be updated because it does not exist: " + asyncTrigger);
   }
 
   @Override

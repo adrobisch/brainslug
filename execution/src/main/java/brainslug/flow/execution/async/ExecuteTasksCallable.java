@@ -1,6 +1,6 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.TaskDefinition;
 import brainslug.flow.node.task.RetryStrategy;
@@ -19,15 +19,18 @@ public class ExecuteTasksCallable implements Callable<List<Future<AsyncTriggerEx
   private AsyncTriggerExecutor asyncTriggerExecutor;
   private Logger log = LoggerFactory.getLogger(ExecuteTasksCallable.class);
 
-  DefaultBrainslugContext context;
+  BrainslugContext context;
   AsyncTriggerSchedulerOptions options;
+  AsyncTriggerStore asyncTriggerStore;
   ExecutorService taskExecutorService;
 
-  ExecuteTasksCallable(DefaultBrainslugContext context,
+  ExecuteTasksCallable(BrainslugContext context,
+                       AsyncTriggerStore asyncTriggerStore,
                        AsyncTriggerSchedulerOptions options,
                        ExecutorService taskExecutorService,
                        AsyncTriggerExecutor asyncTriggerExecutor) {
     this.context = context;
+    this.asyncTriggerStore = asyncTriggerStore;
     this.options = options;
     this.taskExecutorService = taskExecutorService;
     this.asyncTriggerExecutor = asyncTriggerExecutor;
@@ -54,15 +57,13 @@ public class ExecuteTasksCallable implements Callable<List<Future<AsyncTriggerEx
     List<ExecuteTaskCallable> tasksToBeExecuted = new ArrayList<ExecuteTaskCallable>();
 
     for (AsyncTrigger trigger: getTasksToTrigger()) {
-      AsyncTrigger updatedTrigger = context.getAsyncTriggerStore().storeTrigger(trigger);
-
-      FlowNodeDefinition nodeDefinition = context.getDefinitionStore()
-        .findById(updatedTrigger.getDefinitionId())
-        .getNode(updatedTrigger.getNodeId(), FlowNodeDefinition.class);
+      FlowNodeDefinition nodeDefinition = context
+        .getDefinitionById(trigger.getDefinitionId())
+        .getNode(trigger.getNodeId(), FlowNodeDefinition.class);
 
       RetryStrategy retryStrategy = getRetryStrategy(nodeDefinition);
 
-      tasksToBeExecuted.add(new ExecuteTaskCallable(context, updatedTrigger, asyncTriggerExecutor, retryStrategy));
+      tasksToBeExecuted.add(new ExecuteTaskCallable(context, trigger, asyncTriggerStore, asyncTriggerExecutor, retryStrategy));
     }
     return tasksToBeExecuted;
   }
@@ -76,7 +77,7 @@ public class ExecuteTasksCallable implements Callable<List<Future<AsyncTriggerEx
   }
 
   protected List<AsyncTrigger> getTasksToTrigger() {
-    return context.getAsyncTriggerStore().getTriggers(
+    return asyncTriggerStore.getTriggers(
       new AsyncTriggerQuery()
         .withMaxCount(options.getMaxTaskCount())
         .withOverdueDate(new Date())

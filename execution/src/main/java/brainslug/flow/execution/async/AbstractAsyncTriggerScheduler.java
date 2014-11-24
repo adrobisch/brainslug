@@ -1,11 +1,12 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.BrainslugContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerScheduler {
-  protected DefaultBrainslugContext context;
+  protected BrainslugContext context;
+  protected AsyncTriggerStore asyncTriggerStore;
   protected AtomicBoolean running = new AtomicBoolean(false);
   protected AsyncTriggerSchedulerOptions options;
 
@@ -17,17 +18,18 @@ public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerSched
   }
 
   protected void internalSchedule(AsyncTrigger asyncTrigger) {
-    context.getAsyncTriggerStore().storeTrigger(asyncTrigger);
+    asyncTriggerStore.storeTrigger(asyncTrigger);
   }
 
   @Override
-  public synchronized void start(DefaultBrainslugContext context, AsyncTriggerSchedulerOptions options) {
+  public synchronized void start(BrainslugContext context, AsyncTriggerStore asyncTriggerStore, AsyncTriggerSchedulerOptions options) {
     if (options.disabled) {
       return;
     }
 
     this.options = options;
     this.context = context;
+    this.asyncTriggerStore = asyncTriggerStore;
 
     if (this.context == null) {
       throw new IllegalStateException("context must be set to start async task scheduler");

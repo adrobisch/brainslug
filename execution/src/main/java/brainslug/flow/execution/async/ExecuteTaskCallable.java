@@ -1,20 +1,22 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.context.DefaultBrainslugContext;
+import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.node.task.RetryStrategy;
 
 import java.util.Date;
 import java.util.concurrent.Callable;
 
 public class ExecuteTaskCallable implements Callable<AsyncTriggerExecutionResult> {
+  AsyncTriggerStore asyncTriggerStore;
   RetryStrategy retryStrategy;
   AsyncTriggerExecutor asyncTriggerExecutor;
-  DefaultBrainslugContext context;
+  BrainslugContext context;
   AsyncTrigger asyncTrigger;
 
-  ExecuteTaskCallable(DefaultBrainslugContext context, AsyncTrigger asyncTrigger, AsyncTriggerExecutor asyncTriggerExecutor, RetryStrategy retryStrategy) {
+  public ExecuteTaskCallable(BrainslugContext context, AsyncTrigger asyncTrigger, AsyncTriggerStore asyncTriggerStore, AsyncTriggerExecutor asyncTriggerExecutor, RetryStrategy retryStrategy) {
     this.context = context;
     this.asyncTrigger = asyncTrigger;
+    this.asyncTriggerStore = asyncTriggerStore;
     this.asyncTriggerExecutor = asyncTriggerExecutor;
     this.retryStrategy = retryStrategy;
   }
@@ -25,20 +27,7 @@ public class ExecuteTaskCallable implements Callable<AsyncTriggerExecutionResult
       throw new IllegalStateException();
     }
 
-    AsyncTriggerExecutionResult execution = asyncTriggerExecutor.execute(asyncTrigger, context);
-    if (execution.isFailed()) {
-      context.getAsyncTriggerStore().storeTrigger(asyncTrigger
-          .incrementRetries()
-          .withDueDate(retryStrategy
-            .nextRetry(asyncTrigger.getRetries(), getBaseDate()).getTime())
-          .withErrorDetails(new AsyncTriggerErrorDetails(execution.getException().get()))
-      );
-    }
-    return execution;
-  }
-
-  public Date getBaseDate() {
-    return new Date();
+    return asyncTriggerExecutor.execute(asyncTrigger, retryStrategy, context, asyncTriggerStore);
   }
 
   @Override

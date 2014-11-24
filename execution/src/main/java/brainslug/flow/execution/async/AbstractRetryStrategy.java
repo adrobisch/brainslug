@@ -16,7 +16,7 @@ public abstract class AbstractRetryStrategy implements RetryStrategy {
 
       @Override
       public String toString() {
-        return String.format("linear retry, duration: %s, unit: %s", intervalDuration, intervalDuration);
+        return String.format("linear retry, duration: %s, unit: %s", intervalDuration, intervalUnit);
       }
     };
   }
@@ -30,7 +30,7 @@ public abstract class AbstractRetryStrategy implements RetryStrategy {
 
       @Override
       public String toString() {
-        return String.format("quadratic retry, duration: %s, unit: %s", intervalDuration, intervalDuration);
+        return String.format("quadratic retry, duration: %s, unit: %s", intervalDuration, intervalUnit);
       }
     };
   }

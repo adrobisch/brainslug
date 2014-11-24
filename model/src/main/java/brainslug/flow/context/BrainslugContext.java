@@ -25,6 +25,11 @@ public interface BrainslugContext {
   public Collection<FlowDefinition> getDefinitions();
 
   /**
+   * @return get a flow definition by id from the definition store
+   */
+  public FlowDefinition getDefinitionById(Identifier flowId);
+
+  /**
    * trigger a node in a given instance and definition
    * for further exeution
    *
@@ -62,4 +67,8 @@ public interface BrainslugContext {
    * @return BrainslugContext with schedulers stopped
    */
   BrainslugContext stop();
+
+  <T> BrainslugContext registerService(Class<T> serviceClass, T serviceInstance);
+
+  <T> T getService(Class<T> clazz);
 }

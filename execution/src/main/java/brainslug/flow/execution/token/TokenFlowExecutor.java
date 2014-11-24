@@ -131,7 +131,7 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   // TODO: create ExecutionContextFactory, which contains merging
   protected ExecutionContext createExecutionContext(TriggerContext trigger) {
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(trigger, registry);
+    ExecutionContext executionContext = new DefaultExecutionContext(trigger, registry);
 
     if(trigger.getInstanceId() != null) {
       executionContext.getTrigger().setProperties(mergeProperties(trigger, executionContext));

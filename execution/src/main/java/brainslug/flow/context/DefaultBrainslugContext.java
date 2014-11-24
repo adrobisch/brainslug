@@ -68,6 +68,11 @@ public class DefaultBrainslugContext implements BrainslugContext {
     return definitionStore.getDefinitions();
   }
 
+  @Override
+  public FlowDefinition getDefinitionById(Identifier flowId) {
+    return definitionStore.findById(flowId);
+  }
+
   public DefinitionStore getDefinitionStore() {
     return definitionStore;
   }
@@ -94,7 +99,7 @@ public class DefaultBrainslugContext implements BrainslugContext {
 
   @Override
   public BrainslugContext start() {
-    Preconditions.notNull(asyncTriggerScheduler).start(this, asyncTriggerSchedulerOptions);
+    Preconditions.notNull(asyncTriggerScheduler).start(this, asyncTriggerStore, asyncTriggerSchedulerOptions);
     Preconditions.notNull(asyncFlowStartScheduler).start(asyncFlowStartSchedulerOptions, this, getDefinitionStore().getDefinitions());
     return this;
   }
@@ -104,6 +109,17 @@ public class DefaultBrainslugContext implements BrainslugContext {
     Preconditions.notNull(asyncTriggerScheduler).stop();
     Preconditions.notNull(asyncFlowStartScheduler).stop();
     return this;
+  }
+
+  @Override
+  public <T> BrainslugContext registerService(Class<T> serviceClass, T serviceInstance) {
+    registry.registerService(serviceClass, serviceInstance);
+    return this;
+  }
+
+  @Override
+  public <T> T getService(Class<T> serviceClass) {
+    return registry.getService(serviceClass);
   }
 
   public ListenerManager getListenerManager() {
