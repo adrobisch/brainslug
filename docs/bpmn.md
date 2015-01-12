@@ -5,7 +5,7 @@ brainslug is able to export flow definitions to BPMN 2.0 as rendered image or XM
 ## Renderer Example
 
 ```java
-JGraphRenderer renderer = new JGraphRenderer(new GraphFactory());
+JGraphRenderer renderer = new JGraphRenderer(new DefaultSkin());
 FileOutputStream outputStream = ...
 FlowBuilder flowBuilder = ...
 renderer.render(flowBuilder, outputStream, Format.PNG);

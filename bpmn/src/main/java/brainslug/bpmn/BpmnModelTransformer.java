@@ -47,6 +47,15 @@ public class BpmnModelTransformer {
       }
   }
 
+  public String toBpmnXml(BpmnModel bpmnModel) {
+    BpmnXMLConverter bpmnXMLConverter = new BpmnXMLConverter();
+    try {
+      return new String(bpmnXMLConverter.convertToXML(bpmnModel), "UTF-8");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   private void addFlows(Process process) {
     for (SequenceFlow flow : sequenceFlows) {
       process.addFlowElement(flow);
@@ -135,14 +144,10 @@ public class BpmnModelTransformer {
   }
 
   private void addTask(AbstractTaskDefinition task, Process process) {
-    if (task instanceof ServiceTaskDefinition) {
-      process.addFlowElement(createServiceTask(task));
-    }
-    else if (task instanceof UserTaskDefinition) {
+    if (task instanceof UserTaskDefinition) {
       process.addFlowElement(createUserTask(task));
-    }
-    else {
-      throw new UnsupportedOperationException("dont know how to transform " + task);
+    } else {
+      process.addFlowElement(createServiceTask(task));
     }
   }
 
@@ -230,6 +235,13 @@ public class BpmnModelTransformer {
       userTask.setAssignee(((UserTaskDefinition) task).getAssignee());
     }
     return userTask;
+  }
+
+  protected Task createTask(AbstractTaskDefinition brainslugTask) {
+    Task task = new Task();
+    task.setId(brainslugTask.getId().toString());
+    task.setName(brainslugTask.getDisplayName());
+    return task;
   }
 
 }

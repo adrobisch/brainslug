@@ -11,11 +11,11 @@
     <artifactId>brainslug-renderer</artifactId>
 
     <dependencies>
-      <dependency>
-          <groupId>org.tinyjee.jgraphx</groupId>
-          <artifactId>jgraphx</artifactId>
-          <version>2.3.0.5</version>
-      </dependency>
+        <dependency>
+            <groupId>org.tinyjee.jgraphx</groupId>
+            <artifactId>jgraphx</artifactId>
+            <version>2.3.0.5</version>
+        </dependency>
         <dependency>
             <groupId>de.androbit</groupId>
             <artifactId>brainslug-model</artifactId>

@@ -1,0 +1,66 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.androbit</groupId>
+    <artifactId>brainslug-maven-plugin-example</artifactId>
+    <version>0.16-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.androbit</groupId>
+            <artifactId>brainslug-execution</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>de.androbit</groupId>
+                <artifactId>brainslug-maven-renderer</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <format>jpg</format>
+                    <flows>brainslug.example.SimpleFlow</flows>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>render</id>
+                        <goals>
+                            <goal>render-flows</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>de.androbit</groupId>
+                <artifactId>brainslug-maven-bpmn</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <flows>brainslug.example.SimpleFlow</flows>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>export</id>
+                        <goals>
+                            <goal>export-bpmn</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

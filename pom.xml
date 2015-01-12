@@ -19,6 +19,8 @@
       <module>quartz</module>
       <module>jpa</module>
       <module>spring</module>
+      <module>maven-renderer</module>
+      <module>maven-bpmn</module>
     </modules>
 
     <licenses>
