@@ -7,6 +7,7 @@ brainslug is a control flow abstraction library. It enables you to model your ap
 which can be transformed to different representations or be executed within a customisable environment.
 
 <a href="https://travis-ci.org/adrobisch/brainslug"><img src="https://travis-ci.org/adrobisch/brainslug.png?branch=master" /></a>
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.androbit/brainslug-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.androbit/brainslug-core)
 
 Download
 ========
