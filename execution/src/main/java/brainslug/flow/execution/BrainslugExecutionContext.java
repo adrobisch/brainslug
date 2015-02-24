@@ -6,12 +6,12 @@ import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Registry;
 import brainslug.flow.context.TriggerContext;
 
-public class DefaultExecutionContext implements ExecutionContext {
+public class BrainslugExecutionContext implements ExecutionContext {
 
   Registry registry;
   TriggerContext trigger;
 
-  public DefaultExecutionContext(TriggerContext trigger, Registry registry) {
+  public BrainslugExecutionContext(TriggerContext trigger, Registry registry) {
     this.trigger = trigger;
     this.registry = registry;
   }

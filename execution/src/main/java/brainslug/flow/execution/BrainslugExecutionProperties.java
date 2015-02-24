@@ -9,15 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DefaultExecutionProperties implements ExecutionProperties {
+public class BrainslugExecutionProperties implements ExecutionProperties {
   Map<String, ExecutionProperty> properties;
 
-  public DefaultExecutionProperties() {
+  public BrainslugExecutionProperties() {
     properties = new HashMap<String, ExecutionProperty>();
   }
 
-  public ExecutionProperties fromList(List<DefaultExecutionProperty> properties) {
-    for (DefaultExecutionProperty property : properties) {
+  public ExecutionProperties fromList(List<BrainslugProperty> properties) {
+    for (BrainslugProperty property : properties) {
       this.properties.put(property.getKey(), property);
     }
     return this;
@@ -25,7 +25,7 @@ public class DefaultExecutionProperties implements ExecutionProperties {
 
   @Override
   public ExecutionProperties put(String key, Object value) {
-    properties.put(key, new DefaultExecutionProperty()
+    properties.put(key, new BrainslugProperty()
       .withKey(key)
       .withObjectValue(value));
 
@@ -75,7 +75,7 @@ public class DefaultExecutionProperties implements ExecutionProperties {
   }
 
   public static ExecutionProperties with(String key, Object value) {
-    return new DefaultExecutionProperties().put(key, value);
+    return new BrainslugExecutionProperties().put(key, value);
   }
 
   @Override

@@ -4,7 +4,7 @@ import brainslug.flow.context.ExecutionProperty;
 
 import java.util.Arrays;
 
-public class DefaultExecutionProperty implements ExecutionProperty {
+public class BrainslugProperty implements ExecutionProperty {
   protected String key;
   protected String valueType;
 
@@ -15,10 +15,10 @@ public class DefaultExecutionProperty implements ExecutionProperty {
   protected Double doubleValue;
   protected byte[] byteArrayValue;
 
-  public DefaultExecutionProperty() {
+  public BrainslugProperty() {
   }
 
-  public DefaultExecutionProperty(String key, String valueType, String stringValue, Long longValue, Double doubleValue, byte[] byteArrayValue) {
+  public BrainslugProperty(String key, String valueType, String stringValue, Long longValue, Double doubleValue, byte[] byteArrayValue) {
     this.key = key;
     this.valueType = valueType;
     this.stringValue = stringValue;
@@ -32,7 +32,7 @@ public class DefaultExecutionProperty implements ExecutionProperty {
     return objectValue;
   }
 
-  public DefaultExecutionProperty withObjectValue(Object propertyValue) {
+  public BrainslugProperty withObjectValue(Object propertyValue) {
     this.objectValue = propertyValue;
     return this;
   }
@@ -42,7 +42,7 @@ public class DefaultExecutionProperty implements ExecutionProperty {
     return key;
   }
 
-  public DefaultExecutionProperty withKey(String key) {
+  public BrainslugProperty withKey(String key) {
     this.key = key;
     return this;
   }
@@ -52,7 +52,7 @@ public class DefaultExecutionProperty implements ExecutionProperty {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    DefaultExecutionProperty property = (DefaultExecutionProperty) o;
+    BrainslugProperty property = (BrainslugProperty) o;
 
     if (!Arrays.equals(byteArrayValue, property.byteArrayValue)) return false;
     if (doubleValue != null ? !doubleValue.equals(property.doubleValue) : property.doubleValue != null) return false;

@@ -1,8 +1,8 @@
 package brainslug.flow.execution.expression;
 
 import brainslug.flow.context.*;
-import brainslug.flow.execution.DefaultExecutionContext;
-import brainslug.flow.execution.DefaultExecutionProperties;
+import brainslug.flow.execution.BrainslugExecutionContext;
+import brainslug.flow.execution.BrainslugExecutionProperties;
 import brainslug.flow.execution.PropertyStore;
 import brainslug.flow.expression.PredicateDefinition;
 import org.assertj.core.api.Assertions;
@@ -17,7 +17,7 @@ public class DefaultPredicateEvaluatorTest {
   public void shouldEvaluatePropertyPredicate() {
     // given:
 
-    DefaultExecutionContext executionContext = testContext();
+    BrainslugExecutionContext executionContext = testContext();
     DefaultPredicateEvaluator evaluator = new DefaultPredicateEvaluator();
 
     PropertyPredicate predicateSpy = spy(new PropertyPredicate() {
@@ -34,7 +34,7 @@ public class DefaultPredicateEvaluatorTest {
     boolean result = evaluator.evaluate(predicateDefintion, executionContext);
 
     // then:
-    verify(predicateSpy).isFulfilled(any(DefaultExecutionProperties.class));
+    verify(predicateSpy).isFulfilled(any(BrainslugExecutionProperties.class));
     Assertions.assertThat(result).isFalse();
   }
 
@@ -44,7 +44,7 @@ public class DefaultPredicateEvaluatorTest {
     // given:
 
     DefaultPredicateEvaluator evaluator = new DefaultPredicateEvaluator();
-    DefaultExecutionContext executionContext = testContext();
+    BrainslugExecutionContext executionContext = testContext();
 
     ContextPredicate predicateSpy = spy(new ContextPredicate() {
       @Override
@@ -64,10 +64,10 @@ public class DefaultPredicateEvaluatorTest {
     Assertions.assertThat(result).isTrue();
   }
 
-  private DefaultExecutionContext testContext() {
+  private BrainslugExecutionContext testContext() {
     PropertyStore propertyStoreMock = mock(PropertyStore.class);
 
-    return new DefaultExecutionContext(new Trigger().property("test", "foo"),
+    return new BrainslugExecutionContext(new Trigger().property("test", "foo"),
         new BrainslugContextBuilder()
           .withPropertyStore(propertyStoreMock).build().getRegistry());
   }

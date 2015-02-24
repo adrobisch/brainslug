@@ -19,6 +19,6 @@ public class HashMapPropertyStore implements PropertyStore {
 
   @Override
   public ExecutionProperties loadProperties(Identifier<?> instanceId) {
-    return Option.of(propertiesByInstance.get(instanceId)).orElse(new DefaultExecutionProperties());
+    return Option.of(propertiesByInstance.get(instanceId)).orElse(new BrainslugExecutionProperties());
   }
 }

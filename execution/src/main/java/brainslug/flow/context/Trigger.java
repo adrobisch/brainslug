@@ -3,7 +3,7 @@ package brainslug.flow.context;
 import brainslug.flow.EnumIdentifier;
 import brainslug.flow.Identifier;
 import brainslug.flow.StringIdentifier;
-import brainslug.flow.execution.DefaultExecutionProperties;
+import brainslug.flow.execution.BrainslugExecutionProperties;
 
 public class Trigger<T extends Trigger> implements TriggerContext {
 
@@ -104,7 +104,7 @@ public class Trigger<T extends Trigger> implements TriggerContext {
   @Override
   public ExecutionProperties getProperties() {
     if (properties == null) {
-      properties = new DefaultExecutionProperties();
+      properties = new BrainslugExecutionProperties();
     }
     return properties;
   }

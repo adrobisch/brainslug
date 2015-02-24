@@ -3,10 +3,8 @@ package brainslug.flow.execution.token;
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
 import brainslug.flow.context.*;
-import brainslug.flow.execution.DefaultExecutionContext;
-import brainslug.flow.execution.DefaultExecutionProperties;
+import brainslug.flow.execution.BrainslugExecutionContext;
 import brainslug.flow.execution.FlowNodeExecutionResult;
 import brainslug.flow.execution.FlowNodeExecutor;
 import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
@@ -31,7 +29,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
 
     FlowDefinition flowDefinition = choiceFlow();
     Trigger trigger = new Trigger().property("foo", "bar");
-    DefaultExecutionContext execution = new DefaultExecutionContext(trigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(trigger, registryWithServiceMock());
 
     // when:
     FlowNodeExecutionResult result = choiceNodeExecutor.execute(flowDefinition.getNode(id(CHOICE), ChoiceDefinition.class), execution);
@@ -48,7 +46,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
 
     FlowDefinition flowDefinition = choiceFlow();
     Trigger trigger = new Trigger().property("foo", "oof");
-    DefaultExecutionContext execution = new DefaultExecutionContext(trigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(trigger, registryWithServiceMock());
 
     // when:
     FlowNodeExecutionResult result = choiceNodeExecutor.execute(flowDefinition.getNode(id(CHOICE), ChoiceDefinition.class), execution);
@@ -63,7 +61,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     // given:
     BrainslugContext brainslugContext = new BrainslugContextBuilder().build();
     FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(new TokenOperations(tokenStore));
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), registryWithServiceMock());
+    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(true);
     // when:
@@ -79,7 +77,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   public void shouldTakeOtherwisePathIfNoneMatches() {
     // given:
     FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(new TokenOperations(tokenStore));
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger(), registryWithServiceMock());
+    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(false);
 

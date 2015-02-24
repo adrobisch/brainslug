@@ -7,7 +7,7 @@ import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Registry;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.CallDefinitionExecutor;
-import brainslug.flow.execution.DefaultExecutionContext;
+import brainslug.flow.execution.BrainslugExecutionContext;
 import brainslug.flow.execution.Execute;
 import brainslug.flow.execution.SimpleTask;
 import brainslug.flow.execution.async.AsyncTrigger;
@@ -41,7 +41,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
     // when:
-    DefaultExecutionContext instance = new DefaultExecutionContext(new Trigger()
+    BrainslugExecutionContext instance = new BrainslugExecutionContext(new Trigger()
       .definitionId(serviceCallFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registryWithServiceMock());
@@ -72,7 +72,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
     // when:
-    DefaultExecutionContext instance = new DefaultExecutionContext(new Trigger()
+    BrainslugExecutionContext instance = new BrainslugExecutionContext(new Trigger()
       .definitionId(serviceCallFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registryWithServiceMock());
@@ -113,7 +113,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     when(registry.getService(TestDelegate.class)).thenReturn(testDelegate);
 
     // when:
-    DefaultExecutionContext instance = new DefaultExecutionContext(new Trigger()
+    BrainslugExecutionContext instance = new BrainslugExecutionContext(new Trigger()
       .definitionId(handlerFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registry);
@@ -173,7 +173,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     context.addFlowDefinition(asyncTaskFlow);
 
     // when:
-    taskNodeExecutor.execute(asyncTaskFlow.getNode(id(TASK), TaskDefinition.class), new DefaultExecutionContext(new Trigger()
+    taskNodeExecutor.execute(asyncTaskFlow.getNode(id(TASK), TaskDefinition.class), new BrainslugExecutionContext(new Trigger()
     .definitionId(asyncTaskFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registryWithServiceMock()));
@@ -217,7 +217,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   }
 
   private void taskNodeTriggered(GoalFlow goalFlow) {
-    DefaultExecutionContext executionContext = new DefaultExecutionContext(new Trigger()
+    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(new Trigger()
       .definitionId(goalFlow.getGoalFlow().getId())
       .nodeId(id(TASK)), registryWithServiceMock());
 

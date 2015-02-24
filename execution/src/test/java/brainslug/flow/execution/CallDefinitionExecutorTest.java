@@ -2,7 +2,6 @@ package brainslug.flow.execution;
 
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.builder.FlowBuilderSupport;
-import brainslug.flow.context.Registry;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.node.task.CallDefinition;
 import brainslug.util.IdUtil;
@@ -21,7 +20,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     CallDefinition callDefinition = dsl.method(service.getString());
 
-    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new DefaultExecutionContext(new Trigger(), registryWithServiceMock()));
+    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new BrainslugExecutionContext(new Trigger(), registryWithServiceMock()));
 
     Assertions.assertThat(callResult).isEqualTo("a String");
   }
@@ -35,7 +34,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     when(testServiceMock.echo(anyString())).then(answerWithFirstArgument());
 
-    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new DefaultExecutionContext(new Trigger(), registryWithServiceMock()));
+    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new BrainslugExecutionContext(new Trigger(), registryWithServiceMock()));
 
     Assertions.assertThat(callResult).isEqualTo("a String");
   }
@@ -51,7 +50,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     when(testServiceMock.echo(anyString())).then(answerWithFirstArgument());
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger().property("property", "the property value"), registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger().property("property", "the property value"), registryWithServiceMock());
 
     Object callResult = new CallDefinitionExecutor().execute(callDefinition, execution);
 
@@ -67,7 +66,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     when(testServiceMock.echo(anyString())).then(answerWithFirstArgument());
 
-    DefaultExecutionContext execution = new DefaultExecutionContext(new Trigger().property("property", "the property value"), registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger().property("property", "the property value"), registryWithServiceMock());
 
     Object callResult = new CallDefinitionExecutor().execute(callDefinition, execution);
 
