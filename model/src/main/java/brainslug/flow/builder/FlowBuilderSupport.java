@@ -29,11 +29,11 @@ public class FlowBuilderSupport {
     return this;
   }
 
-  public Identifier id(Enum id) {
+  public static Identifier id(Enum id) {
     return new EnumIdentifier(id);
   }
 
-  public Identifier id(String id) {
+  public static Identifier id(String id) {
     return new StringIdentifier(id);
   }
 
