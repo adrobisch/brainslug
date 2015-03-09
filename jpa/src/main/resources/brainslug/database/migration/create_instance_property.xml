@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        logicalFilePath="create_instance_property.xml">
+
+    <changeSet id="1" author="adrobisch">
+        <preConditions>
+            <not>
+                <tableExists tableName="BS_INSTANCE_PROPERTY" />
+            </not>
+        </preConditions>
+
+        <createTable tableName="BS_INSTANCE_PROPERTY">
+            <column name="_ID" type="varchar(40)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="_CREATED" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_VERSION" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_INSTANCE_ID" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_VALUE_TYPE" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_PROPERTY_KEY" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="_STRING_VALUE" type="clob" />
+            <column name="_LONG_VALUE" type="bigint" />
+            <column name="_DOUBLE_VALUE" type="double" />
+            <column name="_BYTE_ARRAY_VALUE" type="blob" />
+        </createTable>
+
+        <createIndex tableName="BS_INSTANCE_PROPERTY" indexName="IDX_INSTANCE_PROPERTY">
+            <column name="_INSTANCE_ID"></column>
+        </createIndex>
+
+        <createIndex tableName="BS_INSTANCE_PROPERTY" indexName="IDX_PROPERTY_KEY">
+            <column name="_PROPERTY_KEY"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="BS_INSTANCE_PROPERTY"
+                                 baseColumnNames="_INSTANCE_ID"
+                                 constraintName="FK_PROPERTY_INSTANCE"
+                                 referencedTableName="BS_FLOW_INSTANCE"
+                                 referencedColumnNames="_ID"/>
+    </changeSet>
+
+</databaseChangeLog>

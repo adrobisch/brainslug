@@ -3,30 +3,30 @@ package brainslug.jpa.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FLOW_TOKEN")
+@Table(name = "BS_FLOW_TOKEN")
 public class FlowTokenEntity {
 
   @Id
-  @Column(name = "ID")
+  @Column(name = "_ID")
   protected String id;
 
   @Version
-  @Column(name = "VERSION")
+  @Column(name = "_VERSION")
   protected Long version;
 
-  @Column(name = "CREATED")
+  @Column(name = "_CREATED")
   protected Long created;
 
-  @Column(name = "CURRENT_NODE")
+  @Column(name = "_CURRENT_NODE")
   protected String currentNode;
 
-  @Column(name = "FLOW_INSTANCE_ID")
+  @Column(name = "_FLOW_INSTANCE_ID")
   protected String flowInstanceId;
 
-  @Column(name = "IS_DEAD")
+  @Column(name = "_IS_DEAD")
   protected Integer isDead;
 
-  @Column(name = "SOURCE_NODE")
+  @Column(name = "_SOURCE_NODE")
   protected String sourceNode;
 
   public String getId() {

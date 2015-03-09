@@ -4,39 +4,39 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "INSTANCE_PROPERTY")
+@Table(name = "BS_INSTANCE_PROPERTY")
 public class InstancePropertyEntity {
   @Id
-  @Column(name = "ID")
+  @Column(name = "_ID")
   protected String id;
 
   @NotNull
-  @Column(name = "CREATED")
+  @Column(name = "_CREATED")
   protected Long created;
 
   @Version
-  @Column(name = "VERSION")
+  @Column(name = "_VERSION")
   protected Long version;
 
-  @Column(name = "INSTANCE_ID")
+  @Column(name = "_INSTANCE_ID")
   protected String instanceId;
 
-  @Column(name = "VALUE_TYPE")
+  @Column(name = "_VALUE_TYPE")
   protected String valueType;
 
-  @Column(name = "PROPERTY_KEY")
+  @Column(name = "_PROPERTY_KEY")
   protected String propertyKey;
 
-  @Column(name = "STRING_VALUE")
+  @Column(name = "_STRING_VALUE")
   protected String stringValue;
 
-  @Column(name = "LONG_VALUE")
+  @Column(name = "_LONG_VALUE")
   protected Long longValue;
 
-  @Column(name = "DOUBLE_VALUE")
+  @Column(name = "_DOUBLE_VALUE")
   protected Double doubleValue;
 
-  @Column(name = "BYTE_ARRAY_VALUE")
+  @Column(name = "_BYTE_ARRAY_VALUE")
   protected byte[] byteArrayValue;
 
   public String getId() {

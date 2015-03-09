@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        logicalFilePath="create_async_task.xml">
+
+    <changeSet id="1" author="adrobisch">
+        <preConditions>
+            <not>
+                <tableExists tableName="BS_ASYNC_TASK" />
+            </not>
+        </preConditions>
+
+        <createTable tableName="BS_ASYNC_TASK">
+            <column name="_ID" type="varchar(40)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="_TASK_NODE_ID" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_INSTANCE_ID" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_DEFINITION_ID" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_ERROR_DETAILS_ID" type="varchar(40)" />
+            <column name="_CREATED" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_DUE_DATE" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_RETRIES" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_MAX_RETRIES" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_VERSION" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="BS_ASYNC_TASK_ERROR_DETAILS">
+            <column name="_ID" type="varchar(40)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="_STACK_TRACE" type="clob" />
+            <column name="_EXCEPTION_TYPE" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_MESSAGE" type="clob" />
+            <column name="_CREATED" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_VERSION" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="BS_ASYNC_TASK"
+                                 baseColumnNames="_ERROR_DETAILS_ID"
+                                 constraintName="FK_TASK_ERROR"
+                                 referencedTableName="BS_ASYNC_TASK_ERROR_DETAILS"
+                                 referencedColumnNames="_ID"/>
+    </changeSet>
+
+</databaseChangeLog>

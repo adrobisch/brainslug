@@ -4,30 +4,30 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "ASYNC_TASK_ERROR_DETAILS")
+@Table(name = "BS_ASYNC_TASK_ERROR_DETAILS")
 public class AsyncTaskErrorDetailsEntity {
   @Id
-  @Column(name = "ID")
+  @Column(name = "_ID")
   protected String id;
 
   @NotNull
-  @Column(name = "CREATED")
+  @Column(name = "_CREATED")
   protected Long created;
 
   @Version
-  @Column(name = "VERSION")
+  @Column(name = "_VERSION")
   protected Long version;
 
   @NotNull
-  @Column(name = "STACK_TRACE")
-  protected byte[] stackTrace;
+  @Column(name = "_STACK_TRACE")
+  protected String stackTrace;
 
   @NotNull
-  @Column(name = "EXCEPTION_TYPE")
+  @Column(name = "_EXCEPTION_TYPE")
   protected String exceptionType;
 
   @NotNull
-  @Column(name = "MESSAGE")
+  @Column(name = "_MESSAGE")
   protected String message;
 
 
@@ -59,11 +59,11 @@ public class AsyncTaskErrorDetailsEntity {
   }
 
   public byte[] getStackTrace() {
-    return stackTrace;
+    return stackTrace.getBytes();
   }
 
   public AsyncTaskErrorDetailsEntity withStackTrace(byte[] stackTrace) {
-    this.stackTrace = stackTrace;
+    this.stackTrace = new String(stackTrace);
     return this;
   }
 

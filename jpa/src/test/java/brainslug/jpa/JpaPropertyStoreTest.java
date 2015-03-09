@@ -14,8 +14,8 @@ public class JpaPropertyStoreTest extends AbstractDatabaseTest {
   Identifier instanceId;
   JpaPropertyStore jpaPropertyStore;
 
-  @Before
-  public void setup() {
+  @Override
+  public void afterMigration() {
     jpaTokenStore = new JpaTokenStore(database, new UuidGenerator());
     instanceId = jpaTokenStore.createInstance(IdUtil.id("definitionId"));
     jpaPropertyStore = new JpaPropertyStore(database, new UuidGenerator());

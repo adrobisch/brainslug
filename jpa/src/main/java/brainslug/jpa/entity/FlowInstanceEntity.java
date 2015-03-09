@@ -4,23 +4,23 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "FLOW_INSTANCE")
+@Table(name = "BS_FLOW_INSTANCE")
 public class FlowInstanceEntity {
 
   @Id
-  @Column(name = "ID")
+  @Column(name = "_ID")
   protected String id;
 
   @NotNull
-  @Column(name = "CREATED")
+  @Column(name = "_CREATED")
   protected Long created;
 
   @NotNull
-  @Column(name = "DEFINITION_ID")
+  @Column(name = "_DEFINITION_ID")
   protected String definitionId;
 
   @Version
-  @Column(name = "VERSION")
+  @Column(name = "_VERSION")
   protected Long version;
 
   public String getId() {

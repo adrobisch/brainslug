@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        logicalFilePath="create_flow_token.xml">
+
+    <changeSet id="1" author="adrobisch">
+        <preConditions>
+            <not>
+                <tableExists tableName="BS_FLOW_TOKEN" />
+            </not>
+        </preConditions>
+
+        <createTable tableName="BS_FLOW_TOKEN">
+            <column name="_ID" type="varchar(40)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="_CREATED" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_VERSION" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_FLOW_INSTANCE_ID" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_CURRENT_NODE" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_SOURCE_NODE" type="varchar(100)" />
+            <column name="_IS_DEAD" type="integer" defaultValueNumeric="0" />
+        </createTable>
+        
+        <createIndex tableName="BS_FLOW_TOKEN" indexName="IDX_TOKEN_INSTANCE">
+            <column name="_FLOW_INSTANCE_ID"></column>
+        </createIndex>
+
+        <createIndex tableName="BS_FLOW_TOKEN" indexName="IDX_TOKEN_CURRENT_NODE">
+            <column name="_CURRENT_NODE"></column>
+        </createIndex>
+
+        <createIndex tableName="BS_FLOW_TOKEN" indexName="IDX_TOKEN_SOURCE_NODE">
+            <column name="_SOURCE_NODE"></column>
+        </createIndex>
+        
+        <addForeignKeyConstraint baseTableName="BS_FLOW_TOKEN"
+                                 baseColumnNames="_FLOW_INSTANCE_ID"
+                                 constraintName="FK_TOKEN_INSTANCE"
+                                 referencedTableName="BS_FLOW_INSTANCE"
+                                 referencedColumnNames="_ID"/>
+    </changeSet>
+
+</databaseChangeLog>

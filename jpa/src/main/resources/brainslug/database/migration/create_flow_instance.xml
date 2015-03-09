@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        logicalFilePath="create_flow_instance.xml">
+
+    <changeSet id="1" author="adrobisch">
+        <preConditions>
+            <not>
+                <tableExists tableName="BS_FLOW_INSTANCE" />
+            </not>
+        </preConditions>
+
+        <createTable tableName="BS_FLOW_INSTANCE">
+            <column name="_ID" type="varchar(40)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="_DEFINITION_ID" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_CREATED" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="_VERSION" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createIndex tableName="BS_FLOW_INSTANCE" indexName="IDX_INSTANCE_DEFINITION">
+            <column name="_DEFINITION_ID"></column>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

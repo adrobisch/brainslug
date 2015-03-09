@@ -4,46 +4,46 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "ASYNC_TASK")
+@Table(name = "BS_ASYNC_TASK")
 public class AsyncTaskEntity {
   @Id
-  @Column(name = "ID")
+  @Column(name = "_ID")
   protected String id;
 
   @NotNull
-  @Column(name = "CREATED")
+  @Column(name = "_CREATED")
   protected Long created;
 
   @NotNull
-  @Column(name = "DEFINITION_ID")
+  @Column(name = "_DEFINITION_ID")
   protected String definitionId;
 
   @NotNull
-  @Column(name = "DUE_DATE")
+  @Column(name = "_DUE_DATE")
   protected Long dueDate;
 
   @NotNull
-  @Column(name = "INSTANCE_ID")
+  @Column(name = "_INSTANCE_ID")
   protected String instanceId;
 
   @NotNull
-  @Column(name = "MAX_RETRIES")
+  @Column(name = "_MAX_RETRIES")
   protected Long maxRetries;
 
   @NotNull
-  @Column(name = "RETRIES")
+  @Column(name = "_RETRIES")
   protected Long retries;
 
   @NotNull
-  @Column(name = "TASK_NODE_ID")
+  @Column(name = "_TASK_NODE_ID")
   protected String taskNodeId;
 
   @OneToOne
-  @JoinColumn(name = "ERROR_DETAILS_ID")
+  @JoinColumn(name = "_ERROR_DETAILS_ID")
   protected AsyncTaskErrorDetailsEntity errorDetails;
 
   @Version
-  @Column(name = "VERSION")
+  @Column(name = "_VERSION")
   protected Long version;
 
   public String getId() {
