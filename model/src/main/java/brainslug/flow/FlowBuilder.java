@@ -29,10 +29,6 @@ abstract public class FlowBuilder extends FlowBuilderSupport {
     return id;
   }
 
-  protected String generateId() {
-    return UUID.randomUUID().toString();
-  }
-
   public String getName() {
     return getId();
   }

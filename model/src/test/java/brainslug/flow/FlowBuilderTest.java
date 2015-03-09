@@ -27,7 +27,7 @@ public class FlowBuilderTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void notUniqueIdThrowsException() {
+  public void nonUniqueIdThrowsException() {
     FlowBuilder flowBuilder = new FlowBuilder() {
 
       @Override
@@ -120,6 +120,51 @@ public class FlowBuilderTest {
       .hasEdge(SecondTask, End);
   }
 
+  @Test
+  public void mergeWorksOnFlowNodeDefinitions() {
+    final TaskDefinition secondTask = FlowBuilder.task(FlowBuilder.id(SecondTask));
+    final TaskDefinition thirdTask = FlowBuilder.task(FlowBuilder.id(ThirdTask));
+    final Identifier mergeId = FlowBuilder.id(Merge);
+
+    FlowBuilder flowBuilder = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(secondTask).execute(thirdTask);
+
+        merge(mergeId, secondTask, thirdTask);
+      }
+    };
+
+    assertThat(flowBuilder.getDefinition())
+      .hasTotalNodes(3)
+      .hasNodesWithType(1, MergeDefinition.class)
+      .hasNodesWithType(2, TaskDefinition.class)
+      .hasEdge(secondTask.getId(), mergeId)
+      .hasEdge(thirdTask.getId(), mergeId);
+  }
+
+  @Test
+  public void joinWorksOnFlowNodeDefinitions() {
+    final TaskDefinition secondTask = FlowBuilder.task(FlowBuilder.id(SecondTask));
+    final TaskDefinition thirdTask = FlowBuilder.task(FlowBuilder.id(ThirdTask));
+    final Identifier joinId = FlowBuilder.id(Join);
+
+    FlowBuilder flowBuilder = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(secondTask).execute(thirdTask);
+
+        join(joinId, secondTask, thirdTask);
+      }
+    };
+
+    assertThat(flowBuilder.getDefinition())
+      .hasTotalNodes(3)
+      .hasNodesWithType(1, JoinDefinition.class)
+      .hasNodesWithType(2, TaskDefinition.class)
+      .hasEdge(secondTask.getId(), joinId)
+      .hasEdge(thirdTask.getId(), joinId);
+  }
 
   @Test
   public void buildChoiceWithMergeFlow() {
@@ -142,20 +187,20 @@ public class FlowBuilderTest {
     };
 
     assertThat(flowBuilder.getDefinition())
-        .hasTotalNodes(6)
-        .hasTotalEdges(6)
-        .hasNodesWithType(2, TaskDefinition.class)
-        .hasNodesWithType(2, AbstractEventDefinition.class)
-        .hasNodesWithType(1, ChoiceDefinition.class)
-        .hasNodesWithType(1, MergeDefinition.class)
-        .hasNodesWithMarker(1, EndEvent.class)
-        .hasNodesWithMarker(1, StartEvent.class)
-        .hasEdge(StartEvent, Choice)
-        .hasEdge(Choice, SecondTask)
-        .hasEdge(Choice, ThirdTask)
-        .hasEdge(SecondTask, Merge)
-        .hasEdge(ThirdTask, Merge)
-        .hasEdge(Merge, EndEvent2);
+      .hasTotalNodes(6)
+      .hasTotalEdges(6)
+      .hasNodesWithType(2, TaskDefinition.class)
+      .hasNodesWithType(2, AbstractEventDefinition.class)
+      .hasNodesWithType(1, ChoiceDefinition.class)
+      .hasNodesWithType(1, MergeDefinition.class)
+      .hasNodesWithMarker(1, EndEvent.class)
+      .hasNodesWithMarker(1, StartEvent.class)
+      .hasEdge(StartEvent, Choice)
+      .hasEdge(Choice, SecondTask)
+      .hasEdge(Choice, ThirdTask)
+      .hasEdge(SecondTask, Merge)
+      .hasEdge(ThirdTask, Merge)
+      .hasEdge(Merge, EndEvent2);
   }
 
   @Test

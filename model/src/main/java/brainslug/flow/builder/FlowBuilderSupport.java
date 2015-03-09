@@ -12,14 +12,16 @@ import brainslug.flow.node.event.timer.StartTimerDefinition;
 import brainslug.flow.node.task.*;
 import brainslug.flow.path.FlowPathDefinition;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class FlowBuilderSupport {
 
   protected FlowDefinition definition;
-  protected ServiceCallInvocationSupport serviceCallInvocation = new ServiceCallInvocationSupport();
+  protected static ServiceCallInvocationSupport serviceCallInvocation = new ServiceCallInvocationSupport();
 
   public FlowBuilderSupport() {
   }
@@ -35,6 +37,14 @@ public class FlowBuilderSupport {
 
   public static Identifier id(String id) {
     return new StringIdentifier(id);
+  }
+
+  public static Identifier id() {
+    return new StringIdentifier(generateId());
+  }
+
+  protected static String generateId() {
+    return UUID.randomUUID().toString();
   }
 
   /**
@@ -170,6 +180,17 @@ public class FlowBuilderSupport {
     return new FlowPathDefinition(definition, mergeDefinition);
   }
 
+  public FlowPathDefinition merge(FlowNodeDefinition<?>... nodeDefinitions) {
+    return merge(id(generateId()), nodeDefinitions);
+  }
+
+  public FlowPathDefinition merge(Identifier id, FlowNodeDefinition<?>... nodeDefinitions) {
+    MergeDefinition mergeDefinition = new MergeDefinition().id(id);
+    definition.addNode(mergeDefinition);
+    connectToNode(mergeDefinition, idList(nodeDefinitions));
+    return new FlowPathDefinition(definition, mergeDefinition);
+  }
+
   /**
    * create a flow path joining the execution after the given nodes
    * by introducing a new merge join to which the nodes connect.
@@ -204,6 +225,25 @@ public class FlowBuilderSupport {
     return new FlowPathDefinition(definition, joinDefinition);
   }
 
+  public FlowPathDefinition join(FlowNodeDefinition<?>... flowNodeDefinitions) {
+    return join(id(generateId()), flowNodeDefinitions);
+  }
+
+  public FlowPathDefinition join(Identifier joinId, FlowNodeDefinition<?>... flowNodeDefinitions) {
+    JoinDefinition joinDefinition = new JoinDefinition().id(joinId);
+    definition.addNode(joinDefinition);
+    connectToNode(joinDefinition, idList(flowNodeDefinitions));
+    return new FlowPathDefinition(definition, joinDefinition);
+  }
+
+  List<Identifier> idList(FlowNodeDefinition<?>... flowNodeDefinitions) {
+    List<Identifier> identifiers = new ArrayList<Identifier>();
+    for (FlowNodeDefinition<?> nodeDefinition: flowNodeDefinitions) {
+      identifiers.add(nodeDefinition.getId());
+    }
+    return identifiers;
+  }
+
   private void connectToNode(FlowNodeDefinition node, List<Identifier> idsToConnect) {
     for (Identifier id : idsToConnect) {
       definition.getNode(id).addOutgoing(node);
@@ -211,7 +251,7 @@ public class FlowBuilderSupport {
     }
   }
 
-  public TaskDefinition task(Identifier id) {
+  public static TaskDefinition task(Identifier id) {
     return new TaskDefinition().id(id).display(id.toString());
   }
 
@@ -239,27 +279,27 @@ public class FlowBuilderSupport {
    * @param callee the callee task
    * @return the task definition with the given task
    */
-  public TaskDefinition task(Identifier id, Task callee) {
+  public static TaskDefinition task(Identifier id, Task callee) {
     return new TaskDefinition().id(id).display(id.toString()).call(new HandlerCallDefinition(callee));
   }
 
-  public EventDefinition event(Identifier id) {
+  public static EventDefinition event(Identifier id) {
     return new EventDefinition().id(id).display(id.toString());
   }
 
-  public <T> Expression expression(T expression) {
+  public static <T> Expression expression(T expression) {
     return new Expression<T>(expression);
   }
 
-  public <T> Expression<T> constant(T constantValue) {
+  public static <T> Expression<T> constant(T constantValue) {
     return expression(constantValue);
   }
 
-  public Property property(Identifier id) {
+  public static Property property(Identifier id) {
     return new Property(id);
   }
 
-  public <T> T property(Identifier id, Class<T> clazz) {
+  public static <T> T property(Identifier id, Class<T> clazz) {
     return (T) val(new Property(id));
   }
 
@@ -270,24 +310,24 @@ public class FlowBuilderSupport {
    * @param <T> the type of the expression
    * @return null of type T
    */
-  public <T> T val(Expression<T> expression) {
+  public static <T> T val(Expression<T> expression) {
     serviceCallInvocation.argument(expression);
     return null;
   }
 
-  public EqualDefinition<Expression, Expression<Object>> eq(Expression actual, Object expected) {
+  public static EqualDefinition<Expression, Expression<Object>> eq(Expression actual, Object expected) {
     return new PredicateBuilder<Expression>(actual).isEqualTo(expected);
   }
 
-  public TrueDefinition<Expression> isTrue(Expression actual) {
+  public static TrueDefinition<Expression> isTrue(Expression actual) {
     return new PredicateBuilder<Expression>(actual).isTrue();
   }
 
-  public <T extends Predicate> PredicateDefinition<T> predicate(T predicate) {
+  public static <T extends Predicate> PredicateDefinition<T> predicate(T predicate) {
     return new PredicateDefinition<T>(predicate);
   }
 
-  public InvokeDefinition method(Class<?> clazz) {
+  public static InvokeDefinition method(Class<?> clazz) {
     return new InvokeDefinition(clazz);
   }
 
@@ -296,7 +336,7 @@ public class FlowBuilderSupport {
   }
 
   /**
-   * create a service proxy to be user for type-safe call definitions.
+   * create a service proxy to be used for type-safe call definitions.
    *
    * Example:
    *
@@ -317,7 +357,7 @@ public class FlowBuilderSupport {
    * @param <T> the type of the interface
    * @return a service proxy of type T
    */
-  public <T> T service(Class<T> clazz) {
+  public static <T> T service(Class<T> clazz) {
     return serviceCallInvocation.createServiceProxy(clazz);
   }
 
