@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.androbit</groupId>
+        <artifactId>brainslug</artifactId>
+        <version>0.17-SNAPSHOT</version>
+        <relativePath>../../</relativePath>
+    </parent>
+
+    <artifactId>brainslug-docs</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <asciidoctor.version>1.5.2</asciidoctor.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.androbit</groupId>
+            <artifactId>brainslug-execution</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor.version}</version>
+                <configuration>
+                    <sourceHighlighter>coderay</sourceHighlighter>
+                    <outputDirectory>target/docs</outputDirectory>
+                    <backend>html</backend>
+                    <doctype>book</doctype>
+                    <attributes>
+                        <projectBase>../../../../..</projectBase>
+                        <exampleBase>../java</exampleBase>
+                    </attributes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>output-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptor>src/assembly/zipped-docs.xml</descriptor>
+                    <finalName>brainslug-docs-${project.version}</finalName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

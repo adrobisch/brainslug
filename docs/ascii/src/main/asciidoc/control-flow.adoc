@@ -1,0 +1,65 @@
+# Control Flow
+
+## Brainslug Flow Node Types
+
+### Task Node
+
+A Task Node will be executed for every incoming token and produces one token per outgoing edge. See the [task documentation](task)
+for details on how to define what a task should do during execution.
+
+image::single_task.png[single_task]
+
+### Event Node
+
+An Event Node is triggered by every incoming token and produces one token per outgoing edge.
+There are different type of event: Start Events, End Events, Wait (Intermediate) Events.
+
+[source, java]
+----
+include::{exampleBase}/brainslug/ControlFlowExamples.java[tags=event-flow]
+----
+
+image::event_flow.png[event_flow]
+
+Start Events mark the start of a flow and are generally the starting point of your flow definition.
+The `waitFor`-method takes an event definition which might have duration to wait for and create a intermediate event
+for it.
+
+End Events mark the end of a flow execution path and are optional.
+
+### Choice Node
+
+A Choice Node will be executed for every incoming token. A token is produced for the first outgoing path
+where the predicate is fullfilled.
+
+[source, java]
+----
+include::{exampleBase}/brainslug/ControlFlowExamples.java[tags=choice-flow]
+----
+
+### Merge Node
+
+A Merge Node merges different execution paths. It will be executed for every incoming token. A token is produced for every outgoing edge.
+
+## Example with Choice and Merge Nodes
+
+image::choice_flow.png[choice_flow]
+
+### Parallel Node
+
+A Parallel Node defines flow paths which are meant for parallel execution, if the execution is really concurrent depends on the
+configuration of the corresponding `FlowNodeExecutor`. It will be executed for every incoming token. A token is produced for every outgoing edge.
+
+[source, java]
+----
+include::{exampleBase}/brainslug/ControlFlowExamples.java[tags=parallel-flow]
+----
+
+### Join Node
+
+A Parallel Node joins or synchronizes multiple concurrent execution paths. It will only be executed if it has tokens from every incoming edge.
+A token is produced for every outgoing edge.
+
+## Example with Parallel and Join Nodes
+
+image::parallel_flow.png[parallel_flow]

@@ -1,0 +1,42 @@
+# Brainslug
+
+image::brainslug_big.png[Brainslug]
+
+brainslug is a control flow abstraction library.
+It allows to model business logic flow of an application as a graph of typed nodes,
+which can be transformed to different representations or be executed within a customisable environment.
+
+
+## Features
+
+* Builder DSL for flow definitions
+* http://www.omg.org/spec/BPMN/2.0/[BPMN 2.0 XML] export using the https://github.com/Activiti/Activiti[Activiti] Model
+* Flow Renderer based on the BPMN symbols
+* Quartz Scheduler for Async Tasks
+
+
+## Example
+
+[source, java]
+----
+include::{exampleBase}/brainslug/SimpleExamples.java[tags=simple]
+----
+
+represents the the following flow:
+
+image::task_flow.png[task_flow]
+
+## Download
+
+The current version is available in the http://search.maven.org/#search%7Cga%7C1%7Cbrainslug[maven central repository]
+
+[source, xml]
+<dependencies>
+...
+  <dependency>
+    <groupId>de.androbit</groupId>
+    <artifactId>brainslug-core</artifactId>
+    <version>...</version>
+  </dependency>
+...
+</dependencies>
