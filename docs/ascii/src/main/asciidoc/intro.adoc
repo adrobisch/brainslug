@@ -1,4 +1,4 @@
-# Brainslug
+## Brainslug
 
 image::brainslug_big.png[Brainslug]
 
@@ -7,7 +7,7 @@ It allows to model business logic flow of an application as a graph of typed nod
 which can be transformed to different representations or be executed within a customisable environment.
 
 
-## Features
+### Features
 
 * Builder DSL for flow definitions
 * http://www.omg.org/spec/BPMN/2.0/[BPMN 2.0 XML] export using the https://github.com/Activiti/Activiti[Activiti] Model
@@ -15,7 +15,7 @@ which can be transformed to different representations or be executed within a cu
 * Quartz Scheduler for Async Tasks
 
 
-## Example
+### Example
 
 [source, java]
 ----
@@ -26,7 +26,7 @@ represents the the following flow:
 
 image::task_flow.png[task_flow]
 
-## Download
+### Download
 
 The current version is available in the http://search.maven.org/#search%7Cga%7C1%7Cbrainslug[maven central repository]
 

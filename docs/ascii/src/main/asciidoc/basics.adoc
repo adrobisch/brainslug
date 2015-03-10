@@ -1,6 +1,6 @@
-# Basics
+## Basics
 
-## Flow Definition
+### Flow Definition
 
 The flow definition is the central concept of brainslug.
 A definition defines possible paths / sequence of actions for a desired outcome, e.g.
@@ -8,7 +8,7 @@ the steps for an ordering process, call to external systems etc. ...
 
 A flow definition is constructed using the `FlowBuilder` DSL and is internally represented as a directed graph of typed flow nodes.
 
-### Example
+#### Example
 
 [source, java]
 ----
@@ -23,18 +23,18 @@ In addition to the examples here in the documentation,
 the https://github.com/adrobisch/brainslug/blob/master/model/src/test/java/brainslug/flow/builder/FlowBuilderTest.java[FlowBuilderTest]
 is a good source for examples on how to build flow definitions.
 
-## Execution
+### Execution
 
 To execute a flow definition you need to create `BrainslugContext` which defines all aspects of the execution.
 The `DefaultBrainslugContext` will use `HashMap` and `List`-based implementations for all aspects related to storing flow instance information.
 It is possible to add durable persistence by using the http://jpa-support[JPA]-module or by writing custom stores.
 
-### Flow Instance
+#### Flow Instance
 
 A flow instance is a single execution of a flow definition. A flow instance may have properties
 which are stored in the `PropertyStore` to share data between flow nodes while the execution is not completed.
 
-### Flow Token
+#### Flow Token
 
 A flow token is a pointer to a flow node in a flow instance. A flow node might have multiple tokens.
 
@@ -44,7 +44,7 @@ new tokens in the nodes which are considered as the next tokens in the flow or p
 Which succeeding nodes get tokens is decided by the corresponding `FlowNodeExecutor` of the node.
 The token includes the information which node execution lead to the creation of token (*"where it came from"*).
 
-### Example
+#### Example
 
 [source,java]
 ----

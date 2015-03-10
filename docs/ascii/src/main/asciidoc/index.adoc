@@ -1,6 +1,14 @@
+# Brainslug Documentation
+A. Drobisch
+:revnumber: {docVersion}
 :imagesdir: images
 :toc: left
 
-include::intro.adoc[]
-include::basics.adoc[]
-include::control-flow.adoc[]
+include::intro.adoc[leveloffset=-1]
+include::basics.adoc[leveloffset=-1]
+include::control-flow.adoc[leveloffset=-1]
+include::task.adoc[leveloffset=-1]
+include::jpa-support.adoc[leveloffset=-1]
+include::spring-support.adoc[leveloffset=-1]
+include::bpmn.adoc[leveloffset=-1]
+include::motivation.adoc[leveloffset=-1]

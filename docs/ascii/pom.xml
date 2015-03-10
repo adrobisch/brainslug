@@ -38,6 +38,7 @@
                     <attributes>
                         <projectBase>../../../../..</projectBase>
                         <exampleBase>../java</exampleBase>
+                        <docVersion>${project.version}</docVersion>
                     </attributes>
                 </configuration>
                 <executions>
