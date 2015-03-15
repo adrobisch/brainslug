@@ -1,9 +1,9 @@
 package brainslug.jpa;
 
 import brainslug.flow.Identifier;
-import brainslug.flow.context.ExecutionProperties;
+import brainslug.flow.context.FlowProperties;
 import brainslug.flow.context.ExecutionProperty;
-import brainslug.flow.execution.BrainslugExecutionProperties;
+import brainslug.flow.execution.ExecutionProperties;
 import brainslug.flow.execution.BrainslugProperty;
 import brainslug.flow.execution.PropertyStore;
 import brainslug.jpa.entity.InstancePropertyEntity;
@@ -28,7 +28,7 @@ public class JpaPropertyStore implements PropertyStore {
   }
 
   @Override
-  public void storeProperties(Identifier<?> instanceId, ExecutionProperties executionProperties) {
+  public void storeProperties(Identifier<?> instanceId, FlowProperties<ExecutionProperty> executionProperties) {
     log.debug("storing properties {} for instance {}", executionProperties, instanceId);
 
     for (ExecutionProperty property : executionProperties.getValues()) {
@@ -68,8 +68,8 @@ public class JpaPropertyStore implements PropertyStore {
   }
 
   @Override
-  public ExecutionProperties loadProperties(Identifier<?> instanceId) {
-    return new BrainslugExecutionProperties().fromList(
+  public FlowProperties loadProperties(Identifier<?> instanceId) {
+    return new ExecutionProperties().fromList(
       database.query().from(QInstancePropertyEntity.instancePropertyEntity)
         .where(QInstancePropertyEntity.instancePropertyEntity.instanceId.eq(instanceId.stringValue()))
         .list(ConstructorExpression.create(BrainslugProperty.class,

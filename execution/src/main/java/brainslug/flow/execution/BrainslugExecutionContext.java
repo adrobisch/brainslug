@@ -1,7 +1,6 @@
 package brainslug.flow.execution;
 
 import brainslug.flow.Identifier;
-import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Registry;
 import brainslug.flow.context.TriggerContext;
@@ -23,6 +22,16 @@ public class BrainslugExecutionContext implements ExecutionContext {
   @Override
   public <T> T property(Identifier key, Class<T> clazz) {
     return getTrigger().getProperty(key.stringValue(), clazz);
+  }
+
+  @Override
+  public <T> T property(String key, Class<T> clazz) {
+    return getTrigger().getProperty(key, clazz);
+  }
+
+  @Override
+  public <T> T property(Enum key, Class<T> clazz) {
+    return getTrigger().getProperty(key.name(), clazz);
   }
 
   @Override

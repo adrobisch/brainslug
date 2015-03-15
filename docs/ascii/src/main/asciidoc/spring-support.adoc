@@ -5,30 +5,21 @@ are available in the execution context.
 
 ### Setup
 
-Just import the `brainslug.spring.SpringBrainslugConfiguration` configuration class into you application context.
+Just import the spring configuration class into you application context.
 
-Calls to the `ExecutionContext` or the `Registry` will then return the services from the Spring application context.
+Calls to the `ExecutionContext` or the `Registry` will then return the beans from the Spring application context:
 
 [source, java]
 ----
-FlowBuilder flowBuilder = new FlowBuilder() {
-  @Override
-  public void define() {
-    flowId(id("task_flow"));
+include::{exampleBase}/brainslug/example/spring/ConfigurationExample.java[tags=spring-example]
+----
 
-    start(event(id("start")).display("Start"))
-      .execute(task(id("task"), new Task() {
-        @Override
-        public void execute(ExecutionContext ctx) {
-          MyService myService = ctx.service(MyService.class);
+Will output the two lines:
 
-          // call to spring bean of type MyService
-          myService.doSomething();
-        }
-      }).display("Do Something"))
-    .end(event(id("end")).display("End"));
-  }
-};
+[source, bash]
+----
+Hello World!
+Hello again!
 ----
 
 

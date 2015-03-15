@@ -74,8 +74,11 @@ public class AbstractExecutionTest {
     };
   }
 
-  public static interface TestService {
+  public static
+  // #tag::test-service[]
+  interface TestService {
     public String getString();
     public String echo(String echo);
   }
+  // #end::test-service[]
 }

@@ -84,8 +84,7 @@ public class FlowBuilderSupport {
   }
 
   public FlowPathDefinition start(AbstractEventDefinition event) {
-    definition.addNode(startEvent(event));
-    return new FlowPathDefinition(definition, event);
+    return new FlowPathDefinition(definition, definition.addStartNode(startEvent(event)));
   }
 
   /**
@@ -99,16 +98,18 @@ public class FlowBuilderSupport {
    * @return the flow path starting with this event
    */
   public FlowPathDefinition start(AbstractEventDefinition event, StartTimerDefinition startTimerDefinition) {
-    definition.addNode(startTimerEvent(event, startTimerDefinition));
-    return new FlowPathDefinition(definition, event);
+    return start(timerEvent(event, startTimerDefinition));
   }
 
-  protected AbstractEventDefinition startEvent(AbstractEventDefinition event) {
+  protected AbstractEventDefinition startEvent(AbstractEventDefinition<?> event) {
+    if (event.is(StartEvent.class)) {
+      return event;
+    }
     event.with(new StartEvent());
     return event;
   }
 
-  protected AbstractEventDefinition startTimerEvent(AbstractEventDefinition event, StartTimerDefinition startTimerDefinition) {
+  protected AbstractEventDefinition timerEvent(AbstractEventDefinition event, StartTimerDefinition startTimerDefinition) {
     event.with(new StartEvent().withRecurringTimerDefinition(startTimerDefinition));
     return event;
   }
@@ -119,8 +120,7 @@ public class FlowBuilderSupport {
    * @return the flow path starting with this task
    */
   public FlowPathDefinition start(AbstractTaskDefinition task) {
-    definition.addNode(task);
-    return new FlowPathDefinition(definition, task);
+    return new FlowPathDefinition(definition, definition.addStartNode(task));
   }
 
   public FlowPathDefinition start(Identifier id, AbstractTaskDefinition task, StartTimerDefinition startTimerDefinition) {

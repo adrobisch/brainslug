@@ -30,10 +30,10 @@ public class SpringBrainslugLifecycle implements SmartLifecycle {
 
   @Override
   public void start() {
-    Boolean schedulersEnabled = environment.getProperty("brainslug.schedulers.enabled", Boolean.class, false);
+    Boolean schedulersEnabled = environment.getProperty("brainslug.schedulers.enabled", Boolean.class, true);
 
     if(schedulersEnabled && !started.get()) {
-      brainslugContext.start();
+      brainslugContext.init();
       started.set(true);
     }
   }
@@ -41,7 +41,7 @@ public class SpringBrainslugLifecycle implements SmartLifecycle {
   @Override
   public void stop() {
     if (isRunning()) {
-      brainslugContext.stop();
+      brainslugContext.destroy();
       started.set(false);
     }
   }

@@ -73,7 +73,7 @@ public class QuartzSchedulerTest {
     BrainslugContext context = new BrainslugContextBuilder()
         .withAsyncTriggerScheduler(new QuartzScheduler(quartzScheduler))
         .build()
-        .addFlowDefinition(asyncTaskFlow).start();
+        .addFlowDefinition(asyncTaskFlow).init();
     // when:
     context.startFlow(asyncTaskFlow.getId(), id("start"));
     quartzScheduler.start();

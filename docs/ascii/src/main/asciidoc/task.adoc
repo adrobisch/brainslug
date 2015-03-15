@@ -18,39 +18,16 @@ Delegate delegateService = context.getRegistry().getService(Delegate.class);
 
 [source, java]
 ----
-FlowBuilder flowBuilder = new FlowBuilder() {
-  @Override
-  public void define() {
-    flowId(id("task_flow"));
-
-    start(event(id("start")).display("Start"))
-      .execute(task(id("task"), new Task() {
-        @Override
-        public void execute(ExecutionContext ctx) {
-          ctx.service(MyService.class).doSomething();
-        }
-      }).display("Do Something"))
-    .end(event(id("end")).display("End"));
-  }
-};
+include::{exampleBase}/brainslug/TaskExamples.java[tags=inline-task, indent=0]
 ----
 
-In **Java 8** this might be done using a lambda expression:
+In **Java 8** the task can be defined using a lambda expression:
 
 [source, java]
 ----
-FlowBuilder flowBuilder = new FlowBuilder() {
-  @Override
-  public void define() {
-    flowId(id("task_flow"));
-
-    start(event(id("start")).display("Start"))
-      .execute(task(id("task"), ctx -> {
-          ctx.service(MyService.class).doSomething();
-      }).display("Do Something"))
-    .end(event(id("end")).display("End"));
-  }
-};
+ctx -> {
+  ctx.service(MyService.class).doSomething();
+}
 ----
 
 #### Delegate class
@@ -60,20 +37,12 @@ method you want be executed for a task:
 
 [source, java]
 ----
-class Delegate {
-  @Execute
-  public void execute(ExecutionContext context) {
-  ...
-  }
-}
-new FlowBuilder() {
-  @Override
-  public void define() {
-    start(event(id(START)))
-      .execute(task(id(TASK)).delegate(Delegate.class)))
-    .end(event(id(END)));
-  }
-}
+include::{projectBase}/execution/src/test/java/brainslug/flow/execution/token/TaskNodeExecutorTest.java[tags=test-delegate, indent=0]
+----
+
+[source, java]
+----
+include::{projectBase}/execution/src/test/java/brainslug/flow/execution/token/TaskNodeExecutorTest.java[tags=delegate-flow, indent=0]
 ----
 
 #### Service Call
@@ -82,15 +51,7 @@ You may use service call definition, to directly define the invocation of a meth
 
 [source, java]
 ----
-new FlowBuilder() {
-  @Override
-  public void define() {
-    start(event(id(START)))
-    .execute(task(id(TASK))
-      .call(service(TestService.class).method("getString")))
-    .end(event(id(END)));
-  }
-}
+include::{projectBase}/execution/src/test/java/brainslug/flow/execution/token/TaskNodeExecutorTest.java[tags=service-call, indent=0]
 ----
 
 #### Typesafe Service Call
@@ -99,26 +60,15 @@ It possible to define service calls using a proxy-based approach similar to Mock
 
 [source, java]
 ----
-public interface MyService {
-  public String echo(String input);
-}
-...
+include::{projectBase}/execution/src/test/java/brainslug/AbstractExecutionTest.java[tags=test-service, indent=0]
+----
 
-FlowBuilder flowBuilder = new FlowBuilder() {
-  @Override
-  public void define() {
-    flowId(id("task_flow"));
-
-    MyService service = service(MyService.class);
-
-    start(event(id("start")).display("Start"))
-      .execute(task(id("task")).call(method(
-        service.echo(val(constant("value to be echoed")))
-      )).display("Do Something"))
-    .end(event(id("end")).display("End"));
-  }
-};
+[source, java]
+----
+include::{projectBase}/execution/src/test/java/brainslug/flow/execution/token/TaskNodeExecutorTest.java[tags=type-safe-call, indent=0]
 ----
 
 In this case, the call to the service will be made at execution using the recorded argument values.
 This will be done using reflection on the instance of the service, which must be available in the `Registry`.
+
+#### Async Tasks

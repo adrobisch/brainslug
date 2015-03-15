@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
+public class ExecutorServiceFlowStartScheduler implements AsyncFlowStartScheduler {
   private  BrainslugContext context;
   private List<TimedFlowDefinition> timedDefinitions = new CopyOnWriteArrayList<TimedFlowDefinition>();
   private Map<Identifier, Long> lastStart = new ConcurrentHashMap<Identifier, Long>();
@@ -128,7 +128,7 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
     return scheduledExecutorService;
   }
 
-  public DefaultFlowStartScheduler withScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+  public ExecutorServiceFlowStartScheduler withScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
     this.scheduledExecutorService = scheduledExecutorService;
     return this;
   }
@@ -137,7 +137,7 @@ public class DefaultFlowStartScheduler implements AsyncFlowStartScheduler {
     return schedulerOptions;
   }
 
-  public DefaultFlowStartScheduler withSchedulerOptions(SchedulerOptions schedulerOptions) {
+  public ExecutorServiceFlowStartScheduler withSchedulerOptions(SchedulerOptions schedulerOptions) {
     this.schedulerOptions = schedulerOptions;
     return this;
   }

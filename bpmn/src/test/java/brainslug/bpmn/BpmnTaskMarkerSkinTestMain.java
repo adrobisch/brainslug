@@ -1,7 +1,7 @@
 package brainslug.bpmn;
 
 import brainslug.flow.renderer.Format;
-import brainslug.flow.renderer.JGraphRenderer;
+import brainslug.flow.renderer.JGraphBpmnRenderer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +12,7 @@ public class BpmnTaskMarkerSkinTestMain {
 
   public static void main(String[] args) throws FileNotFoundException {
     Format format = Format.PNG;
-    JGraphRenderer renderer = new JGraphRenderer(new BpmnTaskMarkerSkin());
+    JGraphBpmnRenderer renderer = new JGraphBpmnRenderer(new BpmnTaskMarkerSkin());
     FileOutputStream output = new FileOutputStream(new File("" + UUID.randomUUID() + "." + format.name().toLowerCase()));
     renderer.render(new BpmnFlowBuilder() {
       @Override

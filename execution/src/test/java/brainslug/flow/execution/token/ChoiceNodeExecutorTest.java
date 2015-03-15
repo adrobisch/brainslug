@@ -105,7 +105,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
         start(id("start")).choice(id("choice"))
           .when(predicate(new PropertyPredicate() {
             @Override
-            public boolean isFulfilled(ExecutionProperties executionProperties) {
+            public boolean isFulfilled(FlowProperties executionProperties) {
               return predicateFulfilled;
             }
           })).then().execute(task(id("task")))

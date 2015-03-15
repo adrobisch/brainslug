@@ -3,7 +3,7 @@ package brainslug.maven;
 import brainslug.flow.FlowBuilder;
 import brainslug.flow.renderer.DefaultSkin;
 import brainslug.flow.renderer.Format;
-import brainslug.flow.renderer.JGraphRenderer;
+import brainslug.flow.renderer.JGraphBpmnRenderer;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -49,7 +49,7 @@ public class RenderFlowsMojo extends AbstractMojo {
     Format imageFormat = Format.valueOf(format.toUpperCase());
 
     FileOutputStream fileOutputStream = getFileOutputStream(getOutputFile(flows + "." + imageFormat.name().toLowerCase()));
-    new JGraphRenderer(new DefaultSkin()).render(flowBuilder, fileOutputStream, imageFormat);
+    new JGraphBpmnRenderer(new DefaultSkin()).render(flowBuilder, fileOutputStream, imageFormat);
   }
 
   private FlowBuilder createFlowInstance(String flowName, ClassLoader classLoader) {

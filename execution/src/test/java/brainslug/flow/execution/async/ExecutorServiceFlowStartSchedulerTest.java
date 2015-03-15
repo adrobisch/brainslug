@@ -4,27 +4,25 @@ import brainslug.flow.FlowBuilder;
 import brainslug.flow.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.BrainslugContextBuilder;
-import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.util.IdUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.verification.VerificationMode;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.mockito.Mockito.*;
 
-public class DefaultFlowStartSchedulerTest {
+public class ExecutorServiceFlowStartSchedulerTest {
   @Test
   public void shouldFindFlowDefinitionsWithStartTimer() {
-    DefaultFlowStartScheduler flowStartScheduler = new DefaultFlowStartScheduler();
+    ExecutorServiceFlowStartScheduler flowStartScheduler = new ExecutorServiceFlowStartScheduler();
     BrainslugContext context = getBrainslugContextWithFlows();
 
-    List<DefaultFlowStartScheduler.TimedFlowDefinition> flowDefinitionsWithStartTimer = flowStartScheduler.addFlowDefinitionsWithStartTimer(context.getDefinitions());
+    List<ExecutorServiceFlowStartScheduler.TimedFlowDefinition> flowDefinitionsWithStartTimer = flowStartScheduler.addFlowDefinitionsWithStartTimer(context.getDefinitions());
     Assertions.assertThat(flowDefinitionsWithStartTimer)
       .hasSize(1);
 
@@ -39,7 +37,7 @@ public class DefaultFlowStartSchedulerTest {
   @Test
   public void shouldStartFlows() {
     BrainslugContext context = getBrainslugContextWithFlows();
-    DefaultFlowStartScheduler flowStartScheduler = new DefaultFlowStartScheduler();
+    ExecutorServiceFlowStartScheduler flowStartScheduler = new ExecutorServiceFlowStartScheduler();
 
     flowStartScheduler.start(new SchedulerOptions().withSchedulePeriod(1), context, context.getDefinitions());
 

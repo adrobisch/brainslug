@@ -2,7 +2,7 @@ package brainslug.flow.execution.expression;
 
 import brainslug.flow.context.*;
 import brainslug.flow.execution.BrainslugExecutionContext;
-import brainslug.flow.execution.BrainslugExecutionProperties;
+import brainslug.flow.execution.ExecutionProperties;
 import brainslug.flow.execution.PropertyStore;
 import brainslug.flow.expression.PredicateDefinition;
 import org.assertj.core.api.Assertions;
@@ -22,7 +22,7 @@ public class DefaultPredicateEvaluatorTest {
 
     PropertyPredicate predicateSpy = spy(new PropertyPredicate() {
       @Override
-      public boolean isFulfilled(ExecutionProperties executionProperties) {
+      public boolean isFulfilled(FlowProperties executionProperties) {
         Assertions.assertThat(executionProperties).isNotNull();
         return false;
       }
@@ -34,7 +34,7 @@ public class DefaultPredicateEvaluatorTest {
     boolean result = evaluator.evaluate(predicateDefintion, executionContext);
 
     // then:
-    verify(predicateSpy).isFulfilled(any(BrainslugExecutionProperties.class));
+    verify(predicateSpy).isFulfilled(any(ExecutionProperties.class));
     Assertions.assertThat(result).isFalse();
   }
 

@@ -140,11 +140,11 @@ public class TokenFlowExecutor implements FlowExecutor {
     return executionContext;
   }
 
-  protected ExecutionProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
-    ExecutionProperties properties = propertyStore
+  protected FlowProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
+    FlowProperties properties = propertyStore
         .loadProperties(executionContext.getTrigger().getInstanceId());
 
-    properties.putAll(trigger.getProperties());
+    properties.withAll(trigger.getProperties());
     return properties;
   }
 

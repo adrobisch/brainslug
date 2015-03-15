@@ -3,7 +3,7 @@ package brainslug.flow.context;
 import brainslug.flow.EnumIdentifier;
 import brainslug.flow.Identifier;
 import brainslug.flow.StringIdentifier;
-import brainslug.flow.execution.BrainslugExecutionProperties;
+import brainslug.flow.execution.ExecutionProperties;
 
 public class Trigger<T extends Trigger> implements TriggerContext {
 
@@ -13,7 +13,7 @@ public class Trigger<T extends Trigger> implements TriggerContext {
   protected Boolean async = false;
   protected Boolean signaling = false;
 
-  protected ExecutionProperties properties;
+  protected FlowProperties properties;
 
   @Override
   public Identifier getDefinitionId() {
@@ -67,12 +67,12 @@ public class Trigger<T extends Trigger> implements TriggerContext {
     return self();
   }
 
-  public T properties(ExecutionProperties properties) {
+  public T properties(FlowProperties properties) {
     this.properties = properties;
     return self();
   }
 
-  public void setProperties(ExecutionProperties properties) {
+  public void setProperties(FlowProperties properties) {
     this.properties = properties;
   }
 
@@ -88,7 +88,7 @@ public class Trigger<T extends Trigger> implements TriggerContext {
 
   @Override
   public void setProperty(String key, Object value) {
-    getProperties().put(key, value);
+    getProperties().with(key, value);
   }
 
   @Override
@@ -102,9 +102,9 @@ public class Trigger<T extends Trigger> implements TriggerContext {
   }
 
   @Override
-  public ExecutionProperties getProperties() {
+  public FlowProperties<?> getProperties() {
     if (properties == null) {
-      properties = new BrainslugExecutionProperties();
+      properties = new ExecutionProperties();
     }
     return properties;
   }

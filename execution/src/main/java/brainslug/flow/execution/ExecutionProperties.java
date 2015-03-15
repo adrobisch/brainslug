@@ -1,6 +1,7 @@
 package brainslug.flow.execution;
 
-import brainslug.flow.context.ExecutionProperties;
+import brainslug.flow.Identifier;
+import brainslug.flow.context.FlowProperties;
 import brainslug.flow.context.ExecutionProperty;
 import brainslug.util.Option;
 
@@ -9,14 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BrainslugExecutionProperties implements ExecutionProperties {
+public class ExecutionProperties implements FlowProperties<ExecutionProperty> {
   Map<String, ExecutionProperty> properties;
 
-  public BrainslugExecutionProperties() {
-    properties = new HashMap<String, ExecutionProperty>();
+  public ExecutionProperties() {
+    this.properties = new HashMap<String, ExecutionProperty>();
   }
 
-  public ExecutionProperties fromList(List<BrainslugProperty> properties) {
+  public FlowProperties<ExecutionProperty> fromList(List<BrainslugProperty> properties) {
     for (BrainslugProperty property : properties) {
       this.properties.put(property.getKey(), property);
     }
@@ -24,7 +25,16 @@ public class BrainslugExecutionProperties implements ExecutionProperties {
   }
 
   @Override
-  public ExecutionProperties put(String key, Object value) {
+  public FlowProperties<ExecutionProperty> with(Identifier key, Object value) {
+    properties.put(key.stringValue(), new BrainslugProperty()
+      .withKey(key.stringValue())
+      .withObjectValue(value));
+
+    return this;
+  }
+
+  @Override
+  public FlowProperties<ExecutionProperty> with(String key, Object value) {
     properties.put(key, new BrainslugProperty()
       .withKey(key)
       .withObjectValue(value));
@@ -33,7 +43,7 @@ public class BrainslugExecutionProperties implements ExecutionProperties {
   }
 
   @Override
-  public ExecutionProperties putAll(ExecutionProperties executionProperties) {
+  public FlowProperties<ExecutionProperty> withAll(FlowProperties<ExecutionProperty> executionProperties) {
     for (ExecutionProperty executionProperty : executionProperties.getValues()) {
       this.properties.put(executionProperty.getKey(), executionProperty);
     }
@@ -74,8 +84,8 @@ public class BrainslugExecutionProperties implements ExecutionProperties {
     return properties.values();
   }
 
-  public static ExecutionProperties with(String key, Object value) {
-    return new BrainslugExecutionProperties().put(key, value);
+  public static ExecutionProperties newProperties() {
+    return new ExecutionProperties();
   }
 
   @Override

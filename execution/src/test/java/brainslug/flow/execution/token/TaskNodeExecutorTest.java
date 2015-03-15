@@ -27,6 +27,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void supportsServiceMethodCallDefinition() {
     // given:
+    // # tag::service-call[]
     FlowDefinition serviceCallFlow = new FlowBuilder() {
 
       @Override
@@ -37,6 +38,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
       }
 
     }.getDefinition();
+    // # end::service-call[]
 
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
@@ -53,8 +55,9 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   }
 
   @Test
-  public void proxiedServiceMethodCallDefinition() {
+  public void typeSafeServiceMethodCallDefinition() {
     // given:
+    // # tag::type-safe-call[]
     FlowDefinition serviceCallFlow = new FlowBuilder() {
 
       @Override
@@ -68,6 +71,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
       }
 
     }.getDefinition();
+    // # end::type-safe-call[]
 
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
@@ -87,17 +91,23 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void supportsHandlerCallDefinitionWithArgumentInjection() {
     // given:
+    abstract
+    // #tag::test-delegate[]
     class TestDelegate implements Delegate {
       @Execute
+      abstract public void execute(TestService testService, ExecutionContext context);
+    }
+    // #end::test-delegate[]
+
+    final TestDelegate testDelegate = spy(new TestDelegate() {
+      @Override
       public void execute(TestService testService, ExecutionContext context) {
         // then:
         assertThat(testService.getString()).isEqualTo("a String");
         assertThat(context).isNotNull();
       }
-    }
-
-    final TestDelegate testDelegate = spy(new TestDelegate());
-
+    });
+    // #tag::delegate-flow[]
     FlowDefinition handlerFlow = new FlowBuilder() {
       @Override
       public void define() {
@@ -106,6 +116,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
         .end(event(id(END)));
       }
     }.getDefinition();
+    // #end::delegate-flow[]
 
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 

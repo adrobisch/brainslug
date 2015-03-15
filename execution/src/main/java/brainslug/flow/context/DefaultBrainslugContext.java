@@ -9,6 +9,7 @@ import brainslug.flow.execution.async.*;
 import brainslug.flow.execution.expression.PredicateEvaluator;
 import brainslug.flow.execution.token.TokenStore;
 import brainslug.flow.listener.ListenerManager;
+import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.util.Preconditions;
 
 import java.util.Collection;
@@ -83,12 +84,37 @@ public class DefaultBrainslugContext implements BrainslugContext {
   }
 
   @Override
+  public Identifier startFlow(FlowDefinition flowDefinition) {
+    return startFlow(flowDefinition.getId());
+  }
+
+  @Override
+  public Identifier startFlow(FlowDefinition flowDefinition, FlowProperties properties) {
+    return startFlow(flowDefinition, flowDefinition.requireSingleStartNode(), properties);
+  }
+
+  @Override
+  public Identifier startFlow(FlowDefinition flowDefinition, FlowNodeDefinition startNode, FlowProperties properties) {
+    return startFlow(flowDefinition.getId(), startNode.getId(), properties);
+  }
+
+  @Override
+  public Identifier startFlow(Identifier definitionId) {
+    return startFlow(definitionId, getDefinitionById(definitionId).requireSingleStartNode().getId());
+  }
+
+  @Override
   public Identifier startFlow(Identifier definitionId, Identifier startNodeId) {
     return flowExecutor.startFlow(new Trigger().definitionId(definitionId).nodeId(startNodeId));
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, ExecutionProperties properties) {
+  public Identifier startFlow(Identifier definitionId, FlowProperties properties) {
+    return startFlow(definitionId, getDefinitionById(definitionId).requireSingleStartNode().getId(), properties);
+  }
+
+  @Override
+  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, FlowProperties properties) {
     TriggerContext trigger = new Trigger()
       .definitionId(definitionId)
       .nodeId(startNodeId)
@@ -98,14 +124,14 @@ public class DefaultBrainslugContext implements BrainslugContext {
   }
 
   @Override
-  public BrainslugContext start() {
+  public BrainslugContext init() {
     Preconditions.notNull(asyncTriggerScheduler).start(this, asyncTriggerStore, asyncTriggerSchedulerOptions);
     Preconditions.notNull(asyncFlowStartScheduler).start(asyncFlowStartSchedulerOptions, this, getDefinitionStore().getDefinitions());
     return this;
   }
 
   @Override
-  public BrainslugContext stop() {
+  public BrainslugContext destroy() {
     Preconditions.notNull(asyncTriggerScheduler).stop();
     Preconditions.notNull(asyncFlowStartScheduler).stop();
     return this;

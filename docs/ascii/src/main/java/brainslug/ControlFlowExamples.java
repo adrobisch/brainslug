@@ -17,7 +17,7 @@ public class ControlFlowExamples {
 
     Identifier eventFlowId = id("helloFlow");
 
-    EventDefinition evenFlowStart = event(id("start")).display("Every 5 Seconds");
+    EventDefinition eventFlowStart = event(id("start")).display("Every 5 Seconds");
 
     EventDefinition fiveSecondsElapsed = event(id("wait")).display("After 5 Seconds")
       .elapsedTime(5, TimeUnit.SECONDS);
@@ -28,7 +28,7 @@ public class ControlFlowExamples {
     public void define() {
       flowId(eventFlowId);
 
-      start(evenFlowStart, every(5, TimeUnit.SECONDS))
+      start(eventFlowStart, every(5, TimeUnit.SECONDS))
         .waitFor(fiveSecondsElapsed)
         .execute(theTask);
     }

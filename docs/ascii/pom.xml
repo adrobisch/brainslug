@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>brainslug-docs</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <asciidoctor.version>1.5.2</asciidoctor.version>
@@ -21,6 +21,31 @@
             <groupId>de.androbit</groupId>
             <artifactId>brainslug-execution</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.androbit</groupId>
+            <artifactId>brainslug-spring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.androbit</groupId>
+            <artifactId>brainslug-renderer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.androbit</groupId>
+            <artifactId>brainslug-bpmn</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.1.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-bpmn-model</artifactId>
+            <version>5.14</version>
         </dependency>
     </dependencies>
 

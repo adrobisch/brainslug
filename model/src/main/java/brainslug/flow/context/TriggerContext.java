@@ -11,13 +11,13 @@ public interface TriggerContext {
 
   void setProperty(String key, Object value);
 
-  void setProperties(ExecutionProperties executionProperties);
+  void setProperties(FlowProperties executionProperties);
 
   <P> P getProperty(String key, Class<P> type);
 
   <P> P getProperty(Class<P> type);
 
-  ExecutionProperties getProperties();
+  FlowProperties getProperties();
 
   /**
    * @return true if this trigger should enable async node execution,

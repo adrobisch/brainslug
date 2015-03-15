@@ -12,7 +12,7 @@ A flow definition is constructed using the `FlowBuilder` DSL and is internally r
 
 [source, java]
 ----
-include::{exampleBase}/brainslug/SimpleExamples.java[tags=hello]
+include::{exampleBase}/brainslug/SimpleExamples.java[tags=hello, indent=0]
 ----
 
 brainslug provides a set of predefined node types to define the http://control-flow[control flow].
@@ -44,11 +44,17 @@ new tokens in the nodes which are considered as the next tokens in the flow or p
 Which succeeding nodes get tokens is decided by the corresponding `FlowNodeExecutor` of the node.
 The token includes the information which node execution lead to the creation of token (*"where it came from"*).
 
+#### Flow Execution Properties
+
+Execution Properties are key-value pairs which can be seen as the input parameters for an flow instance.
+They are used to influence the execution of an instance by changing the control flow
+or by acting as input for the execution of tasks.
+
 #### Example
 
 [source,java]
 ----
-include::{exampleBase}/brainslug/SimpleExamples.java[tags=start-hello]
+include::{exampleBase}/brainslug/SimpleExamples.java[tags=start-hello, indent=0]
 ----
 
-will execute the `helloFlow` and thus print `Hello World!` on the console.
+will execute the `helloFlow` from the listing above and thus print `Hello World!` on the console.

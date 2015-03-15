@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JGraphRenderer implements Renderer {
+public class JGraphBpmnRenderer implements Renderer {
 
   public static final int INTER_RANK_CELL_SPACING = 75;
 
@@ -30,7 +30,7 @@ public class JGraphRenderer implements Renderer {
   double scale = 1.0f;
   int padding = 20;
 
-  public JGraphRenderer(Skin skin) {
+  public JGraphBpmnRenderer(Skin skin) {
     this.skin = skin;
   }
 

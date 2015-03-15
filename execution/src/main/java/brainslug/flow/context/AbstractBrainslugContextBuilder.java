@@ -18,7 +18,7 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
   protected AsyncTriggerStore asyncTriggerStore = new ArrayListTriggerStore();
   protected AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions = new AsyncTriggerSchedulerOptions();
 
-  protected AsyncFlowStartScheduler asyncFlowStartScheduler = new DefaultFlowStartScheduler();
+  protected AsyncFlowStartScheduler asyncFlowStartScheduler = new ExecutorServiceFlowStartScheduler();
   protected SchedulerOptions asyncFlowStartSchedulerOptions = new SchedulerOptions();
 
   protected DefinitionStore definitionStore = new HashMapDefinitionStore();
