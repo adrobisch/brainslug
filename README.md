@@ -46,7 +46,7 @@ Rendered as:
 Documentation
 =============
 
-Check [Read The Docs](http://brainslug.readthedocs.org) for examples and documentation.
+Check the project [Github Pages](http://adrobisch.github.io/brainslug) for examples and documentation.
 
 Versioning
 ==========
