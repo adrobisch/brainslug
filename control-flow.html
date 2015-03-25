@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.2">
-<meta name="author" content="A. Drobisch">
-<title>Brainslug Documentation</title>
+<title>Control Flow</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -501,292 +500,17 @@ table.CodeRay td.code>pre{padding:0}
 .CodeRay .head .head{color:#f4f}
 </style>
 </head>
-<body class="book toc2 toc-left">
+<body class="book">
 <div id="header">
-<h1>Brainslug Documentation</h1>
-<div class="details">
-<span id="author" class="author">A. Drobisch</span><br>
-<span id="revnumber">version 0.17-SNAPSHOT</span>
-</div>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel0">
-<li><a href="#_brainslug">Brainslug</a>
-<ul class="sectlevel1">
-<li><a href="#_features">Features</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_download">Download</a></li>
-</ul>
-</li>
-<li><a href="#_basics">Basics</a>
-<ul class="sectlevel1">
-<li><a href="#_flow_definition">Flow Definition</a>
-<ul class="sectlevel2">
-<li><a href="#_example_2">Example</a></li>
-</ul>
-</li>
-<li><a href="#_execution">Execution</a>
-<ul class="sectlevel2">
-<li><a href="#_flow_instance">Flow Instance</a></li>
-<li><a href="#_flow_token">Flow Token</a></li>
-<li><a href="#_flow_execution_properties">Flow Execution Properties</a></li>
-<li><a href="#_example_3">Example</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_control_flow">Control Flow</a>
-<ul class="sectlevel1">
-<li><a href="#_brainslug_flow_node_types">Brainslug Flow Node Types</a>
-<ul class="sectlevel2">
-<li><a href="#_task_node">Task Node</a></li>
-<li><a href="#_event_node">Event Node</a></li>
-<li><a href="#_choice_node">Choice Node</a></li>
-<li><a href="#_merge_node">Merge Node</a></li>
-<li><a href="#_parallel_node">Parallel Node</a></li>
-<li><a href="#_join_node">Join Node</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_tasks">Tasks</a>
-<ul class="sectlevel1">
-<li><a href="#_registry">Registry</a></li>
-<li><a href="#_ways_to_define_a_task">Ways to define a task</a>
-<ul class="sectlevel2">
-<li><a href="#_inline_task">Inline Task</a></li>
-<li><a href="#_delegate_class">Delegate class</a></li>
-<li><a href="#_service_call">Service Call</a></li>
-<li><a href="#_typesafe_service_call">Typesafe Service Call</a></li>
-<li><a href="#_async_tasks">Async Tasks</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_jpa_support">JPA Support</a>
-<ul class="sectlevel1">
-<li><a href="#_setup">Setup</a></li>
-</ul>
-</li>
-<li><a href="#_spring_support">Spring Support</a>
-<ul class="sectlevel1">
-<li><a href="#_setup_2">Setup</a></li>
-</ul>
-</li>
-<li><a href="#_bpmn_support">BPMN Support</a>
-<ul class="sectlevel1">
-<li><a href="#_bpmn_renderer">BPMN Renderer</a></li>
-<li><a href="#_bpmn_xml_export">BPMN XML Export</a></li>
-</ul>
-</li>
-<li><a href="#_motivation">Motivation</a>
-<ul class="sectlevel1">
-<li><a href="#_design_goals">Design Goals</a></li>
-</ul>
-</li>
-</ul>
-</div>
 </div>
 <div id="content">
-<h1 id="_brainslug" class="sect0">Brainslug</h1>
-<div class="openblock partintro">
-<div class="content">
-<div class="imageblock">
-<div class="content">
-<img src="images/brainslug_big.png" alt="Brainslug">
-</div>
-</div>
-<div class="paragraph">
-<p>brainslug is a control flow abstraction library.
-It allows to model business logic flow of an application as a graph of typed nodes,
-which can be transformed to different representations or be executed within a customisable environment.</p>
-</div>
-</div>
-</div>
 <div class="sect1">
-<h2 id="_features">Features</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>Builder DSL for flow definitions</p>
-</li>
-<li>
-<p><a href="http://www.omg.org/spec/BPMN/2.0/">BPMN 2.0 XML</a> export using the <a href="https://github.com/Activiti/Activiti">Activiti</a> Model</p>
-</li>
-<li>
-<p>Flow Renderer based on the BPMN symbols</p>
-</li>
-<li>
-<p>Quartz Scheduler for Async Tasks</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_example">Example</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">FlowBuilder simpleFlow = <span class="keyword">new</span> FlowBuilder() {
-  <span class="annotation">@Override</span>
-  <span class="directive">public</span> <span class="type">void</span> define() {
-    flowId(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">simpleFlow</span><span class="delimiter">&quot;</span></span>));
-
-    start(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>)))
-      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">A Task</span><span class="delimiter">&quot;</span></span>))
-      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task2</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Another Task</span><span class="delimiter">&quot;</span></span>))
-        .end(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span>)));
-  }
-};</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>represents the the following flow:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="images/task_flow.png" alt="task_flow">
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_download">Download</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The current version is available in the <a href="http://search.maven.org/#search%7Cga%7C1%7Cbrainslug">maven central repository</a></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependencies&gt;</span>
-...
-  <span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.androbit<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>brainslug-core<span class="tag">&lt;/artifactId&gt;</span>
-    <span class="tag">&lt;version&gt;</span>...<span class="tag">&lt;/version&gt;</span>
-  <span class="tag">&lt;/dependency&gt;</span>
-...
-<span class="tag">&lt;/dependencies&gt;</span></code></pre>
-</div>
-</div>
-</div>
-</div>
-<h1 id="_basics" class="sect0">Basics</h1>
-<div class="sect1">
-<h2 id="_flow_definition">Flow Definition</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The flow definition is the central concept of brainslug.
-A definition defines possible paths / sequence of actions for a desired outcome, e.g.
-the steps for an ordering process, call to external systems etc. &#8230;&#8203;</p>
-</div>
-<div class="paragraph">
-<p>A flow definition is constructed using the <code>FlowBuilder</code> DSL and is internally represented as a directed graph of typed flow nodes.</p>
-</div>
-<div class="sect2">
-<h3 id="_example_2">Example</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">HelloWorldFlow</span> <span class="directive">extends</span> FlowBuilder {
-
-  <span class="directive">public</span> <span class="directive">static</span> Identifier helloFlow = id(<span class="string"><span class="delimiter">&quot;</span><span class="content">helloFlow</span><span class="delimiter">&quot;</span></span>);
-
-  <span class="directive">public</span> <span class="directive">static</span> Identifier start = id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>);
-  <span class="directive">public</span> <span class="directive">static</span> Identifier helloTask = id(<span class="string"><span class="delimiter">&quot;</span><span class="content">helloTask</span><span class="delimiter">&quot;</span></span>);
-
-  <span class="annotation">@Override</span>
-  <span class="directive">public</span> <span class="type">void</span> define() {
-    flowId(helloFlow);
-
-    start(start).execute(task(helloTask, <span class="keyword">new</span> SimpleTask() {
-      <span class="annotation">@Override</span>
-      <span class="directive">public</span> <span class="type">void</span> execute(ExecutionContext context) {
-        <span class="predefined-type">System</span>.out.println(<span class="predefined-type">String</span>.format(
-            <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello %s!</span><span class="delimiter">&quot;</span></span>, context.property(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.class))
-        );
-      }
-    }));
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>brainslug provides a set of predefined node types to define the <a href="http://control-flow">control flow</a>.
-These types might be extended in additional modules like the <a href="https://github.com/adrobisch/brainslug/blob/master/bpmn">BPMN</a>
-support.</p>
-</div>
-<div class="paragraph">
-<p>In addition to the examples here in the documentation,
-the <a href="https://github.com/adrobisch/brainslug/blob/master/model/src/test/java/brainslug/flow/builder/FlowBuilderTest.java">FlowBuilderTest</a>
-is a good source for examples on how to build flow definitions.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_execution">Execution</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To execute a flow definition you need to create <code>BrainslugContext</code> which defines all aspects of the execution.
-The <code>DefaultBrainslugContext</code> will use <code>HashMap</code> and <code>List</code>-based implementations for all aspects related to storing flow instance information.
-It is possible to add durable persistence by using the <a href="http://jpa-support">JPA</a>-module or by writing custom stores.</p>
-</div>
-<div class="sect2">
-<h3 id="_flow_instance">Flow Instance</h3>
-<div class="paragraph">
-<p>A flow instance is a single execution of a flow definition. A flow instance may have properties
-which are stored in the <code>PropertyStore</code> to share data between flow nodes while the execution is not completed.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_flow_token">Flow Token</h3>
-<div class="paragraph">
-<p>A flow token is a pointer to a flow node in a flow instance. A flow node might have multiple tokens.</p>
-</div>
-<div class="paragraph">
-<p>Tokens are consumed / deleted when the execution of a single node was successfully, which in turn creates
-new tokens in the nodes which are considered as the next tokens in the flow or path of execution.</p>
-</div>
-<div class="paragraph">
-<p>Which succeeding nodes get tokens is decided by the corresponding <code>FlowNodeExecutor</code> of the node.
-The token includes the information which node execution lead to the creation of token (<strong>"where it came from"</strong>).</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_flow_execution_properties">Flow Execution Properties</h3>
-<div class="paragraph">
-<p>Execution Properties are key-value pairs which can be seen as the input parameters for an flow instance.
-They are used to influence the execution of an instance by changing the control flow
-or by acting as input for the execution of tasks.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_example_3">Example</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">//  create brainslug context with defaults</span>
-BrainslugContext context = <span class="keyword">new</span> BrainslugContextBuilder().build();
-<span class="comment">// add the flow definition</span>
-FlowDefinition helloFlow = <span class="keyword">new</span> HelloWorldFlow().getDefinition();
-context.addFlowDefinition(helloFlow);
-<span class="comment">// start the flow with property 'name' = &quot;World&quot;</span>
-context.startFlow(helloFlow, newProperties().with(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>));</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>will execute the <code>helloFlow</code> from the listing above and thus print <code>Hello World!</code> on the console.</p>
-</div>
-</div>
-</div>
-</div>
-<h1 id="_control_flow" class="sect0">Control Flow</h1>
-<div class="sect1">
-<h2 id="_brainslug_flow_node_types">Brainslug Flow Node Types</h2>
+<h2 id="_control_flow">Control Flow</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_task_node">Task Node</h3>
+<h3 id="_brainslug_flow_node_types">Brainslug Flow Node Types</h3>
+<div class="sect3">
+<h4 id="_task_node">Task Node</h4>
 <div class="paragraph">
 <p>A Task Node will be executed for every incoming token and produces one token per outgoing edge. See the [task documentation](task)
 for details on how to define what a task should do during execution.</p>
@@ -797,14 +521,14 @@ for details on how to define what a task should do during execution.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_event_node">Event Node</h3>
+<div class="sect3">
+<h4 id="_event_node">Event Node</h4>
 <div class="paragraph">
 <p>An Event Node is triggered by every incoming token and produces one token per outgoing edge.
 There are different type of event: Start Events, End Events, Wait (Intermediate) Events.</p>
 </div>
-<div class="sect3">
-<h4 id="_example_4">Example</h4>
+<div class="sect4">
+<h5 id="_example">Example</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">EventFlow</span> <span class="directive">extends</span> FlowBuilder {
@@ -844,20 +568,20 @@ for it.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_choice_node">Choice Node</h3>
+<div class="sect3">
+<h4 id="_choice_node">Choice Node</h4>
 <div class="paragraph">
 <p>A Choice Node will be executed for every incoming token. A token is produced for the first outgoing path
 where the predicate is fullfilled.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_merge_node">Merge Node</h3>
+<div class="sect3">
+<h4 id="_merge_node">Merge Node</h4>
 <div class="paragraph">
 <p>A Merge Node merges different execution paths. It will be executed for every incoming token. A token is produced for every outgoing edge.</p>
 </div>
-<div class="sect3">
-<h4 id="_example_5">Example</h4>
+<div class="sect4">
+<h5 id="_example_2">Example</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">ChoiceFlow</span> <span class="directive">extends</span> FlowBuilder {
@@ -901,21 +625,21 @@ where the predicate is fullfilled.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_parallel_node">Parallel Node</h3>
+<div class="sect3">
+<h4 id="_parallel_node">Parallel Node</h4>
 <div class="paragraph">
 <p>A Parallel Node defines flow paths which are meant for parallel execution, if the execution is really concurrent depends on the
 configuration of the corresponding <code>FlowNodeExecutor</code>. It will be executed for every incoming token. A token is produced for every outgoing edge.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_join_node">Join Node</h3>
+<div class="sect3">
+<h4 id="_join_node">Join Node</h4>
 <div class="paragraph">
 <p>A Parallel Node joins or synchronizes multiple concurrent execution paths. It will only be executed if it has tokens from every incoming edge.
 A token is produced for every outgoing edge.</p>
 </div>
-<div class="sect3">
-<h4 id="_example_6">Example</h4>
+<div class="sect4">
+<h5 id="_example_3">Example</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">ParallelFlow</span> <span class="directive">extends</span> FlowBuilder {
@@ -953,433 +677,11 @@ A token is produced for every outgoing edge.</p>
 </div>
 </div>
 </div>
-<h1 id="_tasks" class="sect0">Tasks</h1>
-<div class="sect1">
-<h2 id="_registry">Registry</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The brainslug context has a <code>Registry</code> where singletons of service classes can be registered:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">context.getRegistry().registerService(Delegate.class, <span class="keyword">new</span> Delegate());</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or retrieved:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">Delegate delegateService = context.getRegistry().getService(Delegate.class);</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_ways_to_define_a_task">Ways to define a task</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_inline_task">Inline Task</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">FlowBuilder inlineTaskFlow = <span class="keyword">new</span> FlowBuilder() {
-  <span class="annotation">@Override</span>
-  <span class="directive">public</span> <span class="type">void</span> define() {
-    flowId(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task_flow</span><span class="delimiter">&quot;</span></span>));
-
-    start(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Start</span><span class="delimiter">&quot;</span></span>))
-      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span>), <span class="keyword">new</span> Task() {
-        <span class="annotation">@Override</span>
-        <span class="directive">public</span> <span class="type">void</span> execute(ExecutionContext ctx) {
-          ctx.service(ExampleService.class).doSomething();
-        }
-      }).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Do Something</span><span class="delimiter">&quot;</span></span>))
-      .end(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">End</span><span class="delimiter">&quot;</span></span>));
-  }
-};</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In <strong>Java 8</strong> the task can be defined using a lambda expression:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">ctx -&gt; {
-  ctx.service(MyService.class).doSomething();
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_delegate_class">Delegate class</h3>
-<div class="paragraph">
-<p>If you do not want to specify the method by name, you can use the <code>Execute</code>-annotation to define which
-method you want be executed for a task:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">TestDelegate</span> <span class="directive">implements</span> Delegate {
-  <span class="annotation">@Execute</span>
-  <span class="directive">abstract</span> <span class="directive">public</span> <span class="type">void</span> execute(TestService testService, ExecutionContext context);
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">FlowDefinition handlerFlow = <span class="keyword">new</span> FlowBuilder() {
-  <span class="annotation">@Override</span>
-  <span class="directive">public</span> <span class="type">void</span> define() {
-    start(event(id(START)))
-      .execute(task(id(TASK)).delegate(TestDelegate.class))
-    .end(event(id(END)));
-  }
-}.getDefinition();</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_service_call">Service Call</h3>
-<div class="paragraph">
-<p>You may use service call definition, to directly define the invocation of a method during flow node definition.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">FlowDefinition serviceCallFlow = <span class="keyword">new</span> FlowBuilder() {
-
-  <span class="annotation">@Override</span>
-  <span class="directive">public</span> <span class="type">void</span> define() {
-    start(event(id(START)))
-      .execute(task(id(TASK)).call(method(TestService.class).name(<span class="string"><span class="delimiter">&quot;</span><span class="content">getString</span><span class="delimiter">&quot;</span></span>)))
-    .end(event(id(END)));
-  }
-
-}.getDefinition();</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_typesafe_service_call">Typesafe Service Call</h3>
-<div class="paragraph">
-<p>It possible to define service calls using a proxy-based approach similar to Mockito.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">interface</span> <span class="class">TestService</span> {
-  <span class="directive">public</span> <span class="predefined-type">String</span> getString();
-  <span class="directive">public</span> <span class="predefined-type">String</span> echo(<span class="predefined-type">String</span> echo);
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">FlowDefinition serviceCallFlow = <span class="keyword">new</span> FlowBuilder() {
-
-  <span class="annotation">@Override</span>
-  <span class="directive">public</span> <span class="type">void</span> define() {
-    TestService testService = service(TestService.class);
-
-    start(event(id(START)))
-      .execute(task(id(TASK)).call(method(testService.echo(testService.getString()))))
-    .end(event(id(END)));
-
-  }
-
-}.getDefinition();</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this case, the call to the service will be made at execution using the recorded argument values.
-This will be done using reflection on the instance of the service, which must be available in the <code>Registry</code>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_async_tasks">Async Tasks</h3>
-
-</div>
-</div>
-</div>
-<h1 id="_jpa_support" class="sect0">JPA Support</h1>
-<div class="openblock partintro">
-<div class="content">
-It is possible to use JPA for the persistence of flow instance information. This support is implemented using querydsl.
-</div>
-</div>
-<div class="sect1">
-<h2 id="_setup">Setup</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>First you need an instance of <code>brainslug.jdbc.Database</code> :</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">new</span> Database(entityManager, <span class="keyword">new</span> HQLTemplates()); <span class="comment">// adjust templates to your JPA provider</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>to create a the JPA TokenStore, JPA PropertyStore and JPA AsyncTriggerStore</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">new</span> Database(entityManager, <span class="keyword">new</span> HQLTemplates()); <span class="comment">// adjust templates to your JPA provider</span>
-
-JpaTokenStore jpaTokenStore = <span class="keyword">new</span> JpaTokenStore(...)
-JpaAsyncTriggerStore jpaAsyncTriggerStore = <span class="keyword">new</span> JpaAsyncTriggerStore(...)
-JpaPropertyStore jpaPropertyStore = <span class="keyword">new</span> JpaPropertyStore(...)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>These can than be provided to the <code>BrainslugContextBuilder</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">new</span> BrainslugContextBuilder()
-  .withTokenStore(jpaTokenStore)
-  .withAsyncTriggerStore(jpaAsyncTriggerStore)
-  .withPropertyStore(jpaPropertyStore)
-  .build()</code></pre>
-</div>
-</div>
-</div>
-</div>
-<h1 id="_spring_support" class="sect0">Spring Support</h1>
-<div class="openblock partintro">
-<div class="content">
-It is possible integrate brainslug with the Spring application context, so that the Spring Beans
-are available in the execution context.
-</div>
-</div>
-<div class="sect1">
-<h2 id="_setup_2">Setup</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Just import the spring configuration class into you application context.</p>
-</div>
-<div class="paragraph">
-<p>Calls to the <code>ExecutionContext</code> or the <code>Registry</code> will then return the beans from the Spring application context:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
-<span class="annotation">@Import</span>(brainslug.spring.SpringBrainslugConfiguration.class)
-<span class="directive">public</span> <span class="type">class</span> <span class="class">ConfigurationExample</span> {
-
-  <span class="annotation">@Component</span>
-  <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SpringExampleTask</span> <span class="directive">implements</span> Task {
-    Environment environment;
-
-    <span class="annotation">@Autowired</span>
-    <span class="directive">public</span> SpringExampleTask(Environment environment) {
-      <span class="local-variable">this</span>.environment = environment;
-    }
-
-    <span class="annotation">@Override</span>
-    <span class="directive">public</span> <span class="type">void</span> execute(ExecutionContext context) {
-      printHello(context.property(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">String</span>.class));
-
-      context.service(SpringExampleTask.class).printHello(<span class="string"><span class="delimiter">&quot;</span><span class="content">again</span><span class="delimiter">&quot;</span></span>);
-    }
-
-    <span class="directive">public</span> <span class="type">void</span> printHello(<span class="predefined-type">String</span> name) {
-      <span class="predefined-type">System</span>.out.println(
-        format(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello %s!</span><span class="delimiter">&quot;</span></span>, name)
-      );
-    }
-  }
-
-  <span class="annotation">@Bean</span>
-  FlowBuilder flowBuilder() {
-    <span class="keyword">return</span> <span class="keyword">new</span> FlowBuilder() {
-      <span class="annotation">@Override</span>
-      <span class="directive">public</span> <span class="type">void</span> define() {
-        flowId(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-flow</span><span class="delimiter">&quot;</span></span>));
-
-        start(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-task</span><span class="delimiter">&quot;</span></span>)).delegate(SpringExampleTask.class));
-      }
-    };
-  }
-
-  <span class="directive">public</span> <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
-    AnnotationConfigApplicationContext applicationContext =
-      <span class="keyword">new</span> AnnotationConfigApplicationContext(ConfigurationExample.class);
-
-    BrainslugContext brainslugContext = applicationContext.getBean(BrainslugContext.class);
-
-    brainslugContext.startFlow(FlowBuilder.id(<span class="string"><span class="delimiter">&quot;</span><span class="content">spring-flow</span><span class="delimiter">&quot;</span></span>),
-      newProperties().with(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">World</span><span class="delimiter">&quot;</span></span>));
-  }
-
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Will output the two lines:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">Hello World!
-Hello again!</code></pre>
-</div>
-</div>
-</div>
-</div>
-<h1 id="_bpmn_support" class="sect0">BPMN Support</h1>
-<div class="openblock partintro">
-<div class="content">
-<div class="paragraph">
-<p>brainslug is able to export flow definitions to BPMN 2.0 as rendered image or XML definitions file.</p>
-</div>
-<div class="paragraph">
-<p>The following examples use this flow:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">FlowBuilder simpleFlow = <span class="keyword">new</span> FlowBuilder() {
-  <span class="annotation">@Override</span>
-  <span class="directive">public</span> <span class="type">void</span> define() {
-    flowId(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">simpleFlow</span><span class="delimiter">&quot;</span></span>));
-
-    start(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>)))
-      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">A Task</span><span class="delimiter">&quot;</span></span>))
-      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task2</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Another Task</span><span class="delimiter">&quot;</span></span>))
-        .end(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span>)));
-  }
-};</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_bpmn_renderer">BPMN Renderer</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Format</span> format = <span class="predefined-type">Format</span>.JPG;
-JGraphBpmnRenderer renderer = <span class="keyword">new</span> JGraphBpmnRenderer(<span class="keyword">new</span> DefaultSkin());
-
-<span class="predefined-type">String</span> fileName = simpleFlow.getName() + <span class="string"><span class="delimiter">&quot;</span><span class="content">.</span><span class="delimiter">&quot;</span></span> + format.name();
-<span class="predefined-type">FileOutputStream</span> outputFile = <span class="keyword">new</span> <span class="predefined-type">FileOutputStream</span>(fileName);
-
-renderer.render(simpleFlow, outputFile, format);</code></pre>
-</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="images/task_flow.png" alt="task_flow">
-</div>
-</div>
-<div class="paragraph">
-<p>also see: <a href="https://github.com/adrobisch/brainslug/blob/master/renderer/src/test/java/brainslug/flow/renderer/JGraphBpmnRendererTest.java">JGraphBpmnRendererTest</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_bpmn_xml_export">BPMN XML Export</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">BpmnModelTransformer bpmnModelTransformer = <span class="keyword">new</span> BpmnModelTransformer();
-<span class="predefined-type">String</span> bpmnXml = bpmnModelTransformer.toBpmnXml(simpleFlow);</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>will produce</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="xml"><span class="preprocessor">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="tag">&lt;definitions</span> <span class="attribute-name">xmlns</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.omg.org/spec/BPMN/20100524/MODEL</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns:xsi</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/2001/XMLSchema-instance</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns:activiti</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://activiti.org/bpmn</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns:bpmndi</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.omg.org/spec/BPMN/20100524/DI</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns:omgdc</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.omg.org/spec/DD/20100524/DC</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns:omgdi</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.omg.org/spec/DD/20100524/DI</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">typeLanguage</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/2001/XMLSchema</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">expressionLanguage</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/1999/XPath</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">targetNamespace</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.activiti.org/test</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-    <span class="tag">&lt;process</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">471ff134-4050-497b-bf80-d1fa5164f311</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">471ff134-4050-497b-bf80-d1fa5164f311</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">isExecutable</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-        <span class="tag">&lt;startEvent</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/startEvent&gt;</span>
-        <span class="tag">&lt;serviceTask</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">A Task</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/serviceTask&gt;</span>
-        <span class="tag">&lt;serviceTask</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">task2</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Another Task</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/serviceTask&gt;</span>
-        <span class="tag">&lt;endEvent</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/endEvent&gt;</span>
-        <span class="tag">&lt;sequenceFlow</span> <span class="attribute-name">sourceRef</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">targetRef</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/sequenceFlow&gt;</span>
-        <span class="tag">&lt;sequenceFlow</span> <span class="attribute-name">sourceRef</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">targetRef</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">task2</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/sequenceFlow&gt;</span>
-        <span class="tag">&lt;sequenceFlow</span> <span class="attribute-name">sourceRef</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">task2</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">targetRef</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/sequenceFlow&gt;</span>
-    <span class="tag">&lt;/process&gt;</span>
-    <span class="tag">&lt;bpmndi:BPMNDiagram</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">BPMNDiagram_471ff134-4050-497b-bf80-d1fa5164f311</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
-        <span class="tag">&lt;bpmndi:BPMNPlane</span> <span class="attribute-name">bpmnElement</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">471ff134-4050-497b-bf80-d1fa5164f311</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">BPMNPlane_471ff134-4050-497b-bf80-d1fa5164f311</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/bpmndi:BPMNPlane&gt;</span>
-    <span class="tag">&lt;/bpmndi:BPMNDiagram&gt;</span>
-<span class="tag">&lt;/definitions&gt;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>also see: <a href="https://github.com/adrobisch/brainslug/blob/master/bpmn/src/test/java/brainslug/bpmn/BpmnModelTransformerTest.java">BpmnModelTransformerTest</a></p>
-</div>
-</div>
-</div>
-<h1 id="_motivation" class="sect0">Motivation</h1>
-<div class="openblock partintro">
-<div class="content">
-<div class="quoteblock">
-<blockquote>
-"Do we really need another Workflow-BPM-whatever engines on the JVM? Smells like <strong>'Not invented here'</strong>!"
-</blockquote>
-</div>
-<div class="paragraph">
-<p><a href="http://activiti.org">Activiti</a>, <a href="http://camunda.org">camunda BPM</a> and <a href="http://www.jbpm.org/">jBPM</a> might be the most popular on the list, but they all have some kind of bigger legacy and target environment
-they have to deal with and its more difficult to just get to their core.</p>
-</div>
-<div class="paragraph">
-<p>For example, Activiti is very focused on BPMN 2.0 and its jBPM 4 roots, jBPM5 is coming from the business rule side,
-BPEL engines make most sense in WS-* environments.</p>
-</div>
-<div class="paragraph">
-<p>To some degree they all share some strong assumptions:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Relational persistence (with JDBC), execution semantics are often coupled to the database transaction management</p>
-</li>
-<li>
-<p>High initial learning effort required to learn the workflow description language like BPMN, BPEL</p>
-</li>
-<li>
-<p>Dynamic expression evaluation, at least to control the flow</p>
-</li>
-<li>
-<p>You are living in a container (Tomcat / Spring, Java Enterprise Edition / JBoss)</p>
-</li>
-<li>
-<p>XML based descriptions / configurations</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><span class="image"><img src="images/brainslug_big.png" alt="brainslug_big"></span> aims to provide a <strong>small</strong> workflow library for the JVM without these strings attached.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_design_goals">Design Goals</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A developer using brainslug should be able to:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>have no external dependencies in the core parts (model and execution), except for logging</p>
-</li>
-<li>
-<p>understand the execution model by reading the code</p>
-</li>
-<li>
-<p>customize all aspects the library (including persistence and transaction management)</p>
-</li>
-<li>
-<p>not want to buy commercial (sometimes called <strong>enterprise</strong>) support</p>
-</li>
-</ul>
-</div>
-</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.17-SNAPSHOT<br>
-Last updated 2015-03-10 23:15:36 CET
+Last updated 2015-03-13 14:55:37 CET
 </div>
 </div>
 </body>
