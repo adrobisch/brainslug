@@ -1,4 +1,4 @@
-package brainslug.flow.execution.property.basic;
+package brainslug.flow.execution.property;
 
 import brainslug.flow.execution.property.AbstractProperty;
 

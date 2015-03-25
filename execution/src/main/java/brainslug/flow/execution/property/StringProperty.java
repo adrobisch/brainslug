@@ -1,6 +1,4 @@
-package brainslug.flow.execution.property.basic;
-
-import brainslug.flow.execution.property.AbstractProperty;
+package brainslug.flow.execution.property;
 
 public class StringProperty extends AbstractProperty<String> {
   public StringProperty(String key, String value) {

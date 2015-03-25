@@ -3,7 +3,6 @@ package brainslug.flow.execution.property;
 import brainslug.flow.context.ExecutionProperty;
 import brainslug.flow.context.FlowProperties;
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.execution.property.basic.*;
 import brainslug.util.Option;
 
 import java.util.*;

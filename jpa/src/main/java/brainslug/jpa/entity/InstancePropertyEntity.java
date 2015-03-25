@@ -117,4 +117,42 @@ public class InstancePropertyEntity {
     return this;
   }
 
+  public static class ValueType {
+    public static final ValueType STRING = new ValueType("string");
+    public static final ValueType DATE = new ValueType("date");
+    public static final ValueType INT = new ValueType("int");
+    public static final ValueType DOUBLE = new ValueType("double");
+    public static final ValueType FLOAT = new ValueType("float");
+    public static final ValueType BOOLEAN = new ValueType("boolean");
+    public static final ValueType SERIALIZABLE = new ValueType("serializable");
+    public static final ValueType LONG = new ValueType("long");
+
+    String typeName;
+
+    public ValueType(String typeName) {
+      this.typeName = typeName;
+    }
+
+    public String typeName() {
+      return typeName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      ValueType valueType = (ValueType) o;
+
+      if (typeName != null ? !typeName.equals(valueType.typeName) : valueType.typeName != null) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return typeName != null ? typeName.hashCode() : 0;
+    }
+  }
+
 }

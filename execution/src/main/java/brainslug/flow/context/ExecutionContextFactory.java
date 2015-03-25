@@ -1,11 +1,6 @@
 package brainslug.flow.context;
 
-import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.context.FlowProperties;
-import brainslug.flow.context.Registry;
-import brainslug.flow.context.TriggerContext;
-import brainslug.flow.context.BrainslugExecutionContext;
-import brainslug.flow.execution.property.PropertyStore;
+import brainslug.flow.execution.property.store.PropertyStore;
 
 public class ExecutionContextFactory {
   private final PropertyStore propertyStore;

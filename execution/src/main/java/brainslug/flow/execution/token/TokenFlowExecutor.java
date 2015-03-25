@@ -9,7 +9,7 @@ import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.flow.execution.expression.PredicateEvaluator;
 import brainslug.flow.execution.node.*;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
-import brainslug.flow.execution.property.PropertyStore;
+import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.node.*;

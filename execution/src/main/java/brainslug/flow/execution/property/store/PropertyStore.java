@@ -1,4 +1,4 @@
-package brainslug.flow.execution.property;
+package brainslug.flow.execution.property.store;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.ExecutionProperty;
