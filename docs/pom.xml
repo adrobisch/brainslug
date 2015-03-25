@@ -6,7 +6,6 @@
         <groupId>de.androbit</groupId>
         <artifactId>brainslug</artifactId>
         <version>0.17-SNAPSHOT</version>
-        <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>brainslug-docs</artifactId>
@@ -61,7 +60,7 @@
                     <backend>html</backend>
                     <doctype>book</doctype>
                     <attributes>
-                        <projectBase>../../../../..</projectBase>
+                        <projectBase>../../../..</projectBase>
                         <exampleBase>../java</exampleBase>
                         <docVersion>${project.version}</docVersion>
                     </attributes>

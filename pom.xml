@@ -21,7 +21,7 @@
       <module>spring</module>
       <module>maven-renderer</module>
       <module>maven-bpmn</module>
-      <module>docs/ascii</module>
+      <module>docs</module>
     </modules>
 
     <licenses>

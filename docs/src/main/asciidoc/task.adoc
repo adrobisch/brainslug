@@ -70,5 +70,3 @@ include::{projectBase}/execution/src/test/java/brainslug/flow/execution/token/Ta
 
 In this case, the call to the service will be made at execution using the recorded argument values.
 This will be done using reflection on the instance of the service, which must be available in the `Registry`.
-
-#### Async Tasks
