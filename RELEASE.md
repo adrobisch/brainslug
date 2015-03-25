@@ -55,8 +55,8 @@ push to origin:
 Publishing to Sonatype
 ======================
 
-Project artifacts are published to Sonatype by executing
-    mvn release:perform
+Project artifacts and documentation are published to Sonatype and Github by executing
+    mvn release:perform site
 
 You can find your artifacts under Staging Repositories afterwards.
 Close, then release the artifacts.
