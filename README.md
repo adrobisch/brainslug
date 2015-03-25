@@ -1,4 +1,4 @@
-![brainslug](docs/images/brainslug_big.png)
+![brainslug](docs/src/main/asciidoc/images/brainslug_big.png)
 
 brainslug
 =========
@@ -41,7 +41,7 @@ context.startFlow(helloWorldFlow.getId(), IdUtil.id("start"));
 
 Rendered as:
 
-![hello_flow](docs/images/hello_flow.png)
+![hello_flow](docs/src/main/asciidoc/images/hello_flow.png)
 
 Documentation
 =============
