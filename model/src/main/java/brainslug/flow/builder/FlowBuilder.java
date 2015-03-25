@@ -1,11 +1,11 @@
-package brainslug.flow;
+package brainslug.flow.builder;
 
-import brainslug.flow.builder.FlowBuilderSupport;
-
-import java.util.UUID;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.definition.StringIdentifier;
 
 /**
- * The FlowBuilder is used to create new {@link brainslug.flow.FlowDefinition}s
+ * The FlowBuilder is used to create new {@link brainslug.flow.definition.FlowDefinition}s
  * by implementing the define method and using the DSL methods provided by the
  * {@link brainslug.flow.builder.FlowBuilderSupport}.
  */

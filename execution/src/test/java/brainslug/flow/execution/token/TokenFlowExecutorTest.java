@@ -1,13 +1,12 @@
 package brainslug.flow.execution.token;
 
 import brainslug.AbstractExecutionTest;
-import brainslug.flow.EnumIdentifier;
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.Identifier;
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Trigger;
-import brainslug.flow.execution.SimpleTask;
+import brainslug.flow.execution.node.task.SimpleTask;
 import brainslug.util.IdUtil;
 import org.junit.Test;
 import org.mockito.InOrder;

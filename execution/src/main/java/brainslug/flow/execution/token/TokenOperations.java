@@ -1,6 +1,6 @@
 package brainslug.flow.execution.token;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class TokenOperations {
     }
   }
 
-  protected void removeTokens(Identifier instanceId, List<Token> tokens) {
+  public void removeTokens(Identifier instanceId, List<Token> tokens) {
     for (Token token : tokens) {
       removeToken(instanceId, token);
     }

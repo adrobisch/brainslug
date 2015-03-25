@@ -1,6 +1,6 @@
 package brainslug;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.node.task.Task;
 

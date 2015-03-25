@@ -1,4 +1,4 @@
-package brainslug.flow.execution;
+package brainslug.flow.execution.node;
 
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.node.FlowNodeDefinition;

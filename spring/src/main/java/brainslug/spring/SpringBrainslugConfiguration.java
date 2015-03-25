@@ -1,6 +1,6 @@
 package brainslug.spring;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.context.BrainslugContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

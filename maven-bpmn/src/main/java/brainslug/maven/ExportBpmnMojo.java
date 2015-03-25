@@ -1,7 +1,7 @@
 package brainslug.maven;
 
 import brainslug.bpmn.BpmnModelTransformer;
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import org.activiti.bpmn.BpmnAutoLayout;
 import org.activiti.bpmn.model.BpmnModel;
 import org.apache.maven.plugin.AbstractMojo;

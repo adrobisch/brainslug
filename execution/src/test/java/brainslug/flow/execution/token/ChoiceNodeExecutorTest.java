@@ -1,12 +1,13 @@
 package brainslug.flow.execution.token;
 
 import brainslug.AbstractExecutionTest;
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.FlowDefinition;
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.context.*;
-import brainslug.flow.execution.BrainslugExecutionContext;
-import brainslug.flow.execution.FlowNodeExecutionResult;
-import brainslug.flow.execution.FlowNodeExecutor;
+import brainslug.flow.context.BrainslugExecutionContext;
+import brainslug.flow.execution.node.ChoiceNodeExecutor;
+import brainslug.flow.execution.node.FlowNodeExecutionResult;
+import brainslug.flow.execution.node.FlowNodeExecutor;
 import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
 import brainslug.flow.execution.expression.PredicateEvaluator;
 import brainslug.flow.execution.expression.PropertyPredicate;

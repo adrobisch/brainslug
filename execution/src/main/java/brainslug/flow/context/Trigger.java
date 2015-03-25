@@ -1,9 +1,9 @@
 package brainslug.flow.context;
 
-import brainslug.flow.EnumIdentifier;
-import brainslug.flow.Identifier;
-import brainslug.flow.StringIdentifier;
-import brainslug.flow.execution.ExecutionProperties;
+import brainslug.flow.definition.EnumIdentifier;
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.definition.StringIdentifier;
+import brainslug.flow.execution.property.ExecutionProperties;
 
 public class Trigger<T extends Trigger> implements TriggerContext {
 
@@ -93,16 +93,11 @@ public class Trigger<T extends Trigger> implements TriggerContext {
 
   @Override
   public <P> P getProperty(String key, Class<P> type) {
-    return getProperties().get(key, type);
+    return getProperties().getValue(key, type);
   }
 
   @Override
-  public <P> P getProperty(Class<P> type) {
-    return type.cast(getProperties().getProperty(type));
-  }
-
-  @Override
-  public FlowProperties<?> getProperties() {
+  public FlowProperties<ExecutionProperty> getProperties() {
     if (properties == null) {
       properties = new ExecutionProperties();
     }

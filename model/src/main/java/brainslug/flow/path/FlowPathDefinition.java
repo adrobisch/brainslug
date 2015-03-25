@@ -1,7 +1,7 @@
 package brainslug.flow.path;
 
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.flow.node.EventDefinition;
 import brainslug.flow.node.FlowNodeDefinition;

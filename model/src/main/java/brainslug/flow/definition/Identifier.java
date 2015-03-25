@@ -1,4 +1,4 @@
-package brainslug.flow;
+package brainslug.flow.definition;
 
 public interface Identifier<T> {
   T getId();

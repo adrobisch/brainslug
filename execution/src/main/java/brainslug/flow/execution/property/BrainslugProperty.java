@@ -1,10 +1,8 @@
-package brainslug.flow.execution;
+package brainslug.flow.execution.property;
 
 import brainslug.flow.context.ExecutionProperty;
 
-import java.util.Arrays;
-
-public class BrainslugProperty implements ExecutionProperty {
+public class BrainslugProperty implements ExecutionProperty<Object> {
   protected String key;
   protected String valueType;
 
@@ -13,22 +11,20 @@ public class BrainslugProperty implements ExecutionProperty {
   protected String stringValue;
   protected Long longValue;
   protected Double doubleValue;
-  protected byte[] byteArrayValue;
 
   public BrainslugProperty() {
   }
 
-  public BrainslugProperty(String key, String valueType, String stringValue, Long longValue, Double doubleValue, byte[] byteArrayValue) {
+  public BrainslugProperty(String key, String valueType, String stringValue, Long longValue, Double doubleValue) {
     this.key = key;
     this.valueType = valueType;
     this.stringValue = stringValue;
     this.longValue = longValue;
     this.doubleValue = doubleValue;
-    this.byteArrayValue = byteArrayValue;
   }
 
   @Override
-  public Object getObjectValue() {
+  public Object getValue() {
     return objectValue;
   }
 
@@ -54,7 +50,6 @@ public class BrainslugProperty implements ExecutionProperty {
 
     BrainslugProperty property = (BrainslugProperty) o;
 
-    if (!Arrays.equals(byteArrayValue, property.byteArrayValue)) return false;
     if (doubleValue != null ? !doubleValue.equals(property.doubleValue) : property.doubleValue != null) return false;
     if (key != null ? !key.equals(property.key) : property.key != null) return false;
     if (longValue != null ? !longValue.equals(property.longValue) : property.longValue != null) return false;
@@ -73,7 +68,6 @@ public class BrainslugProperty implements ExecutionProperty {
     result = 31 * result + (stringValue != null ? stringValue.hashCode() : 0);
     result = 31 * result + (longValue != null ? longValue.hashCode() : 0);
     result = 31 * result + (doubleValue != null ? doubleValue.hashCode() : 0);
-    result = 31 * result + (byteArrayValue != null ? Arrays.hashCode(byteArrayValue) : 0);
     return result;
   }
 
@@ -86,7 +80,6 @@ public class BrainslugProperty implements ExecutionProperty {
       ", stringValue='" + stringValue + '\'' +
       ", longValue=" + longValue +
       ", doubleValue=" + doubleValue +
-      ", byteArrayValue=" + Arrays.toString(byteArrayValue) +
       '}';
   }
 
@@ -103,9 +96,6 @@ public class BrainslugProperty implements ExecutionProperty {
     }
     if (clazz.equals(Double.class)) {
       return (T) doubleValue;
-    }
-    if (clazz.equals(byte[].class)) {
-      return (T) byteArrayValue;
     }
     return null;
   }

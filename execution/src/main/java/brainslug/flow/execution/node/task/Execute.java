@@ -1,4 +1,4 @@
-package brainslug.flow.execution;
+package brainslug.flow.execution.node.task;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Arguments for this method will provided from the {@link brainslug.flow.context.Registry}.
  * Its also possible to obtain the {@link brainslug.flow.context.ExecutionContext} this way.
  *
- * @see brainslug.flow.execution.token.TaskNodeExecutor and the corresponding test
+ * @see brainslug.flow.execution.node.TaskNodeExecutor and the corresponding test
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

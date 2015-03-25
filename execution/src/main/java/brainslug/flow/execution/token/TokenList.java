@@ -1,6 +1,6 @@
 package brainslug.flow.execution.token;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 
 import java.util.*;
 

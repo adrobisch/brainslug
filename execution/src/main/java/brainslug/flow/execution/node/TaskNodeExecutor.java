@@ -1,11 +1,10 @@
-package brainslug.flow.execution.token;
+package brainslug.flow.execution.node;
 
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.execution.CallDefinitionExecutor;
-import brainslug.flow.execution.DefinitionStore;
-import brainslug.flow.execution.FlowNodeExecutionResult;
+import brainslug.flow.execution.node.task.CallDefinitionExecutor;
+import brainslug.flow.definition.DefinitionStore;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerErrorDetails;
 import brainslug.flow.execution.async.AsyncTriggerScheduler;
@@ -34,7 +33,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, Abst
   }
 
   @Override
-  public brainslug.flow.execution.FlowNodeExecutionResult execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
+  public FlowNodeExecutionResult execute(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
     removeIncomingTokens(execution.getTrigger());
 
     if (taskDefinition.getGoal().isPresent() && goalIsFulfilled((Identifier) taskDefinition.getGoal().get(), execution)) {

@@ -5,7 +5,6 @@ import com.mysema.query.types.Path;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.NumberPath;
-import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
 
 import static com.mysema.query.types.PathMetadataFactory.forVariable;
@@ -33,8 +32,6 @@ public class QInstancePropertyEntity extends EntityPathBase<InstancePropertyEnti
     public final NumberPath<Long> longValue = createNumber("longValue", Long.class);
 
     public final NumberPath<Double> doubleValue = createNumber("doubleValue", Double.class);
-
-    public final SimplePath<byte[]> byteArrayValue = createSimple("byteArrayValue", byte[].class);
 
     public QInstancePropertyEntity(String variable) {
         super(InstancePropertyEntity.class, forVariable(variable));

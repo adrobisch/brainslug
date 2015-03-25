@@ -1,7 +1,5 @@
-package brainslug.flow.execution;
+package brainslug.flow.definition;
 
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;

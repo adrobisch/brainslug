@@ -1,5 +1,6 @@
 package brainslug.flow;
 
+import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.node.EventDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.event.AbstractEventDefinition;

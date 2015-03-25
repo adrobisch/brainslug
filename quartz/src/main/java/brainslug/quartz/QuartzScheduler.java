@@ -1,6 +1,6 @@
 package brainslug.quartz;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.async.AbstractAsyncTriggerScheduler;

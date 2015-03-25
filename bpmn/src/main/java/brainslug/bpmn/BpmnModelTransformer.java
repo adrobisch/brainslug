@@ -1,8 +1,7 @@
 package brainslug.bpmn;
 
-import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.expression.Expression;
 import brainslug.flow.node.*;
 import brainslug.flow.node.event.AbstractEventDefinition;

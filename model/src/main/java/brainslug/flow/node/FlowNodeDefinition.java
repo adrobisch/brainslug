@@ -1,8 +1,8 @@
 package brainslug.flow.node;
 
-import brainslug.flow.EnumIdentifier;
-import brainslug.flow.Identifier;
-import brainslug.flow.StringIdentifier;
+import brainslug.flow.definition.EnumIdentifier;
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.definition.StringIdentifier;
 import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.util.MixableBase;
 

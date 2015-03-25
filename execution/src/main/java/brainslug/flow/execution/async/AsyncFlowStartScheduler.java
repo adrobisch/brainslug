@@ -1,6 +1,6 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.FlowDefinition;
+import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.context.BrainslugContext;
 
 import java.util.Collection;

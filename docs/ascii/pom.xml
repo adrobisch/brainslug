@@ -92,6 +92,33 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                    <skipDeploy>true</skipDeploy>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-scm-publish-plugin</artifactId>
+                <configuration>
+                    <serverId>github</serverId>
+                    <pubScmUrl>scm:git:git@github.com:adrobisch/brainslug.git</pubScmUrl>
+                    <scmBranch>gh-pages</scmBranch>
+                    <checkinComment>update documentation pages</checkinComment>
+                    <content>${project.build.directory}/docs</content>
+                    <siteOutputEncoding>UTF-8</siteOutputEncoding>
+                    <tryUpdate>true</tryUpdate>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>publish-scm</goal>
+                        </goals>
+                        <phase>site</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

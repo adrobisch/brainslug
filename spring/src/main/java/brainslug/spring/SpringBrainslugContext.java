@@ -2,8 +2,8 @@ package brainslug.spring;
 
 import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.context.Registry;
-import brainslug.flow.execution.CallDefinitionExecutor;
-import brainslug.flow.execution.DefinitionStore;
+import brainslug.flow.execution.node.task.CallDefinitionExecutor;
+import brainslug.flow.definition.DefinitionStore;
 import brainslug.flow.execution.FlowExecutor;
 import brainslug.flow.execution.async.*;
 import brainslug.flow.execution.expression.PredicateEvaluator;

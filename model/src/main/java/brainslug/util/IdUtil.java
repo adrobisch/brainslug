@@ -1,8 +1,8 @@
 package brainslug.util;
 
-import brainslug.flow.EnumIdentifier;
-import brainslug.flow.Identifier;
-import brainslug.flow.StringIdentifier;
+import brainslug.flow.definition.EnumIdentifier;
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.definition.StringIdentifier;
 
 public class IdUtil {
   public static Identifier id(Enum idValue) {

@@ -1,21 +1,19 @@
 package brainslug.spring;
 
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.FlowDefinition;
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.execution.SimpleTask;
+import brainslug.flow.execution.node.task.SimpleTask;
 import brainslug.util.IdUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 import static brainslug.util.IdUtil.id;
 import static org.assertj.core.api.Assertions.assertThat;

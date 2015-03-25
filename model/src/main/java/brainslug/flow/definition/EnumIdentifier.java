@@ -1,4 +1,4 @@
-package brainslug.flow;
+package brainslug.flow.definition;
 
 public class EnumIdentifier implements Identifier<Enum> {
 

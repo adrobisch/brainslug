@@ -1,6 +1,6 @@
 package brainslug.util;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 
 public interface IdGenerator {
   Identifier generateId();

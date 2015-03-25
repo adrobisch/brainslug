@@ -36,9 +36,6 @@ public class InstancePropertyEntity {
   @Column(name = "_DOUBLE_VALUE")
   protected Double doubleValue;
 
-  @Column(name = "_BYTE_ARRAY_VALUE")
-  protected byte[] byteArrayValue;
-
   public String getId() {
     return id;
   }
@@ -120,12 +117,4 @@ public class InstancePropertyEntity {
     return this;
   }
 
-  public byte[] getByteArrayValue() {
-    return byteArrayValue;
-  }
-
-  public InstancePropertyEntity withByteArrayValue(byte[] byteArrayValue) {
-    this.byteArrayValue = byteArrayValue;
-    return this;
-  }
 }

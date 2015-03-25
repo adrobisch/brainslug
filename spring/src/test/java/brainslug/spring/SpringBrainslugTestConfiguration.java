@@ -1,8 +1,8 @@
 package brainslug.spring;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.execution.SimpleTask;
+import brainslug.flow.execution.node.task.SimpleTask;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;

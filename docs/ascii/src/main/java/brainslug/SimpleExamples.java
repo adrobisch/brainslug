@@ -1,14 +1,14 @@
 package brainslug;
 
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.BrainslugContextBuilder;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.execution.SimpleTask;
+import brainslug.flow.execution.node.task.SimpleTask;
 
-import static brainslug.flow.execution.ExecutionProperties.newProperties;
+import static brainslug.flow.execution.property.ExecutionProperties.newProperties;
 
 public class SimpleExamples {
   public static

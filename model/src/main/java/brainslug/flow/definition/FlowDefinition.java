@@ -1,4 +1,4 @@
-package brainslug.flow;
+package brainslug.flow.definition;
 
 import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.FlowNodeDefinition;

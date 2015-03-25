@@ -1,9 +1,10 @@
-package brainslug.flow.execution.token;
+package brainslug.flow.execution.node;
 
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.TriggerContext;
-import brainslug.flow.execution.FlowNodeExecutionResult;
-import brainslug.flow.execution.FlowNodeExecutor;
+import brainslug.flow.execution.node.FlowNodeExecutionResult;
+import brainslug.flow.execution.node.FlowNodeExecutor;
+import brainslug.flow.execution.token.TokenOperations;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 

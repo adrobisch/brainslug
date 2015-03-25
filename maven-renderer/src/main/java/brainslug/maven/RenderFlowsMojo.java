@@ -1,6 +1,6 @@
 package brainslug.maven;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.renderer.DefaultSkin;
 import brainslug.flow.renderer.Format;
 import brainslug.flow.renderer.JGraphBpmnRenderer;

@@ -1,9 +1,9 @@
 package brainslug.flow.execution.async;
 
 import brainslug.AbstractExecutionTest;
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.context.Trigger;

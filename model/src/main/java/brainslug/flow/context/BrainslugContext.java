@@ -1,7 +1,7 @@
 package brainslug.flow.context;
 
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.node.FlowNodeDefinition;
 
 import java.util.Collection;

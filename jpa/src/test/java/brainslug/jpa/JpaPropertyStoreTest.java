@@ -1,6 +1,6 @@
 package brainslug.jpa;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.FlowProperties;
 import brainslug.util.IdUtil;
 import brainslug.util.UuidGenerator;
@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
-import static brainslug.flow.execution.ExecutionProperties.newProperties;
+import static brainslug.flow.execution.property.ExecutionProperties.newProperties;
 
 public class JpaPropertyStoreTest extends AbstractDatabaseTest {
   JpaTokenStore jpaTokenStore;
@@ -27,7 +27,7 @@ public class JpaPropertyStoreTest extends AbstractDatabaseTest {
     jpaPropertyStore.storeProperties(instanceId, newProperties().with("stringTest", "value"));
 
     FlowProperties loadedProperties = jpaPropertyStore.loadProperties(instanceId);
-    Assertions.assertThat(loadedProperties.get("stringTest", String.class)).isEqualTo("value");
+    Assertions.assertThat(loadedProperties.getValue("stringTest", String.class)).isEqualTo("value");
   }
 
   @Test
@@ -35,7 +35,7 @@ public class JpaPropertyStoreTest extends AbstractDatabaseTest {
     jpaPropertyStore.storeProperties(instanceId, newProperties().with("doubleTest", 1.2));
 
     FlowProperties loadedProperties = jpaPropertyStore.loadProperties(instanceId);
-    Assertions.assertThat(loadedProperties.get("doubleTest", Double.class)).isEqualTo(1.2);
+    Assertions.assertThat(loadedProperties.getValue("doubleTest", Double.class)).isEqualTo(1.2);
   }
 
   @Test
@@ -50,7 +50,7 @@ public class JpaPropertyStoreTest extends AbstractDatabaseTest {
 
     FlowProperties loadedProperties = jpaPropertyStore.loadProperties(instanceId);
     Assertions.assertThat(loadedProperties.getValues().size()).isEqualTo(1);
-    Assertions.assertThat(loadedProperties.get("doubleTest", Double.class)).isEqualTo(1.3);
+    Assertions.assertThat(loadedProperties.getValue("doubleTest", Double.class)).isEqualTo(1.3);
   }
 
 }

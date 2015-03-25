@@ -1,9 +1,9 @@
 package brainslug.flow.builder;
 
-import brainslug.flow.EnumIdentifier;
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
-import brainslug.flow.StringIdentifier;
+import brainslug.flow.definition.EnumIdentifier;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.definition.StringIdentifier;
 import brainslug.flow.expression.*;
 import brainslug.flow.node.*;
 import brainslug.flow.node.event.AbstractEventDefinition;

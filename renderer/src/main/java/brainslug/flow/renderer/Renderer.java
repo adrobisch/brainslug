@@ -1,6 +1,6 @@
 package brainslug.flow.renderer;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 
 import java.io.OutputStream;
 

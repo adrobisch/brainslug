@@ -1,7 +1,7 @@
 package brainslug.flow.context;
 
-public interface ExecutionProperty {
-  Object getObjectValue();
+public interface ExecutionProperty<ValueType> {
+  ValueType getValue();
 
   String getKey();
 

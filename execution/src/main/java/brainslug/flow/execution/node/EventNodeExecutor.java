@@ -1,8 +1,7 @@
-package brainslug.flow.execution.token;
+package brainslug.flow.execution.node;
 
 import brainslug.flow.context.TriggerContext;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.execution.FlowNodeExecutionResult;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.flow.execution.expression.PredicateEvaluator;
@@ -55,7 +54,7 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, Ev
     return getCurrentTime() + timerDefinition.getUnit().toMillis(timerDefinition.getDuration());
   }
 
-  long getCurrentTime() {
+  protected long getCurrentTime() {
     return new Date().getTime();
   }
 

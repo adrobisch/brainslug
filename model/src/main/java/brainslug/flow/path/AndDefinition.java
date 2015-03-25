@@ -1,6 +1,6 @@
 package brainslug.flow.path;
 
-import brainslug.flow.FlowDefinition;
+import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.ParallelDefinition;
 

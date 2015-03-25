@@ -1,6 +1,6 @@
 package brainslug.flow.context;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 
 import java.util.Collection;
 
@@ -11,11 +11,11 @@ public interface FlowProperties<PropertyType> {
 
   FlowProperties<PropertyType> withAll(FlowProperties<PropertyType> executionProperties);
 
-  <T> T get(String key, Class<T> clazz);
+  <T> T getValue(String key, Class<T> clazz);
 
   PropertyType get(String key);
 
-  <P> P getProperty(Class<P> type);
+  <T> ExecutionProperty<T> getProperty(String key, Class<T> clazz);
 
-  Collection<PropertyType> getValues();
+  <T extends PropertyType> Collection<T> getValues();
 }

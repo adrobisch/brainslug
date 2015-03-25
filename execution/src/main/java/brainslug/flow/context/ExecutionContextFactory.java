@@ -1,0 +1,36 @@
+package brainslug.flow.context;
+
+import brainslug.flow.context.ExecutionContext;
+import brainslug.flow.context.FlowProperties;
+import brainslug.flow.context.Registry;
+import brainslug.flow.context.TriggerContext;
+import brainslug.flow.context.BrainslugExecutionContext;
+import brainslug.flow.execution.property.PropertyStore;
+
+public class ExecutionContextFactory {
+  private final PropertyStore propertyStore;
+  private final Registry registry;
+
+  public ExecutionContextFactory(PropertyStore propertyStore, Registry registry) {
+    this.propertyStore = propertyStore;
+    this.registry = registry;
+  }
+
+  public ExecutionContext createExecutionContext(TriggerContext trigger) {
+    ExecutionContext executionContext = new BrainslugExecutionContext(trigger, registry);
+
+    if (trigger.getInstanceId() != null) {
+      executionContext.getTrigger().setProperties(mergeProperties(trigger, executionContext));
+    }
+
+    return executionContext;
+  }
+
+  protected FlowProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
+    FlowProperties properties = propertyStore
+      .loadProperties(executionContext.getTrigger().getInstanceId());
+
+    properties.withAll(trigger.getProperties());
+    return properties;
+  }
+}

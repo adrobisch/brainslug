@@ -1,9 +1,9 @@
 package brainslug.flow.execution.expression;
 
 import brainslug.flow.context.*;
-import brainslug.flow.execution.BrainslugExecutionContext;
-import brainslug.flow.execution.ExecutionProperties;
-import brainslug.flow.execution.PropertyStore;
+import brainslug.flow.context.BrainslugExecutionContext;
+import brainslug.flow.execution.property.ExecutionProperties;
+import brainslug.flow.execution.property.PropertyStore;
 import brainslug.flow.expression.PredicateDefinition;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package brainslug.jpa;
 
-import brainslug.flow.Identifier;
-import brainslug.flow.StringIdentifier;
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.definition.StringIdentifier;
 import brainslug.flow.execution.token.Token;
 import brainslug.flow.execution.token.TokenList;
 import brainslug.flow.execution.token.TokenStore;

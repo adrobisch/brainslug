@@ -1,7 +1,7 @@
 package brainslug.flow.node.task;
 
 import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.util.Option;
 
 abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefinition> extends FlowNodeDefinition<SelfType> {

@@ -1,6 +1,6 @@
 package brainslug.flow.context;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 
 public interface TriggerContext {
   Identifier getDefinitionId();
@@ -15,9 +15,7 @@ public interface TriggerContext {
 
   <P> P getProperty(String key, Class<P> type);
 
-  <P> P getProperty(Class<P> type);
-
-  FlowProperties getProperties();
+  FlowProperties<ExecutionProperty> getProperties();
 
   /**
    * @return true if this trigger should enable async node execution,

@@ -1,6 +1,6 @@
 package brainslug.flow.expression;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 
 public class Property extends Expression<Identifier> {
 

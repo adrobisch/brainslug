@@ -7,7 +7,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
         logicalFilePath="create_instance_property.xml">
 
-    <changeSet id="1" author="adrobisch">
+    <changeSet id="1" author="brainslug">
         <preConditions>
             <not>
                 <tableExists tableName="BS_INSTANCE_PROPERTY" />
@@ -37,7 +37,6 @@
             <column name="_STRING_VALUE" type="clob" />
             <column name="_LONG_VALUE" type="bigint" />
             <column name="_DOUBLE_VALUE" type="double" />
-            <column name="_BYTE_ARRAY_VALUE" type="blob" />
         </createTable>
 
         <createIndex tableName="BS_INSTANCE_PROPERTY" indexName="IDX_INSTANCE_PROPERTY">

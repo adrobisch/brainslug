@@ -7,7 +7,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
         logicalFilePath="create_flow_token.xml">
 
-    <changeSet id="1" author="adrobisch">
+    <changeSet id="1" author="brainslug">
         <preConditions>
             <not>
                 <tableExists tableName="BS_FLOW_TOKEN" />

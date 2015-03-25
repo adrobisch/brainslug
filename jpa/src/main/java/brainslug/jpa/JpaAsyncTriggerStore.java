@@ -1,6 +1,6 @@
 package brainslug.jpa;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerErrorDetails;
 import brainslug.flow.execution.async.AsyncTriggerQuery;

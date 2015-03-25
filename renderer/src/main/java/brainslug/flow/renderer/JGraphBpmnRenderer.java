@@ -1,6 +1,6 @@
 package brainslug.flow.renderer;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;

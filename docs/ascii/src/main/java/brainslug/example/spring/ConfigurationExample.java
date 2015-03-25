@@ -1,6 +1,6 @@
 package brainslug.example.spring;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.node.task.Task;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import static brainslug.flow.execution.ExecutionProperties.newProperties;
+import static brainslug.flow.execution.property.ExecutionProperties.newProperties;
 import static java.lang.String.format;
 
 // # tag::spring-example[]

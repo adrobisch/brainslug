@@ -1,7 +1,7 @@
 package brainslug;
 
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.Identifier;
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.EqualDefinition;
 import brainslug.flow.expression.Expression;
 import brainslug.flow.node.EventDefinition;

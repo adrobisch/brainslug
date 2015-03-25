@@ -1,6 +1,6 @@
-package brainslug.flow.execution;
+package brainslug.flow.execution.property;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.ExecutionProperty;
 import brainslug.flow.context.FlowProperties;
 import brainslug.util.Option;

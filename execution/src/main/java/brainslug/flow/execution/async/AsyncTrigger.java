@@ -1,6 +1,6 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.util.Option;
 
 import static brainslug.util.IdUtil.id;

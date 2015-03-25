@@ -1,6 +1,6 @@
 package brainslug.flow.execution;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.TriggerContext;
 
 public interface FlowExecutor {

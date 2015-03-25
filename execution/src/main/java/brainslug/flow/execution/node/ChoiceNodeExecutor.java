@@ -1,7 +1,6 @@
-package brainslug.flow.execution.token;
+package brainslug.flow.execution.node;
 
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.execution.FlowNodeExecutionResult;
 import brainslug.flow.execution.expression.PredicateEvaluator;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.flow.path.ThenDefinition;

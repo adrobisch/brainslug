@@ -1,6 +1,6 @@
-package brainslug.flow.execution;
+package brainslug.flow.execution.property;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.ExecutionProperty;
 import brainslug.flow.context.FlowProperties;
 
@@ -16,5 +16,5 @@ public interface PropertyStore {
    * @param instanceId the instance to load the setProperties for
    * @return the setProperties of the specified instance id, if none exists an empty map ist returned
    */
-  FlowProperties loadProperties(Identifier<?> instanceId);
+  public FlowProperties loadProperties(Identifier<?> instanceId);
 }

@@ -1,7 +1,7 @@
 package brainslug.flow.execution.async;
 
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.event.StartEvent;

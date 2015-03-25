@@ -1,6 +1,6 @@
 package brainslug.bpmn;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;

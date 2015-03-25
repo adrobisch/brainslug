@@ -1,11 +1,15 @@
 package brainslug.flow.execution.token;
 
-import brainslug.flow.Identifier;
+import brainslug.flow.definition.DefinitionStore;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.*;
 import brainslug.flow.execution.*;
 import brainslug.flow.execution.async.AsyncTriggerScheduler;
 import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.node.*;
+import brainslug.flow.execution.node.task.CallDefinitionExecutor;
+import brainslug.flow.execution.property.PropertyStore;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.node.*;
@@ -18,6 +22,7 @@ import java.util.Map;
 
 public class TokenFlowExecutor implements FlowExecutor {
 
+  private final ExecutionContextFactory executionContextFactory;
   private TokenOperations tokenOperations;
 
   private Logger log = LoggerFactory.getLogger(TokenFlowExecutor.class);
@@ -55,6 +60,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     this.callDefinitionExecutor = callDefinitionExecutor;
 
     this.tokenOperations = new TokenOperations(tokenStore);
+    this.executionContextFactory = new ExecutionContextFactory(propertyStore, registry);
 
     addNodeExecutorMappings();
   }
@@ -117,7 +123,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     FlowNodeDefinition node = getNode(trigger.getDefinitionId(), trigger.getNodeId());
     FlowNodeExecutor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
 
-    ExecutionContext executionContext = createExecutionContext(trigger);
+    ExecutionContext executionContext = executionContextFactory.createExecutionContext(trigger);
 
     listenerManager.notifyListeners(EventType.BEFORE_EXECUTION, trigger);
 
@@ -127,25 +133,6 @@ public class TokenFlowExecutor implements FlowExecutor {
     listenerManager.notifyListeners(EventType.AFTER_EXECUTION, trigger);
 
     triggerNext(trigger, node, executionResult);
-  }
-
-  // TODO: create ExecutionContextFactory, which contains merging
-  protected ExecutionContext createExecutionContext(TriggerContext trigger) {
-    ExecutionContext executionContext = new BrainslugExecutionContext(trigger, registry);
-
-    if(trigger.getInstanceId() != null) {
-      executionContext.getTrigger().setProperties(mergeProperties(trigger, executionContext));
-    }
-
-    return executionContext;
-  }
-
-  protected FlowProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
-    FlowProperties properties = propertyStore
-        .loadProperties(executionContext.getTrigger().getInstanceId());
-
-    properties.withAll(trigger.getProperties());
-    return properties;
   }
 
   protected void triggerNext(TriggerContext trigger, FlowNodeDefinition<?> node, FlowNodeExecutionResult flowNodeExecutionResult) {
@@ -171,7 +158,10 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   public void setTokenStore(TokenStore tokenStore) {
     this.tokenStore = tokenStore;
-    this.tokenOperations = new TokenOperations(tokenStore);
+  }
+
+  public void setTokenOperations(TokenOperations tokenOperations) {
+    this.tokenOperations = tokenOperations;
   }
 
   public void setDefinitionStore(DefinitionStore definitionStore) {

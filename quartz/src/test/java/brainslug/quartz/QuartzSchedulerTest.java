@@ -1,12 +1,12 @@
 package brainslug.quartz;
 
-import brainslug.flow.FlowBuilder;
-import brainslug.flow.FlowDefinition;
-import brainslug.flow.Identifier;
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.BrainslugContextBuilder;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.execution.SimpleTask;
+import brainslug.flow.execution.node.task.SimpleTask;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerSchedulerOptions;
 import brainslug.flow.execution.async.AsyncTriggerStore;
