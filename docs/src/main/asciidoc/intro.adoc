@@ -19,7 +19,7 @@ which can be transformed to different representations or be executed within a cu
 
 [source, java]
 ----
-include::{exampleBase}/brainslug/SimpleExamples.java[tags=simple, indent=0]
+include::{exampleBase}/SimpleExamples.java[tags=simple, indent=0]
 ----
 
 represents the the following flow:

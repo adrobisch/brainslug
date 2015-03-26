@@ -18,7 +18,7 @@ There are different type of event: Start Events, End Events, Wait (Intermediate)
 
 [source, java]
 ----
-include::{exampleBase}/brainslug/ControlFlowExamples.java[tags=event-flow, indent=0]
+include::{exampleBase}/ControlFlowExamples.java[tags=event-flow, indent=0]
 ----
 
 image::event_flow.png[event_flow]
@@ -42,7 +42,7 @@ A Merge Node merges different execution paths. It will be executed for every inc
 
 [source, java]
 ----
-include::{exampleBase}/brainslug/ControlFlowExamples.java[tags=choice-flow, indent=0]
+include::{exampleBase}/ControlFlowExamples.java[tags=choice-flow, indent=0]
 ----
 
 image::choice_flow.png[choice_flow]
@@ -61,7 +61,7 @@ A token is produced for every outgoing edge.
 
 [source, java]
 ----
-include::{exampleBase}/brainslug/ControlFlowExamples.java[tags=parallel-flow, indent=0]
+include::{exampleBase}/ControlFlowExamples.java[tags=parallel-flow, indent=0]
 ----
 
 image::parallel_flow.png[parallel_flow]

@@ -2,21 +2,23 @@ package brainslug.flow.execution.async;
 
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.builder.FlowBuilder;
-import brainslug.flow.definition.FlowDefinition;
-import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.context.TriggerContext;
+import brainslug.flow.definition.FlowDefinition;
+import brainslug.flow.definition.Identifier;
 import brainslug.util.IdUtil;
 import org.junit.Test;
 import org.mockito.verification.VerificationMode;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static brainslug.util.IdUtil.id;
 import static com.jayway.awaitility.Awaitility.await;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionTest {
@@ -43,14 +45,14 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
 
   private FlowDefinition taskFlow() {
     return new FlowBuilder() {
-        @Override
-        public void define() {
-          flowId(id(ASYNC_TASK_FLOW));
+      @Override
+      public void define() {
+        flowId(id(ASYNC_TASK_FLOW));
 
-          start(id(START)).execute(task(id(TASK)).async(true));
-        }
+        start(id(START)).execute(task(id(TASK)).async(true));
+      }
 
-      }.getDefinition();
+    }.getDefinition();
   }
 
   private FlowDefinition waitEventFlow() {
@@ -63,6 +65,73 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
       }
 
     }.getDefinition();
+  }
+
+  @Test
+  public void shouldNotScheduleTriggerIfNotRunning() {
+    new ExecutorServiceAsyncTriggerScheduler() {
+      @Override
+      protected void internalSchedule(AsyncTrigger asyncTrigger) {
+        throw new AssertionError("should not happen");
+      }
+    }.schedule(new AsyncTrigger());
+  }
+
+  @Test
+  public void shouldStartIfOptionIsDisabled() {
+    ExecutorServiceAsyncTriggerScheduler executorServiceAsyncTriggerScheduler = new ExecutorServiceAsyncTriggerScheduler();
+
+    executorServiceAsyncTriggerScheduler
+      .start(
+        mock(BrainslugContext.class),
+        asyncTriggerStore,
+        new AsyncTriggerSchedulerOptions().setDisabled(true)
+      );
+
+    assertThat(executorServiceAsyncTriggerScheduler.isRunning()).isFalse();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void shouldThrowExceptionOnNullContext() {
+    ExecutorServiceAsyncTriggerScheduler executorServiceAsyncTriggerScheduler = new ExecutorServiceAsyncTriggerScheduler();
+
+    executorServiceAsyncTriggerScheduler
+      .start(
+        null,
+        asyncTriggerStore,
+        new AsyncTriggerSchedulerOptions()
+      );
+  }
+
+  @Test
+  public void shouldCallHooksOnStartAndStop() {
+    final AtomicBoolean startHookCalled = new AtomicBoolean();
+    final AtomicBoolean stopHookCalled = new AtomicBoolean();
+
+    ExecutorServiceAsyncTriggerScheduler executorServiceAsyncTriggerScheduler = new ExecutorServiceAsyncTriggerScheduler() {
+      @Override
+      protected void internalStart() {
+        startHookCalled.set(true);
+      }
+
+      @Override
+      protected void internalStop() {
+        stopHookCalled.set(true);
+      }
+    };
+
+    executorServiceAsyncTriggerScheduler
+      .start(
+        mock(BrainslugContext.class),
+        asyncTriggerStore,
+        new AsyncTriggerSchedulerOptions()
+      );
+
+    executorServiceAsyncTriggerScheduler.stop();
+
+    assertThat(startHookCalled.get()).isTrue();
+    assertThat(stopHookCalled.get()).isTrue();
+    assertThat(executorServiceAsyncTriggerScheduler.isRunning()).isFalse();
   }
 
   @Test
@@ -167,7 +236,7 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
           verify(contextMock, verificationMode).trigger(eq(expectedTrigger));
           // verify will throw an assertion error until the mock was called
           return true;
-        }catch (AssertionError e) {
+        } catch (AssertionError e) {
           return false;
         }
       }

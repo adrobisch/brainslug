@@ -1,4 +1,4 @@
-package brainslug;
+package brainslug.example;
 
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.context.ExecutionContext;

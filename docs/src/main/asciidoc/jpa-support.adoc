@@ -13,8 +13,6 @@ to create a the JPA TokenStore, JPA PropertyStore and JPA AsyncTriggerStore
 
 [source, java]
 ----
-new Database(entityManager, new HQLTemplates()); // adjust templates to your JPA provider
-
 JpaTokenStore jpaTokenStore = new JpaTokenStore(...)
 JpaAsyncTriggerStore jpaAsyncTriggerStore = new JpaAsyncTriggerStore(...)
 JpaPropertyStore jpaPropertyStore = new JpaPropertyStore(...)

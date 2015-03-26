@@ -11,7 +11,7 @@ Calls to the `ExecutionContext` or the `Registry` will then return the beans fro
 
 [source, java]
 ----
-include::{exampleBase}/brainslug/example/spring/ConfigurationExample.java[tags=spring-example]
+include::{exampleBase}/spring/ConfigurationExample.java[tags=spring-example]
 ----
 
 Will output the two lines:
@@ -22,5 +22,11 @@ Hello World!
 Hello again!
 ----
 
+### Custom BrainslugContext
 
+To configure the `BrainslugContext` in your `ApplicationContext` you can use the `SpringBrainslugContextBuilder`:
 
+[source, java]
+----
+include::{exampleBase}/spring/ContextBuilderExample.java[tags=builder-example]
+----

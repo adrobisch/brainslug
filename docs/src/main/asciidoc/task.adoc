@@ -18,7 +18,7 @@ Delegate delegateService = context.getRegistry().getService(Delegate.class);
 
 [source, java]
 ----
-include::{exampleBase}/brainslug/TaskExamples.java[tags=inline-task, indent=0]
+include::{exampleBase}/TaskExamples.java[tags=inline-task, indent=0]
 ----
 
 In **Java 8** the task can be defined using a lambda expression:

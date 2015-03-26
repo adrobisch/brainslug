@@ -51,4 +51,8 @@ public abstract class AbstractAsyncTriggerScheduler implements AsyncTriggerSched
 
   protected void internalStop() {
   }
+
+  public boolean isRunning() {
+    return running.get();
+  }
 }

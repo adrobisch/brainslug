@@ -8,7 +8,7 @@ import brainslug.flow.renderer.JGraphBpmnRenderer;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import static brainslug.SimpleExamples.*;
+import static brainslug.example.SimpleExamples.*;
 
 public class BpmnExamples {
 

@@ -6,14 +6,14 @@ The following examples use this flow:
 
 [source,java]
 ----
-include::{exampleBase}/brainslug/SimpleExamples.java[tags=simple, indent=0]
+include::{exampleBase}/SimpleExamples.java[tags=simple, indent=0]
 ----
 
 ### BPMN Renderer
 
 [source,java]
 ----
-include::{exampleBase}/brainslug/example/bpmn/BpmnExamples.java[tags=renderer-example, indent=0]
+include::{exampleBase}/bpmn/BpmnExamples.java[tags=renderer-example, indent=0]
 ----
 
 image::task_flow.png[task_flow]
@@ -24,14 +24,14 @@ also see: https://github.com/adrobisch/brainslug/blob/master/renderer/src/test/j
 
 [source,java]
 ----
-include::{exampleBase}/brainslug/example/bpmn/BpmnExamples.java[tags=transformer-example, indent=0]
+include::{exampleBase}/bpmn/BpmnExamples.java[tags=transformer-example, indent=0]
 ----
 
 will produce
 
 [source, xml]
 ----
-include::{exampleBase}/brainslug/example/bpmn/simple_flow.bpmn.xml[]
+include::{exampleBase}/bpmn/simple_flow.bpmn.xml[]
 ----
 
 also see: https://github.com/adrobisch/brainslug/blob/master/bpmn/src/test/java/brainslug/bpmn/BpmnModelTransformerTest.java[BpmnModelTransformerTest]
