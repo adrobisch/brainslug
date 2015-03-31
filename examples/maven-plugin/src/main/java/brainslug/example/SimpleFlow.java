@@ -1,6 +1,6 @@
 package brainslug.example;
 
-import brainslug.flow.FlowBuilder;
+import brainslug.flow.builder.FlowBuilder;
 
 public class SimpleFlow extends FlowBuilder {
   @Override

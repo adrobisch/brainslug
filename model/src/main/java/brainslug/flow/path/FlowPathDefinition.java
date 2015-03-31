@@ -88,6 +88,11 @@ public class FlowPathDefinition<Self extends FlowPathDefinition> {
     return (Self)  this;
   }
 
+  public Self then(FlowNodeDefinition<?> flowNodeDefinition) {
+    this.appendNode(flowNodeDefinition);
+    return then();
+  }
+
   public LinkedList<FlowNodeDefinition> getPathNodes() {
     return pathNodes;
   }

@@ -22,6 +22,7 @@
       <module>maven-renderer</module>
       <module>maven-bpmn</module>
       <module>docs</module>
+      <module>examples/maven-plugin</module>
     </modules>
 
     <licenses>
@@ -90,7 +91,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>cobertura-maven-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>2.7</version>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -25,28 +25,50 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, Ev
   public FlowNodeExecutionResult execute(EventDefinition eventDefinition, ExecutionContext execution) {
     removeIncomingTokens(execution.getTrigger());
 
-    if (eventDefinition.getContinuePredicate().isPresent() &&
-      predicateIsFulfilled(eventDefinition.getContinuePredicate().get(), execution)) {
+    if (shouldContinueImmediately(eventDefinition, execution)) {
       return takeAll(eventDefinition);
+    } else if (eventDefinition.getConditionPredicate().isPresent()) {
+      return executeConditionalEvent(eventDefinition, execution);
     } else if (waitingForSignal(eventDefinition, execution.getTrigger())) {
       addTimersIfDefined(eventDefinition, execution);
-
       return takeNone();
     } else {
       return takeAll(eventDefinition);
     }
   }
 
+  protected boolean shouldContinueImmediately(EventDefinition eventDefinition, ExecutionContext execution) {
+    return eventDefinition.getContinuePredicate().isPresent() &&
+      predicateIsFulfilled(eventDefinition.getContinuePredicate().get(), execution);
+  }
+
+  protected FlowNodeExecutionResult executeConditionalEvent(EventDefinition eventDefinition, ExecutionContext execution) {
+    if (execution.getTrigger().isSignaling()) {
+      return takeAll(eventDefinition);
+    } else if (!execution.getTrigger().isAsync()){
+      createAsyncTrigger(eventDefinition, execution, 0);
+      return takeNone();
+    } else if (predicateIsFulfilled(eventDefinition.getConditionPredicate().get(), execution)) {
+      return takeAll(eventDefinition);
+    } else {
+      return takeNone();
+    }
+  }
+
   protected void addTimersIfDefined(EventDefinition eventDefinition, ExecutionContext execution) {
     if (eventDefinition.getElapsedTimeDefinition().isPresent()) {
-      asyncTriggerStore.storeTrigger(
-        new AsyncTrigger()
-          .withNodeId(eventDefinition.getId())
-          .withDefinitionId(execution.getTrigger().getDefinitionId())
-          .withInstanceId(execution.getTrigger().getInstanceId())
-          .withDueDate(getElapsedTimeDueDate(eventDefinition))
-      );
+      createAsyncTrigger(eventDefinition, execution, getElapsedTimeDueDate(eventDefinition));
     }
+  }
+
+  protected void createAsyncTrigger(EventDefinition eventDefinition, ExecutionContext execution, long dueDate) {
+    asyncTriggerStore.storeTrigger(
+      new AsyncTrigger()
+        .withNodeId(eventDefinition.getId())
+        .withDefinitionId(execution.getTrigger().getDefinitionId())
+        .withInstanceId(execution.getTrigger().getInstanceId())
+        .withDueDate(dueDate)
+    );
   }
 
   long getElapsedTimeDueDate(EventDefinition eventDefinition) {

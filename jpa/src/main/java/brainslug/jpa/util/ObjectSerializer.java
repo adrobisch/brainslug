@@ -27,7 +27,7 @@ public class ObjectSerializer {
     } catch (IOException e) {
       throw new RuntimeException(e);
     } catch (ClassNotFoundException e) {
-      throw new RuntimeException();
+      throw new RuntimeException(e);
     }
   }
 }

@@ -20,15 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 public class FlowBuilderSupport {
 
-  protected FlowDefinition definition;
-  protected static ServiceCallInvocationSupport serviceCallInvocation = new ServiceCallInvocationSupport();
+  protected FlowDefinition definition = new FlowDefinition();
+  protected ServiceCallInvocationSupport serviceCallInvocation = new ServiceCallInvocationSupport();
 
   public FlowBuilderSupport() {
-  }
-
-  public FlowBuilderSupport withDefinition(FlowDefinition definition) {
-    this.definition = definition;
-    return this;
   }
 
   public static Identifier id(Enum id) {
@@ -299,7 +294,7 @@ public class FlowBuilderSupport {
     return new Property(id);
   }
 
-  public static <T> T property(Identifier id, Class<T> clazz) {
+  public <T> T property(Identifier id, Class<T> clazz) {
     return (T) val(new Property(id));
   }
 
@@ -310,7 +305,7 @@ public class FlowBuilderSupport {
    * @param <T> the type of the expression
    * @return null of type T
    */
-  public static <T> T val(Expression<T> expression) {
+  public <T> T val(Expression<T> expression) {
     serviceCallInvocation.argument(expression);
     return null;
   }
@@ -357,11 +352,11 @@ public class FlowBuilderSupport {
    * @param <T> the type of the interface
    * @return a service proxy of type T
    */
-  public static <T> T service(Class<T> clazz) {
+  public <T> T service(Class<T> clazz) {
     return serviceCallInvocation.createServiceProxy(clazz);
   }
 
-  public PredicateBuilder<CallDefinition> resultOf(CallDefinition methodCall) {
+  public static PredicateBuilder<CallDefinition> resultOf(CallDefinition methodCall) {
     return new PredicateBuilder<CallDefinition>(methodCall);
   }
 
@@ -392,16 +387,20 @@ public class FlowBuilderSupport {
    * @param id the goal id
    * @return the goal definition
    */
-  public GoalDefinition goal(Identifier id) {
-    return new GoalDefinition(definition).id(id);
+  public static GoalDefinition goal(Identifier id) {
+    return new GoalDefinition().id(id);
   }
 
-  public GoalDefinition check(Identifier id, PredicateDefinition goalPredicate) {
-    return new GoalDefinition(definition).id(id).check(goalPredicate);
+  public static GoalDefinition goal() {
+    return new GoalDefinition();
   }
 
-  public GoalDefinition check(Identifier id, Predicate<?> goalPredicate) {
-    return new GoalDefinition(definition).id(id).check(new PredicateDefinition<Predicate>(goalPredicate));
+  public static GoalDefinition check(PredicateDefinition goalPredicate) {
+    return new GoalDefinition().check(goalPredicate);
+  }
+
+  public static GoalDefinition check(Predicate<?> goalPredicate) {
+    return new GoalDefinition().check(new PredicateDefinition<Predicate>(goalPredicate));
   }
 
 }

@@ -19,8 +19,8 @@ public class ControlFlowExamples {
 
     EventDefinition eventFlowStart = event(id("start")).display("Every 5 Seconds");
 
-    EventDefinition fiveSecondsElapsed = event(id("wait")).display("After 5 Seconds")
-      .elapsedTime(5, TimeUnit.SECONDS);
+    EventDefinition fiveSecondsPassed = event(id("wait")).display("After 5 Seconds")
+      .timePassed(5, TimeUnit.SECONDS);
 
     TaskDefinition theTask = task(id("doIt")).display("Do Something");
 
@@ -29,7 +29,7 @@ public class ControlFlowExamples {
       flowId(eventFlowId);
 
       start(eventFlowStart, every(5, TimeUnit.SECONDS))
-        .waitFor(fiveSecondsElapsed)
+        .waitFor(fiveSecondsPassed)
         .execute(theTask);
     }
   }

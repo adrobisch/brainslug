@@ -10,11 +10,11 @@ import brainslug.flow.node.event.EndEvent;
 import brainslug.flow.node.event.IntermediateEvent;
 import brainslug.flow.node.event.StartEvent;
 import brainslug.flow.node.event.timer.StartTimerDefinition;
+import brainslug.flow.node.task.GoalDefinition;
 import brainslug.flow.node.task.GoalPredicate;
 import brainslug.flow.node.task.RetryStrategy;
 import brainslug.flow.node.task.Task;
 import brainslug.util.IdUtil;
-import brainslug.util.Option;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -317,29 +317,32 @@ public class FlowBuilderTest {
 
   @Test
   public void buildFlowWithGoal() {
+
     FlowDefinition goalFlow = new FlowBuilder() {
+
+      GoalDefinition taskExecutedGoal = goal(id("taskExecuted")).check(predicate(new GoalPredicate<Void>() {
+        @Override
+        public boolean isFulfilled(Void aVoid) {
+          return true;
+        }
+      }));
+
       @Override
       public void define() {
         start(id("start"))
           .execute(task(id("simpleTask"))
             .retryAsync(true)
-            .goal(id("taskExecuted")))
+            .goal(taskExecutedGoal))
         .end(id("end"));
-
-        goal(id("taskExecuted")).check(predicate(new GoalPredicate<Void>() {
-          @Override
-          public boolean isFulfilled(Void aVoid) {
-            return true;
-          }
-        }));
       }
+
     }.getDefinition();
 
-    TaskDefinition node = goalFlow.getNode(IdUtil.id("simpleTask"), TaskDefinition.class);
+    TaskDefinition node = goalFlow.getNode(FlowBuilder.id("simpleTask"), TaskDefinition.class);
 
     TaskDefinition taskNode = (TaskDefinition) node;
     Assertions.assertThat(taskNode.isRetryAsync()).isTrue();
-    Assertions.assertThat(taskNode.getGoal()).isEqualTo(Option.of(IdUtil.id("taskExecuted")));
+    Assertions.assertThat(taskNode.getGoal().get().getId()).isEqualTo(FlowBuilder.id("taskExecuted"));
   }
 
   @Test
@@ -349,7 +352,7 @@ public class FlowBuilderTest {
       public void define() {
         start(id("start"))
           .execute(task(id("simpleTask"))
-            .goal(check(id("inlineGoal"), predicate(new GoalPredicate() {
+            .goal(check(predicate(new GoalPredicate() {
               @Override
               public boolean isFulfilled(Object o) {
                 return false;
@@ -360,7 +363,7 @@ public class FlowBuilderTest {
     }.getDefinition();
 
     TaskDefinition taskNode = goalFlow.getNode(IdUtil.id("simpleTask"), TaskDefinition.class);
-    Assertions.assertThat(taskNode.getGoal()).isEqualTo(Option.of(IdUtil.id("inlineGoal")));
+    Assertions.assertThat(taskNode.getGoal()).isNotNull();
   }
 
   @Test

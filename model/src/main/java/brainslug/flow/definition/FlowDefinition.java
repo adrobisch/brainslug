@@ -1,13 +1,9 @@
 package brainslug.flow.definition;
 
-import brainslug.flow.expression.PredicateDefinition;
 import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.util.Option;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A FlowDefinition is used to describe paths of actions for
@@ -21,13 +17,8 @@ public class FlowDefinition {
 
   List<FlowNodeDefinition> startNodes = new ArrayList<FlowNodeDefinition>();
   List<FlowNodeDefinition> nodes = new ArrayList<FlowNodeDefinition>();
-  Map<Identifier, PredicateDefinition> goalPredicates = new HashMap<Identifier, PredicateDefinition>();
 
   public FlowDefinition() {
-  }
-
-  public Option<PredicateDefinition> getGoalPredicate(Identifier goalId) {
-    return Option.of(goalPredicates.get(goalId));
   }
 
   public <T extends FlowNodeDefinition> T addNode(T flowNodeDefinition) {
@@ -103,9 +94,5 @@ public class FlowDefinition {
   public FlowDefinition id(Identifier id) {
     this.id = id;
     return this;
-  }
-
-  public void addGoal(Identifier id, PredicateDefinition predicate) {
-    goalPredicates.put(id, predicate);
   }
 }

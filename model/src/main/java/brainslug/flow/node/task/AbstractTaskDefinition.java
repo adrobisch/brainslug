@@ -1,7 +1,6 @@
 package brainslug.flow.node.task;
 
 import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.flow.definition.Identifier;
 import brainslug.util.Option;
 
 abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefinition> extends FlowNodeDefinition<SelfType> {
@@ -10,8 +9,8 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
   protected boolean async;
   protected boolean retryAsync;
   protected CallDefinition methodCall;
-  protected Identifier goalId;
   protected RetryStrategy retryStrategy;
+  protected Option<GoalDefinition> goal = Option.empty();
 
   /**
    * sets a delegate class to be executed as action for this task
@@ -162,12 +161,7 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
    * @return this task definition with goal defined
    */
   public SelfType goal(GoalDefinition goal) {
-    this.goalId = goal.getId();
-    return self();
-  }
-
-  public SelfType goal(Identifier goalId) {
-    this.goalId = goalId;
+    this.goal = Option.of(goal);
     return self();
   }
 
@@ -179,8 +173,8 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
     return methodCall;
   }
 
-  public Option<Identifier> getGoal() {
-    return Option.of(goalId);
+  public Option<GoalDefinition> getGoal() {
+    return goal;
   }
 
   public boolean isAsync() {

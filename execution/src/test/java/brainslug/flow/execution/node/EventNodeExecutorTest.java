@@ -2,6 +2,7 @@ package brainslug.flow.execution.node;
 
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.builder.FlowBuilderSupport;
 import brainslug.flow.context.BrainslugContextBuilder;
 import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.context.ExecutionContext;
@@ -137,9 +138,71 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
 
     verify(asyncTriggerStore).storeTrigger(
       new AsyncTrigger()
-      .withNodeId(id(INTERMEDIATE))
-      .withDueDate(5042l)
+        .withNodeId(id(INTERMEDIATE))
+        .withDueDate(5042l)
     );
+  }
+
+  @Test
+  public void shouldStoreAsyncTriggerForConditionalEventDefinition() {
+    // given:
+    ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
+    EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
+    Identifier eventId = eventSetup.getEventId();
+
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
+
+    // when:
+    eventNodeExecutor.execute(conditionalEvent, execution);
+
+    // then:
+    verify(asyncTriggerStore).storeTrigger(
+      new AsyncTrigger()
+        .withNodeId(eventId));
+  }
+
+  @Test
+  public void shouldExecuteConditionalEventDefinitionOnAsyncTrigger() {
+    // given:
+    ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
+    EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
+    Identifier eventId = eventSetup.getEventId();
+
+    when(eventSetup.getContextPredicate().isFulfilled(any(ExecutionContext.class))).thenReturn(true);
+
+    Trigger trigger = new Trigger().async(true);
+
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(trigger, registryWithServiceMock());
+    // when:
+    FlowNodeExecutionResult result = eventNodeExecutor.execute(conditionalEvent, execution);
+
+    // then:
+    Assertions.assertThat(result.getNextNodes()).hasSize(1);
+
+    verify(asyncTriggerStore, times(0)).storeTrigger(
+      new AsyncTrigger()
+        .withNodeId(eventId));
+  }
+
+  @Test
+  public void shouldAlwaysExecuteConditionalEventDefinitionOnAsyncSignal() {
+    // given:
+    ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
+    EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
+    Identifier eventId = eventSetup.getEventId();
+
+    Trigger trigger = new Trigger().signaling(true);
+
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(trigger, registryWithServiceMock());
+    // when:
+    FlowNodeExecutionResult result = eventNodeExecutor.execute(conditionalEvent, execution);
+
+    // then:
+    Assertions.assertThat(result.getNextNodes()).hasSize(1);
+
+    verify(asyncTriggerStore, times(0)).storeTrigger(
+      new AsyncTrigger()
+        .withNodeId(eventId));
   }
 
   EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor(asyncTriggerStore, predicateEvaluator)
@@ -192,7 +255,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
       public void define() {
         start(event(id(START)))
           .execute(task(id(TASK)))
-          .waitFor(event(id(INTERMEDIATE)).elapsedTime(5, TimeUnit.SECONDS))
+          .waitFor(event(id(INTERMEDIATE)).timePassed(5, TimeUnit.SECONDS))
           .execute(task(id(TASK2)));
       }
 
@@ -204,4 +267,35 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
   }
 
 
+  private class ConditionalEventSetup {
+    private Identifier eventId;
+    private EventDefinition conditionalEvent;
+    private ContextPredicate contextPredicate;
+
+    public Identifier getEventId() {
+      return eventId;
+    }
+
+    public EventDefinition getConditionalEvent() {
+      return conditionalEvent;
+    }
+
+    public ContextPredicate getContextPredicate() {
+      return contextPredicate;
+    }
+
+    public ConditionalEventSetup create() {
+      contextPredicate = mock(ContextPredicate.class);
+      when(contextPredicate.isFulfilled(any(ExecutionContext.class))).thenReturn(false);
+
+      eventId = FlowBuilder.id("conditionalEvent");
+
+      conditionalEvent = FlowBuilderSupport
+        .event(eventId)
+        .condition(FlowBuilderSupport.predicate(contextPredicate));
+
+      conditionalEvent.addOutgoing(FlowBuilderSupport.event(id("end")));
+      return this;
+    }
+  }
 }

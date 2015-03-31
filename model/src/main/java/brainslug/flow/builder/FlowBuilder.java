@@ -13,6 +13,8 @@ abstract public class FlowBuilder extends FlowBuilderSupport {
 
   String id;
 
+  boolean isDefined = false;
+
   public FlowBuilder() {
   }
 
@@ -34,9 +36,11 @@ abstract public class FlowBuilder extends FlowBuilderSupport {
   }
 
   public FlowDefinition getDefinition() {
-    withDefinition(new FlowDefinition());
-    define();
-    definition.id(new StringIdentifier(getId())).name(getName());
+    if (!isDefined) {
+      define();
+      definition.id(new StringIdentifier(getId())).name(getName());
+      isDefined = true;
+    }
 
     return definition;
   }

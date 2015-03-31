@@ -11,6 +11,8 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
 
   private PredicateDefinition continuePredicate;
 
+  private PredicateDefinition conditionPredicate;
+
   private TimerDefinition elapsedTimeDefinition;
 
   /**
@@ -23,20 +25,33 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
    */
   public Self continueIf(PredicateDefinition continuePredicate) {
     this.continuePredicate = continuePredicate;
-    return (Self) this;
+    return self();
   }
 
   /**
-   * defined this event as timed event, causing the execution
+   * defines this event as timed event, causing the execution
    * to wait for the given duration. the trigger will be asynchronously.
    *
    * @param duration the duration to be waited before
    * @param unit the unit of the duration
    * @return the event definition
    */
-  public Self elapsedTime(long duration, TimeUnit unit) {
+  public Self timePassed(long duration, TimeUnit unit) {
     this.elapsedTimeDefinition = new TimerDefinition(duration, unit);
-    return (Self) this;
+    return self();
+  }
+
+  /**
+   * defines this event as conditional event, causing the execution
+   * to wait until the condition is fulfilled. the check of
+   * the condition will be done asynchronously be the scheduler
+   *
+   * @param conditionPredicate the condition predicate check
+   * @return the event definition with the predicate
+   */
+  public Self condition(PredicateDefinition conditionPredicate) {
+    this.conditionPredicate = conditionPredicate;
+    return self();
   }
 
   public Option<PredicateDefinition> getContinuePredicate() {
@@ -47,4 +62,7 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
     return Option.of(elapsedTimeDefinition);
   }
 
+  public Option<PredicateDefinition> getConditionPredicate() {
+    return Option.of(conditionPredicate);
+  }
 }

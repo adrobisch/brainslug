@@ -23,12 +23,12 @@ public interface BrainslugContext {
   /**
    * @return the stored flow definitions from the definition store
    */
-  public Collection<FlowDefinition> getDefinitions();
+  Collection<FlowDefinition> getDefinitions();
 
   /**
    * @return get a flow definition by id from the definition store
    */
-  public FlowDefinition getDefinitionById(Identifier flowId);
+  FlowDefinition getDefinitionById(Identifier flowId);
 
   /**
    * trigger a node in a given instance and definition
