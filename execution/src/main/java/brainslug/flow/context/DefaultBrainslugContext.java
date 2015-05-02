@@ -32,7 +32,7 @@ public class DefaultBrainslugContext implements BrainslugContext {
   FlowExecutor flowExecutor;
   TokenStore tokenStore;
 
-  public DefaultBrainslugContext(AsyncTriggerScheduler asyncTriggerScheduler,
+  protected DefaultBrainslugContext(AsyncTriggerScheduler asyncTriggerScheduler,
                                  AsyncTriggerStore asyncTriggerStore,
                                  AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions,
                                  AsyncFlowStartScheduler asyncFlowStartScheduler,
@@ -81,6 +81,15 @@ public class DefaultBrainslugContext implements BrainslugContext {
   @Override
   public void trigger(TriggerContext context) {
     flowExecutor.trigger(context);
+  }
+
+  @Override
+  public void signalEvent(Identifier eventId, Identifier instanceId, Identifier definitionId) {
+    trigger(new Trigger()
+      .nodeId(eventId)
+      .instanceId(instanceId)
+      .definitionId(definitionId)
+      .signaling(true));
   }
 
   @Override

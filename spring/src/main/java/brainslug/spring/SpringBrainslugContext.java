@@ -16,7 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class SpringBrainslugContext extends DefaultBrainslugContext {
   ApplicationContext applicationContext;
 
-  public SpringBrainslugContext(ApplicationContext applicationContext, AsyncTriggerScheduler asyncTriggerScheduler, AsyncTriggerStore asyncTriggerStore, AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions, AsyncFlowStartScheduler asyncFlowStartScheduler, SchedulerOptions asyncFlowStartSchedulerOptions, DefinitionStore definitionStore, ListenerManager listenerManager, CallDefinitionExecutor callDefinitionExecutor, PredicateEvaluator predicateEvaluator, Registry registry, FlowExecutor flowExecutor, TokenStore tokenStore) {
+  public SpringBrainslugContext(ApplicationContext applicationContext,
+                                AsyncTriggerScheduler asyncTriggerScheduler,
+                                AsyncTriggerStore asyncTriggerStore,
+                                AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions,
+                                AsyncFlowStartScheduler asyncFlowStartScheduler,
+                                SchedulerOptions asyncFlowStartSchedulerOptions,
+                                DefinitionStore definitionStore,
+                                ListenerManager listenerManager,
+                                CallDefinitionExecutor callDefinitionExecutor,
+                                PredicateEvaluator predicateEvaluator,
+                                Registry registry,
+                                FlowExecutor flowExecutor,
+                                TokenStore tokenStore) {
     super(asyncTriggerScheduler, asyncTriggerStore, asyncTriggerSchedulerOptions, asyncFlowStartScheduler, asyncFlowStartSchedulerOptions, definitionStore, listenerManager, callDefinitionExecutor, predicateEvaluator, registry, flowExecutor, tokenStore);
     this.applicationContext = applicationContext;
   }

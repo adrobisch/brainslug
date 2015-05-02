@@ -15,6 +15,8 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
 
   private TimerDefinition elapsedTimeDefinition;
 
+  private TimerDefinition conditionPollingTimeDefinition;
+
   /**
    * sets a predicate which is checked to determine whether the execution
    * should be continued immediately for this event, without waiting
@@ -54,6 +56,20 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
     return self();
   }
 
+  /**
+   * defines the interval in which conditional event predicates are checked
+   * while they are not fulfilled. if not set, the event executor may choose
+   * a default interval
+   *
+   * @param duration of the interval
+   * @param timeUnit of the interval
+   * @return event definition with defined polling interval
+   */
+  public Self pollingInterval(long duration, TimeUnit timeUnit) {
+    this.conditionPollingTimeDefinition = new TimerDefinition(duration, timeUnit);
+    return self();
+  }
+
   public Option<PredicateDefinition> getContinuePredicate() {
     return Option.of(continuePredicate);
   }
@@ -64,5 +80,9 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
 
   public Option<PredicateDefinition> getConditionPredicate() {
     return Option.of(conditionPredicate);
+  }
+
+  public Option<TimerDefinition> getConditionPollingTimeDefinition() {
+    return Option.of(conditionPollingTimeDefinition);
   }
 }

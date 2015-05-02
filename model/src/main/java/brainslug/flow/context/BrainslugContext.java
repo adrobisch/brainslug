@@ -38,6 +38,14 @@ public interface BrainslugContext {
    */
   void trigger(TriggerContext context);
 
+  /**
+   * send a signaling trigger to the specified event
+   *
+   * @param eventId id of the event node
+   * @param instanceId id of the instance containing this event node
+   * @param definitionId id of the flow definition where the event is defined
+   */
+  void signalEvent(Identifier eventId, Identifier instanceId, Identifier definitionId);
 
   /**
    * start an instance with the start node definition

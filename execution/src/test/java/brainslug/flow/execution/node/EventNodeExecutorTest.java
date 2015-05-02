@@ -129,7 +129,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
 
     // when:
-    when(eventNodeExecutor.getCurrentTime()).thenReturn(42l);
+    currentTimeIsMocked();
     FlowNodeExecutionResult executionResult = eventNodeExecutor
       .execute(timerEventNode, execution);
 
@@ -143,6 +143,33 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     );
   }
 
+  private void currentTimeIsMocked() {
+    when(eventNodeExecutor.getCurrentTime()).thenReturn(42l);
+  }
+
+  @Test
+  public void shouldContinueElapsedTimerDefinitionOnSignalingTrigger () {
+    // given:
+    FlowDefinition eventFlow = timerEventFlow();
+    EventDefinition timerEventNode = eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class);
+
+    Trigger signalingTrigger = new Trigger().signaling(true);
+
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(signalingTrigger, registryWithServiceMock());
+
+    // when:
+    currentTimeIsMocked();
+
+    FlowNodeExecutionResult executionResult = eventNodeExecutor
+      .execute(timerEventNode, execution);
+
+    // then:
+    Assertions.assertThat(executionResult.getNextNodes())
+      .containsOnly(eventFlow.getNode(id(TASK2)));
+
+    verify(asyncTriggerStore, times(0)).storeTrigger(any(AsyncTrigger.class));
+  }
+
   @Test
   public void shouldStoreAsyncTriggerForConditionalEventDefinition() {
     // given:
@@ -153,12 +180,35 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
 
     // when:
+    currentTimeIsMocked();
     eventNodeExecutor.execute(conditionalEvent, execution);
 
     // then:
     verify(asyncTriggerStore).storeTrigger(
       new AsyncTrigger()
-        .withNodeId(eventId));
+        .withNodeId(eventId)
+        .withDueDate(3042));
+  }
+
+  @Test
+  public void shouldSetDueDateForConditionalEventWithPollingInterval() {
+    // given:
+    ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
+    EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
+    conditionalEvent.pollingInterval(6, TimeUnit.SECONDS);
+    Identifier eventId = eventSetup.getEventId();
+
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
+
+    // when:
+    currentTimeIsMocked();
+    eventNodeExecutor.execute(conditionalEvent, execution);
+
+    // then:
+    verify(asyncTriggerStore).storeTrigger(
+      new AsyncTrigger()
+        .withNodeId(eventId)
+        .withDueDate(6042));
   }
 
   @Test
@@ -166,7 +216,6 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // given:
     ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
     EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
-    Identifier eventId = eventSetup.getEventId();
 
     when(eventSetup.getContextPredicate().isFulfilled(any(ExecutionContext.class))).thenReturn(true);
 
@@ -179,17 +228,40 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // then:
     Assertions.assertThat(result.getNextNodes()).hasSize(1);
 
-    verify(asyncTriggerStore, times(0)).storeTrigger(
-      new AsyncTrigger()
-        .withNodeId(eventId));
+    verify(asyncTriggerStore, times(0)).storeTrigger(any(AsyncTrigger.class));
   }
 
   @Test
-  public void shouldAlwaysExecuteConditionalEventDefinitionOnAsyncSignal() {
+  public void shouldRescheduleConditionalEventTriggerIfPredicateNotFulfilled() {
     // given:
     ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
     EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
     Identifier eventId = eventSetup.getEventId();
+
+    when(eventSetup.getContextPredicate().isFulfilled(any(ExecutionContext.class))).thenReturn(false);
+
+    Trigger trigger = new Trigger().async(true);
+
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(trigger, registryWithServiceMock());
+
+    // when:
+    currentTimeIsMocked();
+    FlowNodeExecutionResult result = eventNodeExecutor.execute(conditionalEvent, execution);
+
+    // then:
+    Assertions.assertThat(result.getNextNodes()).hasSize(0);
+
+    verify(asyncTriggerStore, times(1)).storeTrigger(
+      new AsyncTrigger()
+        .withNodeId(eventId)
+        .withDueDate(3042));
+  }
+
+  @Test
+  public void shouldAlwaysExecuteConditionalEventDefinitionOnSignalingTrigger() {
+    // given:
+    ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
+    EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
 
     Trigger trigger = new Trigger().signaling(true);
 
@@ -200,9 +272,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // then:
     Assertions.assertThat(result.getNextNodes()).hasSize(1);
 
-    verify(asyncTriggerStore, times(0)).storeTrigger(
-      new AsyncTrigger()
-        .withNodeId(eventId));
+    verify(asyncTriggerStore, times(0)).storeTrigger(any(AsyncTrigger.class));
   }
 
   EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor(asyncTriggerStore, predicateEvaluator)

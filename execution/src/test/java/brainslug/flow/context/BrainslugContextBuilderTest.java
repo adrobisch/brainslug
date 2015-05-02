@@ -34,7 +34,7 @@ public class BrainslugContextBuilderTest {
     DefaultBrainslugContext createdContext = new BrainslugContextBuilder()
       .withAsyncTriggerScheduler(asyncTriggerScheduler)
       .withTokenStore(tokenStore)
-      .withExecutor(flowExecutor)
+      .withFlowExecutor(flowExecutor)
       .withAsyncTriggerSchedulerOptions(asyncSchedulerOptions)
       .withAsyncFlowStartScheduler(flowStartScheduler)
       .withAsyncTriggerStore(asyncTriggerStore)

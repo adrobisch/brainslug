@@ -50,7 +50,7 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
     }
 
     if (flowExecutor == null) {
-      withExecutor(new TokenFlowExecutor(
+      withFlowExecutor(new TokenFlowExecutor(
         tokenStore,
         definitionStore,
         propertyStore,
@@ -112,7 +112,7 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
     return self();
   }
 
-  public SelfType withExecutor(FlowExecutor newFlowExecutor) {
+  public SelfType withFlowExecutor(FlowExecutor newFlowExecutor) {
     this.flowExecutor = newFlowExecutor;
     return self();
   }
