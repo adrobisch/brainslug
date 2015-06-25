@@ -1,8 +1,8 @@
 package brainslug.bpmn;
 
-import brainslug.flow.expression.Expression;
+import brainslug.flow.expression.Value;
 
-public class JuelExpression extends Expression<String> {
+public class JuelExpression extends Value<String> {
   public JuelExpression(String expression) {
     super(expression);
   }

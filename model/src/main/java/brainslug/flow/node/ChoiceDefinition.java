@@ -1,8 +1,9 @@
 package brainslug.flow.node;
 
-import brainslug.flow.expression.EqualDefinition;
+import brainslug.flow.expression.Expression;
 import brainslug.flow.path.FlowPathDefinition;
 import brainslug.flow.path.ThenDefinition;
+import brainslug.util.Option;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,8 @@ public class ChoiceDefinition extends FlowNodeDefinition<ChoiceDefinition> {
     this.path = path;
   }
 
-  public ThenDefinition when(EqualDefinition predicateDefinition) {
-    return addThenDefinition(new ThenDefinition(predicateDefinition, path.getDefinition(), this));
+  public ThenDefinition when(Expression whenExpression) {
+    return addThenDefinition(new ThenDefinition(whenExpression, path.getDefinition(), this));
   }
 
   protected ThenDefinition addThenDefinition(ThenDefinition then) {
@@ -30,8 +31,8 @@ public class ChoiceDefinition extends FlowNodeDefinition<ChoiceDefinition> {
     return thenPaths;
   }
 
-  public ThenDefinition getOtherwisePath() {
-    return otherwisePath;
+  public Option<ThenDefinition> getOtherwisePath() {
+    return Option.of(otherwisePath);
   }
 
   public void setOtherwisePath(ThenDefinition otherwisePath) {

@@ -1,6 +1,6 @@
 package brainslug.flow.node.event;
 
-import brainslug.flow.expression.PredicateDefinition;
+import brainslug.flow.expression.PredicateExpression;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.node.event.timer.TimerDefinition;
 import brainslug.util.Option;
@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit;
 
 abstract public class AbstractEventDefinition<Self extends AbstractEventDefinition> extends FlowNodeDefinition<Self> {
 
-  private PredicateDefinition continuePredicate;
+  private PredicateExpression continuePredicate;
 
-  private PredicateDefinition conditionPredicate;
+  private PredicateExpression conditionPredicate;
 
   private TimerDefinition elapsedTimeDefinition;
 
@@ -25,7 +25,7 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
    * @param continuePredicate the predicate to be checked
    * @return the event definition
    */
-  public Self continueIf(PredicateDefinition continuePredicate) {
+  public Self continueIf(PredicateExpression continuePredicate) {
     this.continuePredicate = continuePredicate;
     return self();
   }
@@ -51,7 +51,7 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
    * @param conditionPredicate the condition predicate check
    * @return the event definition with the predicate
    */
-  public Self condition(PredicateDefinition conditionPredicate) {
+  public Self condition(PredicateExpression conditionPredicate) {
     this.conditionPredicate = conditionPredicate;
     return self();
   }
@@ -70,7 +70,7 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
     return self();
   }
 
-  public Option<PredicateDefinition> getContinuePredicate() {
+  public Option<PredicateExpression> getContinuePredicate() {
     return Option.of(continuePredicate);
   }
 
@@ -78,7 +78,7 @@ abstract public class AbstractEventDefinition<Self extends AbstractEventDefiniti
     return Option.of(elapsedTimeDefinition);
   }
 
-  public Option<PredicateDefinition> getConditionPredicate() {
+  public Option<PredicateExpression> getConditionPredicate() {
     return Option.of(conditionPredicate);
   }
 

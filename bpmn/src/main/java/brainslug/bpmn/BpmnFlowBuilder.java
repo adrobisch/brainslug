@@ -4,7 +4,7 @@ import brainslug.bpmn.task.ServiceTaskDefinition;
 import brainslug.bpmn.task.UserTaskDefinition;
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.expression.PredicateBuilder;
+import brainslug.flow.expression.ExpressionBuilder;
 
 abstract public class BpmnFlowBuilder extends FlowBuilder {
 
@@ -16,8 +16,8 @@ abstract public class BpmnFlowBuilder extends FlowBuilder {
     return new UserTaskDefinition().id(id);
   }
 
-  public PredicateBuilder<JuelExpression> juel(String juelExpression) {
-    return new PredicateBuilder<JuelExpression>(new JuelExpression(juelExpression));
+  public ExpressionBuilder<JuelExpression> juel(String juelExpression) {
+    return new ExpressionBuilder<JuelExpression>(new JuelExpression(juelExpression));
   }
 
 }

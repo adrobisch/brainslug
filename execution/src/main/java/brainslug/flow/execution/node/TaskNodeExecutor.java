@@ -5,9 +5,9 @@ import brainslug.flow.definition.DefinitionStore;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerErrorDetails;
 import brainslug.flow.execution.async.AsyncTriggerScheduler;
-import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
-import brainslug.flow.expression.PredicateDefinition;
+import brainslug.flow.expression.PredicateExpression;
 import brainslug.flow.node.task.AbstractTaskDefinition;
 import brainslug.flow.node.task.GoalDefinition;
 import brainslug.flow.node.task.HandlerCallDefinition;
@@ -20,13 +20,13 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, Abst
   private Logger log = LoggerFactory.getLogger(TaskNodeExecutor.class);
 
   DefinitionStore definitionStore;
-  PredicateEvaluator predicateEvaluator;
+  ExpressionEvaluator expressionEvaluator;
   CallDefinitionExecutor callDefinitionExecutor;
   AsyncTriggerScheduler asyncTriggerScheduler;
 
-  public TaskNodeExecutor(DefinitionStore definitionStore, PredicateEvaluator predicateEvaluator, CallDefinitionExecutor callDefinitionExecutor, AsyncTriggerScheduler asyncTriggerScheduler) {
+  public TaskNodeExecutor(DefinitionStore definitionStore, ExpressionEvaluator expressionEvaluator, CallDefinitionExecutor callDefinitionExecutor, AsyncTriggerScheduler asyncTriggerScheduler) {
     this.definitionStore = definitionStore;
-    this.predicateEvaluator = predicateEvaluator;
+    this.expressionEvaluator = expressionEvaluator;
     this.callDefinitionExecutor = callDefinitionExecutor;
     this.asyncTriggerScheduler = asyncTriggerScheduler;
   }
@@ -87,9 +87,9 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, Abst
   }
 
   protected boolean goalIsFulfilled(GoalDefinition goal, ExecutionContext execution) {
-    PredicateDefinition goalPredicate = goal.getPredicate();
+    PredicateExpression goalPredicate = goal.getPredicate();
 
-    return goalPredicate != null && predicateEvaluator.evaluate(goalPredicate, execution);
+    return goalPredicate != null && expressionEvaluator.evaluate(goalPredicate, execution, Boolean.class);
   }
 
   protected void scheduleAsyncTask(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {

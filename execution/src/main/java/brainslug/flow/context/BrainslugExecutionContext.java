@@ -1,6 +1,7 @@
 package brainslug.flow.context;
 
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.expression.Property;
 
 public class BrainslugExecutionContext implements ExecutionContext {
 
@@ -14,6 +15,11 @@ public class BrainslugExecutionContext implements ExecutionContext {
 
   public TriggerContext getTrigger() {
     return trigger;
+  }
+
+  @Override
+  public <T> T property(Property<T> key, Class<T> clazz) {
+    return property(key.getValue(), clazz);
   }
 
   @Override

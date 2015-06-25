@@ -1,18 +1,20 @@
 package brainslug.flow.path;
 
 import brainslug.flow.definition.FlowDefinition;
-import brainslug.flow.expression.EqualDefinition;
+import brainslug.flow.expression.EqualsExpression;
+import brainslug.flow.expression.Expression;
+import brainslug.flow.expression.Value;
 import brainslug.flow.node.ChoiceDefinition;
 
 public class ThenDefinition extends FlowPathDefinition<ThenDefinition> {
 
   private final ChoiceDefinition choiceDefinition;
-  private final EqualDefinition predicateDefinition;
+  private final Expression expression;
 
-  public ThenDefinition(EqualDefinition predicateDefinition, FlowDefinition definition, ChoiceDefinition choiceDefinition) {
+  public ThenDefinition(Expression expression, FlowDefinition definition, ChoiceDefinition choiceDefinition) {
     super(definition, choiceDefinition);
 
-    this.predicateDefinition = predicateDefinition;
+    this.expression = expression;
     this.choiceDefinition = choiceDefinition;
   }
 
@@ -21,7 +23,7 @@ public class ThenDefinition extends FlowPathDefinition<ThenDefinition> {
   }
 
   public ThenDefinition otherwise() {
-    ThenDefinition otherwise = new ThenDefinition(new EqualDefinition<Boolean, Boolean>(true, true), definition, choiceDefinition);
+    ThenDefinition otherwise = new ThenDefinition(new EqualsExpression<Value<Boolean>, Value<Boolean>>(new Value<Boolean>(true), new Value<Boolean>(true)), definition, choiceDefinition);
     getChoiceNode().setOtherwisePath(otherwise);
     return otherwise;
   }
@@ -30,7 +32,7 @@ public class ThenDefinition extends FlowPathDefinition<ThenDefinition> {
     return choiceDefinition;
   }
 
-  public EqualDefinition getPredicateDefinition() {
-    return predicateDefinition;
+  public Expression getExpression() {
+    return expression;
   }
 }

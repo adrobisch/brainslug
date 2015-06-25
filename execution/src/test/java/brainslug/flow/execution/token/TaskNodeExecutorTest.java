@@ -2,6 +2,7 @@ package brainslug.flow.execution.token;
 
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.builder.FlowBuilderSupport;
 import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Registry;
@@ -13,6 +14,7 @@ import brainslug.flow.execution.node.task.Execute;
 import brainslug.flow.execution.node.task.SimpleTask;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.expression.ContextPredicate;
+import brainslug.flow.expression.Property;
 import brainslug.flow.node.TaskDefinition;
 import brainslug.flow.node.task.Delegate;
 import brainslug.flow.node.task.GoalDefinition;
@@ -58,15 +60,19 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void typeSafeServiceMethodCallDefinition() {
     // given:
+
     // # tag::type-safe-call[]
     FlowDefinition serviceCallFlow = new FlowBuilder() {
 
       @Override
       public void define() {
+        Property<String> echoProperty = FlowBuilderSupport.property(id("echo"), String.class);
+
         TestService testService = service(TestService.class);
 
         start(event(id(START)))
           .execute(task(id(TASK)).call(method(testService.echo(testService.getString()))))
+          .execute(task(id(TASK2)).call(method(testService.echo(value(echoProperty)))))
         .end(event(id(END)));
 
       }
@@ -80,13 +86,16 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     BrainslugExecutionContext instance = new BrainslugExecutionContext(new Trigger()
       .definitionId(serviceCallFlow.getId())
       .nodeId(id(TASK))
+      .property("echo", "Echo!")
       .instanceId(id("instance")), registryWithServiceMock());
 
     taskNodeExecutor.execute(serviceCallFlow.getNode(id(TASK), TaskDefinition.class), instance);
+    taskNodeExecutor.execute(serviceCallFlow.getNode(id(TASK2), TaskDefinition.class), instance);
 
     // then:
     verify(testServiceMock).getString();
     verify(testServiceMock).echo(testServiceMock.getString());
+    verify(testServiceMock).echo("Echo!");
   }
 
   @Test
@@ -198,7 +207,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   }
 
   private TaskNodeExecutor createTaskNodeExecutor() {
-    return new TaskNodeExecutor(definitionStore, predicateEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler)
+    return new TaskNodeExecutor(definitionStore, expressionEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler)
         .withTokenOperations(new TokenOperations(tokenStore));
   }
 
@@ -233,7 +242,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
       .definitionId(goalFlow.getGoalFlow().getId())
       .nodeId(id(TASK)), registryWithServiceMock());
 
-    new TaskNodeExecutor(definitionStore, predicateEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler)
+    new TaskNodeExecutor(definitionStore, expressionEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler)
         .withTokenOperations(new TokenOperations(tokenStore))
         .execute((TaskDefinition) goalFlow.getGoalFlow().getNode(IdUtil.id(TASK)), executionContext);
   }

@@ -8,5 +8,4 @@ public interface TokenStore {
   TokenList getNodeTokens(Identifier nodeId, Identifier instanceId);
   Token addToken(Identifier instanceId, Identifier nodeId, Option<Identifier> sourceNodeId);
   boolean removeToken(Identifier instanceId, Identifier tokenId);
-  Identifier createInstance(Identifier definitionId);
 }

@@ -21,6 +21,11 @@ public class SpringBrainslugTestConfiguration {
   }
 
   @Bean
+  public TestServiceClass testServiceClass() {
+    return mock(TestServiceClass.class);
+  }
+
+  @Bean
   public FlowBuilder testFlow() {
     return new FlowBuilder() {
 

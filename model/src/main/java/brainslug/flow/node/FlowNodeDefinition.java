@@ -93,7 +93,7 @@ public class FlowNodeDefinition<T extends FlowNodeDefinition> extends MixableBas
   @Override
   public String toString() {
     return "FlowNodeDefinition{" +
-      "getId=" + id +
+      "getIdentifier=" + id +
       ", incoming=" + incoming +
       ", outgoing=" + outgoing +
       '}';

@@ -2,8 +2,8 @@ package brainslug.example;
 
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.expression.EqualDefinition;
-import brainslug.flow.expression.Expression;
+import brainslug.flow.expression.EqualsExpression;
+import brainslug.flow.expression.Value;
 import brainslug.flow.node.EventDefinition;
 import brainslug.flow.node.TaskDefinition;
 
@@ -45,10 +45,10 @@ public class ControlFlowExamples {
     EventDefinition choiceEnd = event(id("end")).display("end");
 
     Identifier meaningOfLiveChoice = id("meaning_choice");
-    Expression meaningProperty = property(id("meaning"));
+    Value meaningProperty = property(id("meaning"));
 
-    EqualDefinition<?,?> equalsFortyTwo = eq(meaningProperty, 42);
-    EqualDefinition<?,?> equalsFortyThree = eq(meaningProperty, 43);
+    EqualsExpression equalsFortyTwo = eq(meaningProperty, 42);
+    EqualsExpression equalsFortyThree = eq(meaningProperty, 43);
 
     TaskDefinition meaningfulTask = task(id("meaning_ful")).display("Meaningful Task");
     TaskDefinition meaninglessTask = task(id("meaning_less")).display("Meaningless Task");

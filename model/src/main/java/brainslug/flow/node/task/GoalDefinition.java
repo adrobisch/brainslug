@@ -1,16 +1,16 @@
 package brainslug.flow.node.task;
 
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.expression.PredicateDefinition;
+import brainslug.flow.expression.PredicateExpression;
 
 public class GoalDefinition {
   Identifier id;
-  PredicateDefinition predicate;
+  PredicateExpression predicate;
 
   public GoalDefinition() {
   }
 
-  public GoalDefinition check(PredicateDefinition predicate) {
+  public GoalDefinition check(PredicateExpression predicate) {
     this.predicate = predicate;
     return this;
   }
@@ -24,7 +24,7 @@ public class GoalDefinition {
     return id;
   }
 
-  public PredicateDefinition getPredicate() {
+  public PredicateExpression getPredicate() {
     return predicate;
   }
 }

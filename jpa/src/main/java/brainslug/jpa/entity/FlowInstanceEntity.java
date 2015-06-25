@@ -1,11 +1,16 @@
 package brainslug.jpa.entity;
 
+import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.instance.FlowInstance;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Entity
 @Table(name = "BS_FLOW_INSTANCE")
-public class FlowInstanceEntity {
+public class FlowInstanceEntity implements FlowInstance {
 
   @Id
   @Column(name = "_ID")
@@ -22,6 +27,10 @@ public class FlowInstanceEntity {
   @Version
   @Column(name = "_VERSION")
   protected Long version;
+
+  @OneToMany
+  @JoinColumn(name = "_INSTANCE_ID")
+  Set<InstancePropertyEntity> properties;
 
   public String getId() {
     return id;
@@ -50,6 +59,10 @@ public class FlowInstanceEntity {
     return this;
   }
 
+  public Set<InstancePropertyEntity> getProperties() {
+    return properties;
+  }
+
   public Long getVersion() {
     return version;
   }
@@ -57,5 +70,10 @@ public class FlowInstanceEntity {
   public FlowInstanceEntity withVersion(Long version) {
     this.version = version;
     return this;
+  }
+
+  @Override
+  public Identifier<?> getIdentifier() {
+    return FlowBuilder.id(id);
   }
 }

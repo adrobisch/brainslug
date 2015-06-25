@@ -2,7 +2,10 @@ package brainslug.flow.context;
 
 import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.instance.InstanceSelector;
 import brainslug.flow.node.FlowNodeDefinition;
+import brainslug.util.Option;
 
 import java.util.Collection;
 
@@ -109,6 +112,14 @@ public interface BrainslugContext {
    * @return id of the instance
    */
   Identifier startFlow(Identifier definitionId, Identifier startNodeId, FlowProperties properties);
+
+  /**
+   * find the flow instance matching the given instance selector
+   *
+   * @param instanceSelector
+   * @return a optional flow instance
+   */
+  Collection<? extends FlowInstance> findInstances(InstanceSelector instanceSelector);
 
   /**
    *

@@ -8,8 +8,8 @@ import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.execution.node.ChoiceNodeExecutor;
 import brainslug.flow.execution.node.FlowNodeExecutionResult;
 import brainslug.flow.execution.node.FlowNodeExecutor;
-import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
-import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.expression.DefaultExpressionEvaluator;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.expression.PropertyPredicate;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.util.IdUtil;
@@ -61,7 +61,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   public void shouldEvaluatePropertyPredicate() {
     // given:
     BrainslugContext brainslugContext = new BrainslugContextBuilder().build();
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(new TokenOperations(tokenStore));
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(expressionEvaluator).withTokenOperations(new TokenOperations(tokenStore));
     BrainslugExecutionContext executionContext = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(true);
@@ -77,7 +77,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldTakeOtherwisePathIfNoneMatches() {
     // given:
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(new TokenOperations(tokenStore));
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(expressionEvaluator).withTokenOperations(new TokenOperations(tokenStore));
     BrainslugExecutionContext executionContext = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(false);
@@ -92,7 +92,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   }
 
   ChoiceNodeExecutor createChoiceNodeExecutor() {
-    PredicateEvaluator mock = new DefaultPredicateEvaluator();
+    ExpressionEvaluator mock = new DefaultExpressionEvaluator();
     TokenOperations tokenOperations = mock(TokenOperations.class);
 
     return new ChoiceNodeExecutor(mock)

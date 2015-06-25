@@ -2,11 +2,12 @@ package brainslug.spring;
 
 import brainslug.flow.context.DefaultBrainslugContext;
 import brainslug.flow.context.Registry;
+import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.definition.DefinitionStore;
 import brainslug.flow.execution.FlowExecutor;
 import brainslug.flow.execution.async.*;
-import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.token.TokenStore;
 import brainslug.flow.listener.ListenerManager;
 import org.springframework.context.ApplicationContext;
@@ -25,11 +26,25 @@ public class SpringBrainslugContext extends DefaultBrainslugContext {
                                 DefinitionStore definitionStore,
                                 ListenerManager listenerManager,
                                 CallDefinitionExecutor callDefinitionExecutor,
-                                PredicateEvaluator predicateEvaluator,
+                                ExpressionEvaluator expressionEvaluator,
                                 Registry registry,
                                 FlowExecutor flowExecutor,
-                                TokenStore tokenStore) {
-    super(asyncTriggerScheduler, asyncTriggerStore, asyncTriggerSchedulerOptions, asyncFlowStartScheduler, asyncFlowStartSchedulerOptions, definitionStore, listenerManager, callDefinitionExecutor, predicateEvaluator, registry, flowExecutor, tokenStore);
+                                TokenStore tokenStore,
+                                InstanceStore instanceStore) {
+    super(asyncTriggerScheduler,
+            asyncTriggerStore,
+            asyncTriggerSchedulerOptions,
+            asyncFlowStartScheduler,
+            asyncFlowStartSchedulerOptions,
+            definitionStore,
+            listenerManager,
+            callDefinitionExecutor,
+            expressionEvaluator,
+            registry,
+            flowExecutor,
+            tokenStore,
+            instanceStore);
+
     this.applicationContext = applicationContext;
   }
 }

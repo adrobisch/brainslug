@@ -200,9 +200,9 @@ public class JGraphBpmnRendererTest {
       public void define() {
         start(event(id("start")))
           .choice(id("choice")).display("Fish or Ships?")
-            .when(isTrue(expression("Fish"))).execute(task(id("task2")))
+            .when(expression("Fish")).execute(task(id("task2")))
               .or()
-            .when(isTrue(expression("Ships"))).execute(task(id("task3")));
+            .when(expression("Ships")).execute(task(id("task3")));
       }
     };
   }

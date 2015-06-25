@@ -2,12 +2,15 @@
 
 It is possible integrate brainslug with the Spring application context, so that the Spring Beans
 are available in the execution context.
+To use it, you need to get the http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22brainslug-spring%22[`brainslug-spring` module].
 
 ### Setup
 
 Just import the spring configuration class into you application context.
 
-Calls to the `ExecutionContext` or the `Registry` will then return the beans from the Spring application context:
+Calls to the `ExecutionContext` or the `Registry` will then return the beans from the Spring application context.
+
+All beans of type `FlowBuilder` will be made available in the `BrainslugContext` as well:
 
 [source, java]
 ----

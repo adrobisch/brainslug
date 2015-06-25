@@ -6,10 +6,13 @@ import brainslug.flow.context.*;
 import brainslug.flow.execution.*;
 import brainslug.flow.execution.async.AsyncTriggerScheduler;
 import brainslug.flow.execution.async.AsyncTriggerStore;
-import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
+import brainslug.flow.execution.instance.DefaultFlowInstance;
+import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.*;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.execution.property.store.PropertyStore;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.node.*;
@@ -28,11 +31,12 @@ public class TokenFlowExecutor implements FlowExecutor {
   private Logger log = LoggerFactory.getLogger(TokenFlowExecutor.class);
 
   protected TokenStore tokenStore;
+  protected InstanceStore instanceStore;
   protected DefinitionStore definitionStore;
   protected PropertyStore propertyStore;
   protected ListenerManager listenerManager;
   protected Registry registry;
-  protected PredicateEvaluator predicateEvaluator;
+  protected ExpressionEvaluator expressionEvaluator;
   protected AsyncTriggerStore asyncTriggerStore;
   protected AsyncTriggerScheduler asyncTriggerScheduler;
   protected CallDefinitionExecutor callDefinitionExecutor;
@@ -41,20 +45,22 @@ public class TokenFlowExecutor implements FlowExecutor {
 
 
   public TokenFlowExecutor(TokenStore tokenStore,
+                           InstanceStore instanceStore,
                            DefinitionStore definitionStore,
                            PropertyStore propertyStore,
                            ListenerManager listenerManager,
                            Registry registry,
-                           PredicateEvaluator predicateEvaluator,
+                           ExpressionEvaluator expressionEvaluator,
                            AsyncTriggerStore asyncTriggerStore,
                            AsyncTriggerScheduler asyncTriggerScheduler,
                            CallDefinitionExecutor callDefinitionExecutor) {
     this.tokenStore = tokenStore;
+    this.instanceStore = instanceStore;
     this.definitionStore = definitionStore;
     this.propertyStore = propertyStore;
     this.listenerManager = listenerManager;
     this.registry = registry;
-    this.predicateEvaluator = predicateEvaluator;
+    this.expressionEvaluator = expressionEvaluator;
     this.asyncTriggerStore = asyncTriggerStore;
     this.asyncTriggerScheduler = asyncTriggerScheduler;
     this.callDefinitionExecutor = callDefinitionExecutor;
@@ -66,16 +72,16 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   protected void addNodeExecutorMappings() {
-    nodeExecutors.put(EventDefinition.class, new EventNodeExecutor(asyncTriggerStore, predicateEvaluator).withTokenOperations(tokenOperations));
+    nodeExecutors.put(EventDefinition.class, new EventNodeExecutor(asyncTriggerStore, expressionEvaluator).withTokenOperations(tokenOperations));
     nodeExecutors.put(ParallelDefinition.class, new DefaultNodeExecutor<DefaultNodeExecutor, ParallelDefinition>().withTokenOperations(tokenOperations));
     nodeExecutors.put(MergeDefinition.class, new DefaultNodeExecutor<DefaultNodeExecutor, MergeDefinition>().withTokenOperations(tokenOperations));
-    nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor(predicateEvaluator).withTokenOperations(tokenOperations));
+    nodeExecutors.put(ChoiceDefinition.class, new ChoiceNodeExecutor(expressionEvaluator).withTokenOperations(tokenOperations));
     nodeExecutors.put(JoinDefinition.class, new JoinNodeExecutor().withTokenOperations(tokenOperations));
     nodeExecutors.put(TaskDefinition.class, createTaskNodeExecutor());
   }
 
   protected TaskNodeExecutor createTaskNodeExecutor() {
-    return new TaskNodeExecutor(definitionStore, predicateEvaluator, callDefinitionExecutor, asyncTriggerScheduler).withTokenOperations(tokenOperations);
+    return new TaskNodeExecutor(definitionStore, expressionEvaluator, callDefinitionExecutor, asyncTriggerScheduler).withTokenOperations(tokenOperations);
   }
 
   FlowNodeDefinition<?> getNode(Identifier definitionId, Identifier nodeId) {
@@ -95,10 +101,10 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   @Override
-  public Identifier startFlow(TriggerContext trigger) {
+  public FlowInstance startFlow(TriggerContext trigger) {
     FlowNodeDefinition<?> startNode = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
 
-    Identifier instanceId = tokenStore.createInstance(trigger.getDefinitionId());
+    Identifier instanceId = instanceStore.createInstance(trigger.getDefinitionId()).getIdentifier();
     tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier>empty());
 
     propertyStore.storeProperties(trigger.getInstanceId(), trigger.getProperties());
@@ -109,7 +115,7 @@ public class TokenFlowExecutor implements FlowExecutor {
       .instanceId(instanceId)
       .properties(trigger.getProperties()));
 
-    return instanceId;
+    return new DefaultFlowInstance(instanceId);
   }
 
   protected FlowNodeDefinition<?> getStartNodeDefinition(Identifier definitionId, Identifier nodeId) {
@@ -180,8 +186,8 @@ public class TokenFlowExecutor implements FlowExecutor {
     this.registry = registry;
   }
 
-  public void setPredicateEvaluator(PredicateEvaluator predicateEvaluator) {
-    this.predicateEvaluator = predicateEvaluator;
+  public void setExpressionEvaluator(ExpressionEvaluator expressionEvaluator) {
+    this.expressionEvaluator = expressionEvaluator;
   }
 
   public void setAsyncTriggerStore(AsyncTriggerStore asyncTriggerStore) {

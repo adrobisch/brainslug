@@ -80,7 +80,7 @@ public class JGraphBpmnRenderer implements Renderer {
     if (edge.getSource() instanceof ChoiceDefinition) {
       for (ThenDefinition then : ((ChoiceDefinition) edge.getSource()).getThenPaths()) {
         if (then.getPathNodes().getFirst().equals(edge.getTarget())) {
-          return then.getPredicateDefinition().getActual().toString();
+          return then.getExpression().toString();
         }
       }
     }

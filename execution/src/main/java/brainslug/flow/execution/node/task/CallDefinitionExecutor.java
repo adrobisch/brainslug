@@ -2,7 +2,7 @@ package brainslug.flow.execution.node.task;
 
 import brainslug.flow.builder.ServiceCallInvocationSupport;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.expression.Expression;
+import brainslug.flow.expression.Value;
 import brainslug.flow.expression.Property;
 import brainslug.flow.node.task.CallDefinition;
 import brainslug.flow.node.task.HandlerCallDefinition;
@@ -62,9 +62,9 @@ public class CallDefinitionExecutor {
     Object value = argument.getValue();
 
     if (value instanceof Property) {
-      return executionContext.property(((Property) value).getValue(), Object.class);
-    } else if (value instanceof Expression) {
-      return ((Expression) value).getValue();
+      return executionContext.property(((Property) value), Object.class);
+    } else if (value instanceof Value) {
+      return ((Value) value).getValue();
     }
     throw new IllegalArgumentException("unknown parameter value type: " + value.getClass().getName());
   }

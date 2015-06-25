@@ -13,17 +13,18 @@ import static org.mockito.Mockito.when;
 public class JpaTokenStoreTest extends AbstractDatabaseTest {
 
   Identifier instanceId = id("instance");
+  Identifier flowId = id("flow");
   Identifier nodeId = id("node");
   Identifier tokenId = id("token");
-  Identifier flowId = id("flow");
 
   @Test
   public void shouldInsertInstanceAndToken() throws Exception {
     // given:
-    JpaTokenStore jpaTokenStore = createJdbcTokenStore();
+    JpaTokenStore jpaTokenStore = createJpaTokenStore();
+    JpaInstanceStore jpaInstanceStore = createJpaInstanceStore();
 
     // when:
-    Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore);
+    Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore, jpaInstanceStore);
 
     assertThat(instanceId).isNotNull();
 
@@ -37,8 +38,10 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
   @Test
   public void shouldDeleteToken() throws Exception {
     // given:
-    JpaTokenStore jpaTokenStore = createJdbcTokenStore();
-    Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore);
+    JpaTokenStore jpaTokenStore = createJpaTokenStore();
+    JpaInstanceStore jpaInstanceStore = createJpaInstanceStore();
+
+    Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore, jpaInstanceStore);
     // when:
     jpaTokenStore.removeToken(instanceId, tokenId);
 
@@ -46,17 +49,21 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
       .hasSize(0);
   }
 
-  private Identifier createInstanceWithSingleRootToken(JpaTokenStore jpaTokenStore) {
+  private Identifier createInstanceWithSingleRootToken(JpaTokenStore jpaTokenStore, JpaInstanceStore jpaInstanceStore) {
     when(idGeneratorMock.generateId()).thenReturn(instanceId);
-    Identifier instanceId = jpaTokenStore.createInstance(flowId);
+    jpaInstanceStore.createInstance(flowId);
 
     when(idGeneratorMock.generateId()).thenReturn(tokenId);
     jpaTokenStore.addToken(instanceId, nodeId, Option.<Identifier>empty());
     return instanceId;
   }
 
-  JpaTokenStore createJdbcTokenStore() {
+  JpaTokenStore createJpaTokenStore() {
     return new JpaTokenStore(database, idGeneratorMock);
+  }
+
+  JpaInstanceStore createJpaInstanceStore() {
+    return new JpaInstanceStore(database, idGeneratorMock);
   }
 
 }

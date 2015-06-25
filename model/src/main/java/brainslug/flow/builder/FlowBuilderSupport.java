@@ -282,44 +282,57 @@ public class FlowBuilderSupport {
     return new EventDefinition().id(id).display(id.toString());
   }
 
-  public static <T> Expression expression(T expression) {
-    return new Expression<T>(expression);
+  public static StringExpression expression(String expression) {
+    return new StringExpression(expression);
   }
 
-  public static <T> Expression<T> constant(T constantValue) {
-    return expression(constantValue);
+  public static <T> Value<T> constant(T value) {
+    return new Value<T>(value);
   }
 
-  public static Property property(Identifier id) {
+  public static Property<?> property(Identifier id) {
     return new Property(id);
   }
 
-  public <T> T property(Identifier id, Class<T> clazz) {
-    return (T) val(new Property(id));
+  public static <T> Property<T> property(Identifier id, Class<T> clazz) {
+    return new Property<T>(id);
+  }
+
+  public <T> T value(Identifier id, Class<T> clazz) {
+    return (T) value(new Property(id));
+  }
+
+  public <T> T value(Property property, Class<T> clazz) {
+    return (T) value(property);
+  }
+
+  public <T> T value(Property<T> property) {
+    serviceCallInvocation.argument(property);
+    return null;
   }
 
   /**
    * add a parameter to the invocation arguments of a proxy method call definition.
    *
-   * @param expression the parameter expression to add
-   * @param <T> the type of the expression
+   * @param value the parameter value to add
+   * @param <T> the type of the value
    * @return null of type T
    */
-  public <T> T val(Expression<T> expression) {
-    serviceCallInvocation.argument(expression);
+  public <T> T value(Value<T> value) {
+    serviceCallInvocation.argument(value);
     return null;
   }
 
-  public static EqualDefinition<Expression, Expression<Object>> eq(Expression actual, Object expected) {
-    return new PredicateBuilder<Expression>(actual).isEqualTo(expected);
+  public static EqualsExpression<Expression, Value<Object>> eq(Expression actual, Object expected) {
+    return new ExpressionBuilder<Expression>(actual).isEqualTo(expected);
   }
 
-  public static TrueDefinition<Expression> isTrue(Expression actual) {
-    return new PredicateBuilder<Expression>(actual).isTrue();
+  public static EqualsExpression<Expression, Value<Boolean>> isTrue(Expression actual) {
+    return new ExpressionBuilder<Expression>(actual).isEqualTo(true);
   }
 
-  public static <T extends Predicate> PredicateDefinition<T> predicate(T predicate) {
-    return new PredicateDefinition<T>(predicate);
+  public static <T extends Predicate> PredicateExpression<T> predicate(T predicate) {
+    return new PredicateExpression<T>(predicate);
   }
 
   public static InvokeDefinition method(Class<?> clazz) {
@@ -356,8 +369,8 @@ public class FlowBuilderSupport {
     return serviceCallInvocation.createServiceProxy(clazz);
   }
 
-  public static PredicateBuilder<CallDefinition> resultOf(CallDefinition methodCall) {
-    return new PredicateBuilder<CallDefinition>(methodCall);
+  public static ExpressionBuilder<Value<CallDefinition>> resultOf(CallDefinition methodCall) {
+    return new ExpressionBuilder<Value<CallDefinition>>(new Value<CallDefinition>(methodCall));
   }
 
   /**
@@ -395,12 +408,12 @@ public class FlowBuilderSupport {
     return new GoalDefinition();
   }
 
-  public static GoalDefinition check(PredicateDefinition goalPredicate) {
+  public static GoalDefinition check(PredicateExpression goalPredicate) {
     return new GoalDefinition().check(goalPredicate);
   }
 
   public static GoalDefinition check(Predicate<?> goalPredicate) {
-    return new GoalDefinition().check(new PredicateDefinition<Predicate>(goalPredicate));
+    return check(new PredicateExpression<Predicate>(goalPredicate));
   }
 
 }

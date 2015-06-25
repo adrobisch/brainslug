@@ -215,8 +215,8 @@ public class BpmnModelTransformerTest {
     assertThat(process.getFlowElements()).hasFlowElement(ExclusiveGateway.class, "choice", "Foo or Bar");
 
     assertThat(process.getFlowElements()).hasSequenceFlow("start", "choice");
-    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task1", "${foo == '42'}");
-    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task2", "bar");
+    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task1", "${foo == '42'}==true");
+    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task2", "bar==true");
     assertThat(process.getFlowElements()).hasSequenceFlow("task1", "merge");
     assertThat(process.getFlowElements()).hasSequenceFlow("task2", "merge");
     assertThat(process.getFlowElements()).hasSequenceFlow("merge", "end");
@@ -233,6 +233,7 @@ public class BpmnModelTransformerTest {
             .execute(userTask(id("task1")).display("Task 1"))
               .and()
             .execute(userTask(id("task2")).display("Task 2"));
+
         join(id("join"), id("task1"), id("task2")).end(event(id("end")));
       }
     };

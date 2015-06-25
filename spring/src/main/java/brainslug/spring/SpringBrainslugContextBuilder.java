@@ -24,9 +24,10 @@ public class SpringBrainslugContextBuilder extends AbstractBrainslugContextBuild
       definitionStore,
       listenerManager,
       callDefinitionExecutor,
-      predicateEvaluator,
+      expressionEvaluator,
       registry,
       flowExecutor,
-      tokenStore);
+      tokenStore,
+      instanceStore);
   }
 }

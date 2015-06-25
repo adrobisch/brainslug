@@ -4,21 +4,21 @@ import brainslug.flow.context.*;
 import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.execution.property.ExecutionProperties;
 import brainslug.flow.execution.property.store.PropertyStore;
-import brainslug.flow.expression.PredicateDefinition;
+import brainslug.flow.expression.PredicateExpression;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class DefaultPredicateEvaluatorTest {
+public class DefaultExpressionEvaluatorTest {
 
   @Test
   public void shouldEvaluatePropertyPredicate() {
     // given:
 
     BrainslugExecutionContext executionContext = testContext();
-    DefaultPredicateEvaluator evaluator = new DefaultPredicateEvaluator();
+    DefaultExpressionEvaluator evaluator = new DefaultExpressionEvaluator();
 
     PropertyPredicate predicateSpy = spy(new PropertyPredicate() {
       @Override
@@ -28,10 +28,10 @@ public class DefaultPredicateEvaluatorTest {
       }
     });
 
-    PredicateDefinition predicateDefintion = new PredicateDefinition<PropertyPredicate>(predicateSpy);
+    PredicateExpression predicateDefintion = new PredicateExpression<PropertyPredicate>(predicateSpy);
     // when:
 
-    boolean result = evaluator.evaluate(predicateDefintion, executionContext);
+    boolean result = evaluator.evaluate(predicateDefintion, executionContext, Boolean.class);
 
     // then:
     verify(predicateSpy).isFulfilled(any(ExecutionProperties.class));
@@ -43,7 +43,7 @@ public class DefaultPredicateEvaluatorTest {
   public void shouldEvaluateContextPredicate() {
     // given:
 
-    DefaultPredicateEvaluator evaluator = new DefaultPredicateEvaluator();
+    DefaultExpressionEvaluator evaluator = new DefaultExpressionEvaluator();
     BrainslugExecutionContext executionContext = testContext();
 
     ContextPredicate predicateSpy = spy(new ContextPredicate() {
@@ -54,10 +54,10 @@ public class DefaultPredicateEvaluatorTest {
       }
     });
 
-    PredicateDefinition predicateDefintion = new PredicateDefinition<ContextPredicate>(predicateSpy);
+    PredicateExpression predicateDefintion = new PredicateExpression<ContextPredicate>(predicateSpy);
     // when:
 
-    boolean result = evaluator.evaluate(predicateDefintion, executionContext);
+    boolean result = evaluator.evaluate(predicateDefintion, executionContext, Boolean.class);
 
     // then:
     verify(predicateSpy).isFulfilled(any(ExecutionContext.class));

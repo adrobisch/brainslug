@@ -14,7 +14,7 @@ import brainslug.flow.execution.expression.ContextPredicate;
 import brainslug.flow.execution.token.TokenList;
 import brainslug.flow.execution.token.TokenOperations;
 import brainslug.flow.execution.token.TokenStore;
-import brainslug.flow.expression.PredicateDefinition;
+import brainslug.flow.expression.PredicateExpression;
 import brainslug.flow.node.EventDefinition;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -275,7 +275,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     verify(asyncTriggerStore, times(0)).storeTrigger(any(AsyncTrigger.class));
   }
 
-  EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor(asyncTriggerStore, predicateEvaluator)
+  EventNodeExecutor eventNodeExecutor = (EventNodeExecutor) spy(new EventNodeExecutor(asyncTriggerStore, expressionEvaluator)
     .withTokenOperations(new TokenOperations(tokenStoreMock())));
 
   TokenStore tokenStoreMock() {
@@ -285,7 +285,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
   }
 
   private EventDefinition eventDefinitionWithPredicate(FlowDefinition eventFlow, final boolean predicateFulfilled) {
-    return eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class).continueIf(new PredicateDefinition<ContextPredicate>(
+    return eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class).continueIf(new PredicateExpression<ContextPredicate>(
       new ContextPredicate() {
         @Override
         public boolean isFulfilled(ExecutionContext executionContext) {

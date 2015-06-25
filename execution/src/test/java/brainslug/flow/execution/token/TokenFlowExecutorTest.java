@@ -38,7 +38,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // when:
     Trigger trigger = new Trigger().definitionId(id(PARALLELID)).nodeId(id(START));
-    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger).getIdentifier();
 
     // then:
     InOrder eventOrder = inOrder(tokenFlowExecutor);
@@ -74,7 +74,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // when:
     Trigger trigger = new Trigger().definitionId(id(MERGEID)).nodeId(id(START));
-    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger).getIdentifier();
 
     // then:
     InOrder eventOrder = inOrder(tokenFlowExecutor);
@@ -109,7 +109,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // when:
     Trigger trigger = new Trigger().definitionId(id(JOINID)).nodeId(id(START));
-    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger).getIdentifier();
 
     // then:
     InOrder eventOrder = inOrder(tokenFlowExecutor);
@@ -144,7 +144,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // when:
     Trigger trigger = new Trigger().definitionId(id(CHOICEID)).nodeId(id(START));
-    Identifier instanceId = tokenFlowExecutor.startFlow(trigger);
+    Identifier instanceId = tokenFlowExecutor.startFlow(trigger).getIdentifier();
 
     // then:
     InOrder eventOrder = inOrder(tokenFlowExecutor);

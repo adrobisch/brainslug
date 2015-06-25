@@ -1,20 +1,22 @@
 package brainslug.flow.builder;
 
-import brainslug.flow.expression.Expression;
+import brainslug.flow.expression.Value;
 import brainslug.flow.node.task.CallDefinition;
 import brainslug.flow.node.task.InvokeDefinition;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.Stack;
 
 public class ServiceCallInvocationSupport {
 
   Stack<ProxyStackEntry> proxyStack = new Stack<ProxyStackEntry>();
 
-  public void argument(Expression expression) {
-    proxyStack.push(new ParameterEntry<Expression>(expression));
+  public Value argument(Value value) {
+    proxyStack.push(new ParameterEntry<Value>(value));
+    return value;
   }
 
   public CallDefinition createCallDefinitionFromCurrentStack() {
@@ -79,14 +81,23 @@ public class ServiceCallInvocationSupport {
 
   private ServiceCallInvocationSupport.ServiceInvocationEntry withArgumentsFromStack(ServiceCallInvocationSupport.ServiceInvocationEntry invocation) {
     for (int paramIndex = 0; paramIndex < invocation.getMethod().getParameterTypes().length; paramIndex++) {
-      invocation.arg(proxyStack.pop());
+      invocation.arg(proxyStack.get(paramIndex));
     }
 
     return invocation;
   }
 
   protected <T> Object createProxyInstance(Class<T> clazz, InvocationHandler handler) {
-    return Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{clazz}, handler);
+    return getServiceProxyFactory().createProxyInstance(clazz, handler);
+  }
+
+  protected ServiceProxyFactory getServiceProxyFactory() {
+    Iterator<ServiceProxyFactory> proxyFactories = ServiceLoader.load(ServiceProxyFactory.class).iterator();
+    if (proxyFactories.hasNext()) {
+      return proxyFactories.next();
+    } else {
+      return new JdkServiceProxyFactory();
+    }
   }
 
 }

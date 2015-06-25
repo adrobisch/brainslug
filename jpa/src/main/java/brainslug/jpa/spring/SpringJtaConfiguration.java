@@ -5,6 +5,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -24,14 +25,16 @@ public class SpringJtaConfiguration {
   XADataSource xaDataSource;
 
   @Bean
+  @Qualifier("brainslug")
   public LocalContainerEntityManagerFactoryBean entityManager() throws Throwable  {
     LocalContainerEntityManagerFactoryBean entityManager =
       new LocalContainerEntityManagerFactoryBean();
     entityManager.setJtaDataSource(dataSource());
     Properties properties = new Properties();
     properties.setProperty("hibernate.transaction.manager_lookup_class",
-      TransactionManagerLookup.class.getName());
+            TransactionManagerLookup.class.getName());
     entityManager.setJpaProperties(properties);
+
     return entityManager;
   }
 

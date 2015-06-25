@@ -5,7 +5,6 @@ import brainslug.flow.definition.StringIdentifier;
 import brainslug.flow.execution.token.Token;
 import brainslug.flow.execution.token.TokenList;
 import brainslug.flow.execution.token.TokenStore;
-import brainslug.jpa.entity.FlowInstanceEntity;
 import brainslug.jpa.entity.FlowTokenEntity;
 import brainslug.jpa.entity.query.QFlowTokenEntity;
 import brainslug.util.IdGenerator;
@@ -85,19 +84,6 @@ public class JpaTokenStore implements TokenStore {
       .execute();
 
     return deletedCount > 0;
-  }
-
-  @Override
-  public Identifier createInstance(Identifier definitionId) {
-    Identifier identifier = idGenerator.generateId();
-
-    database.insertOrUpdate(new FlowInstanceEntity()
-        .withId(identifier.stringValue())
-        .withCreated(new Date().getTime())
-        .withDefinitionId(definitionId.stringValue())
-    );
-
-    return identifier;
   }
 
 }

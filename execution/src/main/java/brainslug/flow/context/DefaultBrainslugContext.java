@@ -2,12 +2,15 @@ package brainslug.flow.context;
 
 import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.definition.DefinitionStore;
 import brainslug.flow.execution.FlowExecutor;
 import brainslug.flow.execution.async.*;
-import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.token.TokenStore;
+import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.instance.InstanceSelector;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.util.Preconditions;
@@ -26,11 +29,12 @@ public class DefaultBrainslugContext implements BrainslugContext {
   DefinitionStore definitionStore;
   ListenerManager listenerManager;
   CallDefinitionExecutor callDefinitionExecutor;
-  PredicateEvaluator predicateEvaluator;
+  ExpressionEvaluator expressionEvaluator;
   Registry registry;
 
   FlowExecutor flowExecutor;
   TokenStore tokenStore;
+  private final InstanceStore instanceStore;
 
   protected DefaultBrainslugContext(AsyncTriggerScheduler asyncTriggerScheduler,
                                  AsyncTriggerStore asyncTriggerStore,
@@ -40,10 +44,11 @@ public class DefaultBrainslugContext implements BrainslugContext {
                                  DefinitionStore definitionStore,
                                  ListenerManager listenerManager,
                                  CallDefinitionExecutor callDefinitionExecutor,
-                                 PredicateEvaluator predicateEvaluator,
+                                 ExpressionEvaluator expressionEvaluator,
                                  Registry registry,
                                  FlowExecutor flowExecutor,
-                                 TokenStore tokenStore) {
+                                 TokenStore tokenStore,
+                                 InstanceStore instanceStore) {
     this.asyncTriggerScheduler = asyncTriggerScheduler;
     this.asyncTriggerStore = asyncTriggerStore;
     this.asyncTriggerSchedulerOptions = asyncTriggerSchedulerOptions;
@@ -52,10 +57,11 @@ public class DefaultBrainslugContext implements BrainslugContext {
     this.definitionStore = definitionStore;
     this.listenerManager = listenerManager;
     this.callDefinitionExecutor = callDefinitionExecutor;
-    this.predicateEvaluator = predicateEvaluator;
+    this.expressionEvaluator = expressionEvaluator;
     this.registry = registry;
     this.flowExecutor = flowExecutor;
     this.tokenStore = tokenStore;
+    this.instanceStore = instanceStore;
   }
 
   @Override
@@ -86,10 +92,10 @@ public class DefaultBrainslugContext implements BrainslugContext {
   @Override
   public void signalEvent(Identifier eventId, Identifier instanceId, Identifier definitionId) {
     trigger(new Trigger()
-      .nodeId(eventId)
-      .instanceId(instanceId)
-      .definitionId(definitionId)
-      .signaling(true));
+            .nodeId(eventId)
+            .instanceId(instanceId)
+            .definitionId(definitionId)
+            .signaling(true));
   }
 
   @Override
@@ -114,7 +120,7 @@ public class DefaultBrainslugContext implements BrainslugContext {
 
   @Override
   public Identifier startFlow(Identifier definitionId, Identifier startNodeId) {
-    return flowExecutor.startFlow(new Trigger().definitionId(definitionId).nodeId(startNodeId));
+    return flowExecutor.startFlow(new Trigger().definitionId(definitionId).nodeId(startNodeId)).getIdentifier();
   }
 
   @Override
@@ -129,7 +135,12 @@ public class DefaultBrainslugContext implements BrainslugContext {
       .nodeId(startNodeId)
       .properties(properties);
 
-    return flowExecutor.startFlow(trigger);
+    return flowExecutor.startFlow(trigger).getIdentifier();
+  }
+
+  @Override
+  public Collection<? extends FlowInstance> findInstances(InstanceSelector instanceSelector) {
+    return instanceStore.findInstances(instanceSelector);
   }
 
   @Override
@@ -165,8 +176,8 @@ public class DefaultBrainslugContext implements BrainslugContext {
     return registry;
   }
 
-  public PredicateEvaluator getPredicateEvaluator() {
-    return predicateEvaluator;
+  public ExpressionEvaluator getExpressionEvaluator() {
+    return expressionEvaluator;
   }
 
   public FlowExecutor getFlowExecutor() {

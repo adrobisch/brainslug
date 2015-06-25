@@ -2,7 +2,6 @@ package brainslug.bpmn;
 
 import brainslug.bpmn.task.UserTaskDefinition;
 import brainslug.flow.builder.FlowBuilder;
-import brainslug.flow.expression.Expression;
 import brainslug.flow.node.*;
 import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.flow.node.event.IntermediateEvent;
@@ -121,11 +120,7 @@ public class BpmnModelTransformer {
   }
 
   private String getExpressionString(ThenDefinition then) {
-    if (then.getPredicateDefinition().getActual() instanceof Expression) {
-      Expression expression = (Expression) then.getPredicateDefinition().getActual();
-      return expression.getString();
-    }
-    throw new UnsupportedOperationException("can only get expression string for Expression predicate");
+    return then.getExpression().toString();
   }
 
   private SequenceFlow addIncomingSequenceFlowToFirstPathNode(FlowElement flowElement, FlowPathDefinition<?> then) {

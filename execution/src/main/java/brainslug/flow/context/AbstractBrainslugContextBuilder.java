@@ -4,8 +4,10 @@ import brainslug.flow.definition.DefinitionStore;
 import brainslug.flow.definition.HashMapDefinitionStore;
 import brainslug.flow.execution.*;
 import brainslug.flow.execution.async.*;
-import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
-import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.expression.DefaultExpressionEvaluator;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
+import brainslug.flow.execution.instance.HashMapInstanceStore;
+import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.execution.property.store.HashMapPropertyStore;
 import brainslug.flow.execution.property.store.PropertyStore;
@@ -20,7 +22,6 @@ import brainslug.util.UuidGenerator;
 public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractBrainslugContextBuilder, T extends BrainslugContext> {
 
   protected AsyncTriggerExecutor asyncTriggerExecutor = new AsyncTriggerExecutor();
-  protected AsyncTriggerStore asyncTriggerStore = new ArrayListTriggerStore();
   protected AsyncTriggerSchedulerOptions asyncTriggerSchedulerOptions = new AsyncTriggerSchedulerOptions();
 
   protected AsyncFlowStartScheduler asyncFlowStartScheduler = new ExecutorServiceFlowStartScheduler();
@@ -29,18 +30,36 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
   protected DefinitionStore definitionStore = new HashMapDefinitionStore();
   protected ListenerManager listenerManager = new DefaultListenerManager();
   protected CallDefinitionExecutor callDefinitionExecutor = new CallDefinitionExecutor();
-  protected PropertyStore propertyStore = new HashMapPropertyStore();
-  protected PredicateEvaluator predicateEvaluator = new DefaultPredicateEvaluator();
-  protected IdGenerator idGenerator = new UuidGenerator();
+  protected ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
   protected Registry registry = new HashMapRegistry();
 
+  protected IdGenerator idGenerator;
   protected FlowExecutor flowExecutor;
   protected TokenStore tokenStore;
+  protected InstanceStore instanceStore;
+  protected AsyncTriggerStore asyncTriggerStore;
+  protected PropertyStore propertyStore;
   protected AsyncTriggerScheduler asyncTriggerScheduler;
 
   public T build() {
+    if (idGenerator == null) {
+      withIdGenerator(new UuidGenerator());
+    }
+
+    if (asyncTriggerStore == null) {
+      withAsyncTriggerStore(new ArrayListTriggerStore());
+    }
+
+    if (propertyStore == null) {
+      withPropertyStore(new HashMapPropertyStore());
+    }
+
     if (tokenStore == null) {
       withTokenStore(new HashMapTokenStore(idGenerator));
+    }
+
+    if (instanceStore == null) {
+      withInstanceStore(new HashMapInstanceStore(idGenerator));
     }
 
     if (asyncTriggerScheduler == null) {
@@ -52,11 +71,12 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
     if (flowExecutor == null) {
       withFlowExecutor(new TokenFlowExecutor(
         tokenStore,
+        instanceStore,
         definitionStore,
         propertyStore,
         listenerManager,
         registry,
-        predicateEvaluator,
+        expressionEvaluator,
         asyncTriggerStore,
         asyncTriggerScheduler,
         callDefinitionExecutor
@@ -122,6 +142,11 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
     return self();
   }
 
+  public SelfType withInstanceStore(InstanceStore instanceStore) {
+    this.instanceStore = instanceStore;
+    return self();
+  }
+
   public SelfType withListenerManager(ListenerManager listenerManager) {
     this.listenerManager = listenerManager;
     return self();
@@ -132,13 +157,13 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
     return self();
   }
 
-  public SelfType withPredicateEvaluator(PredicateEvaluator predicateEvaluator) {
-    this.predicateEvaluator = predicateEvaluator;
+  public SelfType withPredicateEvaluator(ExpressionEvaluator expressionEvaluator) {
+    this.expressionEvaluator = expressionEvaluator;
     return self();
   }
 
-  public SelfType withIdGenerator(UuidGenerator uuidGenerator) {
-    this.idGenerator = uuidGenerator;
+  public SelfType withIdGenerator(IdGenerator idGenerator) {
+    this.idGenerator = idGenerator;
     return self();
   }
 

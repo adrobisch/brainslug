@@ -3,14 +3,16 @@ package brainslug;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.BrainslugContextBuilder;
 import brainslug.flow.context.Registry;
+import brainslug.flow.execution.instance.HashMapInstanceStore;
+import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.definition.DefinitionStore;
 import brainslug.flow.execution.property.store.HashMapPropertyStore;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.execution.async.AsyncTriggerScheduler;
 import brainslug.flow.execution.async.AsyncTriggerStore;
-import brainslug.flow.execution.expression.DefaultPredicateEvaluator;
-import brainslug.flow.execution.expression.PredicateEvaluator;
+import brainslug.flow.execution.expression.DefaultExpressionEvaluator;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.token.HashMapTokenStore;
 import brainslug.flow.execution.token.TokenFlowExecutor;
 import brainslug.flow.execution.token.TokenStore;
@@ -29,11 +31,12 @@ public class AbstractExecutionTest {
 
   protected TestService testServiceMock =  mock(TestService.class);
   protected DefinitionStore definitionStore = mock(DefinitionStore.class);
-  protected PredicateEvaluator predicateEvaluator = new DefaultPredicateEvaluator();
+  protected ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
   protected AsyncTriggerStore asyncTriggerStore = mock(AsyncTriggerStore.class);
   protected AsyncTriggerScheduler asyncTriggerScheduler = mock(AsyncTriggerScheduler.class);
   protected CallDefinitionExecutor callExecutor = mock(CallDefinitionExecutor.class);
   protected TokenStore tokenStore = new HashMapTokenStore(new UuidGenerator());
+  protected InstanceStore instanceStore = new HashMapInstanceStore(new UuidGenerator());
   protected PropertyStore propertyStore = new HashMapPropertyStore();
   protected ListenerManager listenerManager = mock(ListenerManager.class);
 
@@ -44,11 +47,12 @@ public class AbstractExecutionTest {
 
   protected TokenFlowExecutor tokenFlowExecutorWithMocks() {
     return spy(new TokenFlowExecutor(tokenStore,
+      instanceStore,
       definitionStore,
       propertyStore,
       listenerManager,
       registryWithServiceMock(),
-      predicateEvaluator,
+            expressionEvaluator,
       asyncTriggerStore,
       asyncTriggerScheduler,
       callExecutor));
@@ -74,11 +78,21 @@ public class AbstractExecutionTest {
     };
   }
 
+  protected Answer<Object> answerWithFirstArgumentAndSecondArgument() {
+    return new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        return invocation.getArguments()[0].toString() + invocation.getArguments()[1].toString();
+      }
+    };
+  }
+
   public static
   // #tag::test-service[]
   interface TestService {
     public String getString();
     public String echo(String echo);
+    public String multiEcho(String echo, String echo2);
   }
   // #end::test-service[]
 }

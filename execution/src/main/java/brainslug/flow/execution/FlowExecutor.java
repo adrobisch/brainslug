@@ -1,9 +1,9 @@
 package brainslug.flow.execution;
 
-import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.TriggerContext;
+import brainslug.flow.instance.FlowInstance;
 
 public interface FlowExecutor {
-  Identifier startFlow(TriggerContext trigger);
+  FlowInstance startFlow(TriggerContext trigger);
   void trigger(TriggerContext trigger);
 }

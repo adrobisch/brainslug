@@ -11,9 +11,10 @@ public class BrainslugContextBuilder extends AbstractBrainslugContextBuilder<Bra
       definitionStore,
       listenerManager,
       callDefinitionExecutor,
-      predicateEvaluator,
+      expressionEvaluator,
       registry,
       flowExecutor,
-      tokenStore);
+      tokenStore,
+      instanceStore);
   }
 }

@@ -8,7 +8,6 @@ import java.util.*;
 
 public class HashMapTokenStore implements TokenStore {
 
-  Map<Identifier, List<Identifier>> flowToInstanceMap = Collections.synchronizedMap(new HashMap<Identifier, List<Identifier>>());
   Map<Identifier, List<Token>> instanceToTokenMap = new HashMap<Identifier, List<Token>>();
 
   IdGenerator idGenerator;
@@ -60,20 +59,6 @@ public class HashMapTokenStore implements TokenStore {
       }
     }
     return false;
-  }
-
-  @Override
-  public Identifier createInstance(Identifier definitionId) {
-    Identifier instanceId = idGenerator.generateId();
-    getOrCreateInstanceList(definitionId).add(instanceId);
-    return instanceId;
-  }
-
-  protected List<Identifier> getOrCreateInstanceList(Identifier flowId) {
-    if (flowToInstanceMap.get(flowId) == null) {
-      flowToInstanceMap.put(flowId, new ArrayList<Identifier>());
-    }
-    return flowToInstanceMap.get(flowId);
   }
 
 }

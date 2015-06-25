@@ -4,8 +4,8 @@ import brainslug.flow.context.TriggerContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.async.AsyncTriggerStore;
-import brainslug.flow.execution.expression.PredicateEvaluator;
-import brainslug.flow.expression.PredicateDefinition;
+import brainslug.flow.execution.expression.ExpressionEvaluator;
+import brainslug.flow.expression.PredicateExpression;
 import brainslug.flow.node.EventDefinition;
 import brainslug.flow.node.event.IntermediateEvent;
 import brainslug.flow.node.event.timer.TimerDefinition;
@@ -15,11 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, EventDefinition> {
   AsyncTriggerStore asyncTriggerStore;
-  PredicateEvaluator predicateEvaluator;
+  ExpressionEvaluator expressionEvaluator;
 
-  public EventNodeExecutor(AsyncTriggerStore asyncTriggerStore, PredicateEvaluator predicateEvaluator) {
+  public EventNodeExecutor(AsyncTriggerStore asyncTriggerStore, ExpressionEvaluator expressionEvaluator) {
     this.asyncTriggerStore = asyncTriggerStore;
-    this.predicateEvaluator = predicateEvaluator;
+    this.expressionEvaluator = expressionEvaluator;
   }
 
   @Override
@@ -96,8 +96,7 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, Ev
     return eventDefinition.is(IntermediateEvent.class) && !trigger.isSignaling();
   }
 
-  protected boolean predicateIsFulfilled(PredicateDefinition eventPredicate, ExecutionContext execution) {
-    return predicateEvaluator
-      .evaluate(eventPredicate, execution);
+  protected boolean predicateIsFulfilled(PredicateExpression eventPredicate, ExecutionContext execution) {
+    return expressionEvaluator.evaluate(eventPredicate, execution, Boolean.class);
   }
 }

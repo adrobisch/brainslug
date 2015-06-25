@@ -3,25 +3,20 @@ package brainslug.jpa;
 import brainslug.jpa.migration.DatabaseMigration;
 import brainslug.jpa.spring.SpringDatabaseConfiguration;
 import brainslug.jpa.spring.SpringDatabaseMigrationConfiguration;
+import brainslug.jpa.spring.SpringJtaConfiguration;
 import brainslug.util.IdGenerator;
-import liquibase.Liquibase;
-import liquibase.exception.LiquibaseException;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
 
 import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
   TestDataSourceConfiguration.class,
+  SpringJtaConfiguration.class,
   SpringDatabaseConfiguration.class,
   SpringDatabaseMigrationConfiguration.class
 })

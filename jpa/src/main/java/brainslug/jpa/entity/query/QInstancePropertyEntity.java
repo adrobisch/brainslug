@@ -1,6 +1,8 @@
 package brainslug.jpa.entity.query;
 
 import brainslug.jpa.entity.InstancePropertyEntity;
+import brainslug.jpa.table.QFlowInstance;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;

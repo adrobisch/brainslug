@@ -5,6 +5,7 @@ import brainslug.flow.builder.FlowBuilderSupport;
 import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
+import brainslug.flow.expression.Property;
 import brainslug.flow.node.task.CallDefinition;
 import brainslug.util.IdUtil;
 import org.assertj.core.api.Assertions;
@@ -42,21 +43,23 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
   }
 
   @Test
-  public void shouldEvaluatePropertyArgument() {
+  public void shouldEvaluatePropertyArguments() {
     FlowBuilderSupport dsl = new FlowBuilderSupport();
     TestService service = dsl.service(TestService.class);
 
-    String property = dsl.property(IdUtil.id("property"), String.class);
+    String property = dsl.value(IdUtil.id("property"), String.class);
+    String property2 = dsl.value(IdUtil.id("property2"), String.class);
 
-    CallDefinition callDefinition = dsl.method(service.echo(property));
+    CallDefinition callDefinition = dsl.method(service.multiEcho(property, property2));
 
-    when(testServiceMock.echo(anyString())).then(answerWithFirstArgument());
+    when(testServiceMock.multiEcho(anyString(), anyString())).then(answerWithFirstArgumentAndSecondArgument());
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger().property("property", "the property value"), registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger()
+      .property("property", "prop1").property("property2", "prop2"), registryWithServiceMock());
 
     Object callResult = new CallDefinitionExecutor().execute(callDefinition, execution);
 
-    Assertions.assertThat(callResult).isEqualTo("the property value");
+    Assertions.assertThat(callResult).isEqualTo("prop1prop2");
   }
 
   @Test
@@ -64,7 +67,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
     FlowBuilderSupport dsl = new FlowBuilderSupport();
     TestService service = dsl.service(TestService.class);
 
-    CallDefinition callDefinition = dsl.method(service.echo(dsl.val(dsl.constant("a constant"))));
+    CallDefinition callDefinition = dsl.method(service.echo(dsl.value(dsl.constant("a constant"))));
 
     when(testServiceMock.echo(anyString())).then(answerWithFirstArgument());
 

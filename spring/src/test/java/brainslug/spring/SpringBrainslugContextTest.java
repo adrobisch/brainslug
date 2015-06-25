@@ -72,6 +72,7 @@ public class SpringBrainslugContextTest {
 
   @Test
   public void shouldIntegrateWithLifecycle() {
+    // see auto start flow in SpringBrainslugTestConfiguration
     verify(testService).bar();
   }
 

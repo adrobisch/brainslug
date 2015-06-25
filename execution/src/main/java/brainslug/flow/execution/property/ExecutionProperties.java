@@ -3,6 +3,7 @@ package brainslug.flow.execution.property;
 import brainslug.flow.context.ExecutionProperty;
 import brainslug.flow.context.FlowProperties;
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.expression.Property;
 import brainslug.util.Option;
 
 import java.util.*;
@@ -24,6 +25,11 @@ public class ExecutionProperties implements FlowProperties<ExecutionProperty> {
   @Override
   public FlowProperties<ExecutionProperty> with(Identifier key, Object value) {
     return with(key.stringValue(), value);
+  }
+
+  @Override
+  public FlowProperties<ExecutionProperty> with(Property<?> key, Object value) {
+    return with(key.getValue(), value);
   }
 
   @Override
