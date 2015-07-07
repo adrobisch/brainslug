@@ -57,7 +57,7 @@ public class JpaTokenStore implements TokenStore {
   }
 
   @Override
-  public Token addToken(Identifier instanceId, Identifier nodeId, Option<Identifier> sourceNodeId) {
+  public Token addToken(Identifier<?> instanceId, Identifier<?> nodeId, Option<Identifier<?>> sourceNodeId) {
     Identifier tokenId = idGenerator.generateId();
 
     database.insertOrUpdate(new FlowTokenEntity()
@@ -69,7 +69,7 @@ public class JpaTokenStore implements TokenStore {
       .withIsDead(0)
     );
 
-    return new Token(tokenId, nodeId, sourceNodeId, Option.of(instanceId), false);
+    return new Token(tokenId, nodeId, sourceNodeId, Option.<Identifier<?>>of(instanceId), false);
   }
 
   @Override

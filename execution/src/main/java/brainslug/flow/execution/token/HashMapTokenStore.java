@@ -40,10 +40,10 @@ public class HashMapTokenStore implements TokenStore {
   }
 
   @Override
-  public Token addToken(Identifier instanceId, Identifier nodeId, Option<Identifier> sourceNodeId) {
+  public Token addToken(Identifier<?> instanceId, Identifier<?> nodeId, Option<Identifier<?>> sourceNodeId) {
     Token token = new Token(idGenerator.generateId(),
       nodeId, sourceNodeId,
-      Option.of(instanceId), false);
+      Option.<Identifier<?>>of(instanceId), false);
 
     getInstanceTokens(instanceId).add(token);
     return token;

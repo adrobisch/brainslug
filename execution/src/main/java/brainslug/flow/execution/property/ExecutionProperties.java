@@ -8,14 +8,14 @@ import brainslug.util.Option;
 
 import java.util.*;
 
-public class ExecutionProperties implements FlowProperties<ExecutionProperty> {
+public class ExecutionProperties implements FlowProperties<ExecutionProperties, ExecutionProperty<?>> {
   Map<String, ExecutionProperty<?>> properties;
 
   public ExecutionProperties() {
     this.properties = new HashMap<String, ExecutionProperty<?>>();
   }
 
-  public <T extends ExecutionProperty> ExecutionProperties fromList(List<T> properties) {
+  public <T extends ExecutionProperty> ExecutionProperties from(Collection<T> properties) {
     for (ExecutionProperty property : properties) {
       this.properties.put(property.getKey(), property);
     }
@@ -23,17 +23,17 @@ public class ExecutionProperties implements FlowProperties<ExecutionProperty> {
   }
 
   @Override
-  public FlowProperties<ExecutionProperty> with(Identifier key, Object value) {
+  public ExecutionProperties with(Identifier key, Object value) {
     return with(key.stringValue(), value);
   }
 
   @Override
-  public FlowProperties<ExecutionProperty> with(Property<?> key, Object value) {
+  public ExecutionProperties with(Property<?> key, Object value) {
     return with(key.getValue(), value);
   }
 
   @Override
-  public FlowProperties<ExecutionProperty> with(String key, Object value) {
+  public ExecutionProperties with(String key, Object value) {
     properties.put(key, createPropertyFromValue(key, value));
     return this;
   }
@@ -59,7 +59,7 @@ public class ExecutionProperties implements FlowProperties<ExecutionProperty> {
   }
 
   @Override
-  public FlowProperties<ExecutionProperty> withAll(FlowProperties<ExecutionProperty> executionProperties) {
+  public ExecutionProperties withAll(ExecutionProperties executionProperties) {
     for (ExecutionProperty executionProperty : executionProperties.getValues()) {
       this.properties.put(executionProperty.getKey(), executionProperty);
     }
@@ -68,7 +68,7 @@ public class ExecutionProperties implements FlowProperties<ExecutionProperty> {
 
   @Override
   public <T> T getValue(String key, Class<T> clazz) {
-    return Option.of(properties.get(key)).get().as(clazz);
+    return (T) Option.of(properties.get(key)).get().getValue();
   }
 
   @Override
@@ -77,7 +77,7 @@ public class ExecutionProperties implements FlowProperties<ExecutionProperty> {
   }
 
   @Override
-  public ExecutionProperty get(String key) {
+  public ExecutionProperty<?> get(String key) {
     return properties.get(key);
   }
 

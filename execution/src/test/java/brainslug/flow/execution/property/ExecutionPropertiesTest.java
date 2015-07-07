@@ -27,7 +27,7 @@ public class ExecutionPropertiesTest {
       );
 
     ExecutionProperties propertiesFromList = new ExecutionProperties()
-      .fromList(propertyList);
+      .from(propertyList);
 
     assertThat(propertiesFromList.getProperty("boolProp", Boolean.class).getValue()).isEqualTo(true);
     assertThat(propertiesFromList.getProperty("intProp", Integer.class).getValue()).isEqualTo(42);

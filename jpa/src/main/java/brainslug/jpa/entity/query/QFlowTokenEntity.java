@@ -7,17 +7,20 @@ import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.StringPath;
 
+import javax.annotation.Generated;
+
 import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
+
+/**
+ * QFlowTokenEntity is a Querydsl query type for FlowTokenEntity
+ */
+@Generated("com.mysema.query.codegen.EntitySerializer")
 public class QFlowTokenEntity extends EntityPathBase<FlowTokenEntity> {
 
-    private static final long serialVersionUID = 290961597L;
+    private static final long serialVersionUID = 364306403L;
 
     public static final QFlowTokenEntity flowTokenEntity = new QFlowTokenEntity("flowTokenEntity");
-
-    public final StringPath id = createString("id");
-
-    public final NumberPath<Long> version = createNumber("version", Long.class);
 
     public final NumberPath<Long> created = createNumber("created", Long.class);
 
@@ -25,9 +28,13 @@ public class QFlowTokenEntity extends EntityPathBase<FlowTokenEntity> {
 
     public final StringPath flowInstanceId = createString("flowInstanceId");
 
+    public final StringPath id = createString("id");
+
     public final NumberPath<Integer> isDead = createNumber("isDead", Integer.class);
 
     public final StringPath sourceNode = createString("sourceNode");
+
+    public final NumberPath<Long> version = createNumber("version", Long.class);
 
     public QFlowTokenEntity(String variable) {
         super(FlowTokenEntity.class, forVariable(variable));

@@ -8,10 +8,6 @@
       <version>0.18-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <spring.version>4.1.1.RELEASE</spring.version>
-    </properties>
-
     <artifactId>brainslug-spring</artifactId>
 
     <dependencies>

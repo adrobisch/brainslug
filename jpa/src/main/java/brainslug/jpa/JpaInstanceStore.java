@@ -3,10 +3,14 @@ package brainslug.jpa;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.instance.DefaultFlowInstance;
 import brainslug.flow.execution.instance.InstanceStore;
+import brainslug.flow.expression.EqualsExpression;
+import brainslug.flow.expression.Property;
+import brainslug.flow.expression.Value;
 import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.instance.InstanceSelector;
 import brainslug.jpa.entity.FlowInstanceEntity;
 import brainslug.jpa.entity.query.QFlowInstanceEntity;
+import brainslug.jpa.entity.query.QInstancePropertyEntity;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -32,15 +36,21 @@ public class JpaInstanceStore implements InstanceStore {
                 .from(QFlowInstanceEntity.flowInstanceEntity);
 
         return filterByInstance(instanceSelector,
-          filterByDefinitionId(instanceSelector,
-            filterByProperties(instanceSelector, instanceQuery)))
-            .list(QFlowInstanceEntity.flowInstanceEntity);
+                filterByDefinitionId(instanceSelector,
+                 filterByProperties(instanceSelector, instanceQuery))).list(QFlowInstanceEntity.flowInstanceEntity);
     }
 
     private JPAQuery filterByProperties(InstanceSelector instanceSelector, JPAQuery instanceQuery) {
-      if (!instanceSelector.properties().isEmpty()) {
-        throw new UnsupportedOperationException("filter by properties not yet supported");
+      for (EqualsExpression<Property<?>, Value<String>> propertyExpression : instanceSelector.properties()) {
+          QInstancePropertyEntity instanceProperty = QFlowInstanceEntity
+                  .flowInstanceEntity
+                  .properties.any();
+
+          instanceQuery
+                  .where(instanceProperty.stringValue.eq(propertyExpression.getRight().getValue())
+                  .and(instanceProperty.propertyKey.eq(propertyExpression.getLeft().getValue().stringValue())));
       }
+
       return instanceQuery;
     }
 

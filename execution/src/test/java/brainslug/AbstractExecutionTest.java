@@ -36,8 +36,8 @@ public class AbstractExecutionTest {
   protected AsyncTriggerScheduler asyncTriggerScheduler = mock(AsyncTriggerScheduler.class);
   protected CallDefinitionExecutor callExecutor = mock(CallDefinitionExecutor.class);
   protected TokenStore tokenStore = new HashMapTokenStore(new UuidGenerator());
-  protected InstanceStore instanceStore = new HashMapInstanceStore(new UuidGenerator());
   protected PropertyStore propertyStore = new HashMapPropertyStore();
+  protected InstanceStore instanceStore = new HashMapInstanceStore(new UuidGenerator(), propertyStore);
   protected ListenerManager listenerManager = mock(ListenerManager.class);
 
   BrainslugContext createContext() {

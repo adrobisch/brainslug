@@ -5,21 +5,21 @@ import brainslug.util.IdUtil;
 import brainslug.util.Option;
 
 public class Token {
-  Identifier id;
-  Identifier nodeId;
-  Option<Identifier> sourceNode;
-  Option<Identifier> instanceId;
+  Identifier<?> id;
+  Identifier<?> nodeId;
+  Option<Identifier<?>> sourceNode;
+  Option<Identifier<?>> instanceId;
   boolean isDead;
 
   public Token(String id, String nodeId, String sourceNodeId, String instanceId, int isDead) {
     this(IdUtil.id(id),
       IdUtil.id(nodeId),
-      Option.of(IdUtil.id(sourceNodeId)),
-      Option.of(IdUtil.id(instanceId)),
+      Option.<Identifier<?>>of(IdUtil.id(sourceNodeId)),
+      Option.<Identifier<?>>of(IdUtil.id(instanceId)),
       isDead == 1);
   }
 
-  public Token(Identifier id, Identifier nodeId, Option<Identifier> sourceNode, Option<Identifier> instanceId, boolean isDead) {
+  public Token(Identifier<?> id, Identifier<?> nodeId, Option<Identifier<?>> sourceNode, Option<Identifier<?>> instanceId, boolean isDead) {
     this.id = id;
     this.nodeId = nodeId;
     this.sourceNode = sourceNode;
@@ -35,11 +35,11 @@ public class Token {
     return nodeId;
   }
 
-  public Option<Identifier> getSourceNode() {
+  public Option<Identifier<?>> getSourceNode() {
     return sourceNode;
   }
 
-  public Option<Identifier> getInstanceId() {
+  public Option<Identifier<?>> getInstanceId() {
     return instanceId;
   }
 

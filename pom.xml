@@ -38,7 +38,7 @@
         <developerConnection>scm:git:git@github.com:adrobisch/brainslug.git</developerConnection>
         <url>http://github.com/adrobisch/brainslug</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <developers>
         <developer>
@@ -83,6 +83,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gpg.passphrase>passphrase</gpg.passphrase>
+        <spring.version>4.1.6.RELEASE</spring.version>
     </properties>
 
     <build>

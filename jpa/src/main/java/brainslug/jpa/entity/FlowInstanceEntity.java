@@ -28,7 +28,7 @@ public class FlowInstanceEntity implements FlowInstance {
   @Column(name = "_VERSION")
   protected Long version;
 
-  @OneToMany
+  @OneToMany(fetch = FetchType.EAGER)
   @JoinColumn(name = "_INSTANCE_ID")
   Set<InstancePropertyEntity> properties;
 

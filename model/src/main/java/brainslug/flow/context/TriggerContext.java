@@ -15,7 +15,7 @@ public interface TriggerContext {
 
   <P> P getProperty(String key, Class<P> type);
 
-  FlowProperties<ExecutionProperty> getProperties();
+  FlowProperties<?, ExecutionProperty<?>> getProperties();
 
   /**
    * @return true if this trigger should enable async node execution,

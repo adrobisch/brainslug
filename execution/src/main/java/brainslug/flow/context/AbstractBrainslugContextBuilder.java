@@ -59,7 +59,7 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
     }
 
     if (instanceStore == null) {
-      withInstanceStore(new HashMapInstanceStore(idGenerator));
+      withInstanceStore(new HashMapInstanceStore(idGenerator, propertyStore));
     }
 
     if (asyncTriggerScheduler == null) {

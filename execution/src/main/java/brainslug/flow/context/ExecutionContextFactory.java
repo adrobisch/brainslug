@@ -23,7 +23,7 @@ public class ExecutionContextFactory {
 
   protected FlowProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
     FlowProperties properties = propertyStore
-      .loadProperties(executionContext.getTrigger().getInstanceId());
+      .getProperties(executionContext.getTrigger().getInstanceId());
 
     properties.withAll(trigger.getProperties());
     return properties;

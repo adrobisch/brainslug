@@ -2,14 +2,16 @@ package brainslug.jpa.spring;
 
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.mysema.query.jpa.HQLTemplates;
+import com.mysema.query.jpa.JPQLTemplates;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.sql.DataSource;
@@ -19,23 +21,50 @@ import javax.transaction.UserTransaction;
 import java.util.Properties;
 
 @Configuration
-public class SpringJtaConfiguration {
+public class SpringHibernateConfiguration {
 
   @Autowired
+  @Qualifier("brainslug")
   XADataSource xaDataSource;
 
   @Bean
   @Qualifier("brainslug")
   public LocalContainerEntityManagerFactoryBean entityManager() throws Throwable  {
-    LocalContainerEntityManagerFactoryBean entityManager =
-      new LocalContainerEntityManagerFactoryBean();
+    LocalContainerEntityManagerFactoryBean entityManager = createFactoryBean();
+
     entityManager.setJtaDataSource(dataSource());
-    Properties properties = new Properties();
-    properties.setProperty("hibernate.transaction.manager_lookup_class",
-            TransactionManagerLookup.class.getName());
-    entityManager.setJpaProperties(properties);
+
+    if (useJta()) {
+      initJtaPlatform(jtaTransactionManager());
+    }
+
+    entityManager.setJpaProperties(jpaProperties());
+    entityManager.setPackagesToScan("brainslug.jpa.entity");
+
+    entityManager.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+    entityManager.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
     return entityManager;
+  }
+
+  protected LocalContainerEntityManagerFactoryBean createFactoryBean() {
+    return new LocalContainerEntityManagerFactoryBean();
+  }
+
+  protected void initJtaPlatform(JtaTransactionManager platformTransactionManager) {
+    SpringHibernateJtaPlatform.setJtaTransactionManager(platformTransactionManager);
+  }
+
+  protected boolean useJta() {
+    return true;
+  }
+
+  protected Properties jpaProperties() {
+    Properties properties = new Properties();
+    if (useJta()) {
+      properties.setProperty("hibernate.transaction.jta.platform", SpringHibernateJtaPlatform.class.getName());
+    }
+    return properties;
   }
 
   @Bean
@@ -50,23 +79,27 @@ public class SpringJtaConfiguration {
   }
 
   @Bean
+  JPQLTemplates jpqlTemplates() {
+    return new HQLTemplates();
+  }
+
+  @Bean
   public UserTransaction userTransaction() throws Throwable {
     UserTransactionImp userTransactionImp = new UserTransactionImp();
     userTransactionImp.setTransactionTimeout(8000);
     return userTransactionImp;
   }
 
-  @Bean(destroyMethod = "close")
+  @Bean(destroyMethod = "close", initMethod = "init")
   public TransactionManager transactionManager() throws Throwable {
     UserTransactionManager userTransactionManager = new UserTransactionManager();
     userTransactionManager.setForceShutdown(false);
-    userTransactionManager.init();
 
     return userTransactionManager;
   }
 
   @Bean
-  public PlatformTransactionManager platformTransactionManager()  throws Throwable {
+  public JtaTransactionManager jtaTransactionManager()  throws Throwable {
     return new JtaTransactionManager(userTransaction(), transactionManager());
   }
 }

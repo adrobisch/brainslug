@@ -1,19 +1,27 @@
 package brainslug.jpa.entity.query;
 
 import brainslug.jpa.entity.AsyncTaskEntity;
-import brainslug.jpa.entity.AsyncTaskErrorDetailsEntity;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.NumberPath;
-import com.mysema.query.types.path.SimplePath;
+import com.mysema.query.types.path.PathInits;
 import com.mysema.query.types.path.StringPath;
+
+import javax.annotation.Generated;
 
 import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
+
+/**
+ * QAsyncTaskEntity is a Querydsl query type for AsyncTaskEntity
+ */
+@Generated("com.mysema.query.codegen.EntitySerializer")
 public class QAsyncTaskEntity extends EntityPathBase<AsyncTaskEntity> {
 
-    private static final long serialVersionUID = 290861591L;
+    private static final long serialVersionUID = -940132327L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QAsyncTaskEntity asyncTaskEntity = new QAsyncTaskEntity("asyncTaskEntity");
 
@@ -21,9 +29,9 @@ public class QAsyncTaskEntity extends EntityPathBase<AsyncTaskEntity> {
 
     public final StringPath definitionId = createString("definitionId");
 
-    public final SimplePath<AsyncTaskErrorDetailsEntity> errorDetails = createSimple("errorDetails", AsyncTaskErrorDetailsEntity.class);
-
     public final NumberPath<Long> dueDate = createNumber("dueDate", Long.class);
+
+    public final QAsyncTaskErrorDetailsEntity errorDetails;
 
     public final StringPath id = createString("id");
 
@@ -38,15 +46,24 @@ public class QAsyncTaskEntity extends EntityPathBase<AsyncTaskEntity> {
     public final NumberPath<Long> version = createNumber("version", Long.class);
 
     public QAsyncTaskEntity(String variable) {
-        super(AsyncTaskEntity.class, forVariable(variable));
+        this(AsyncTaskEntity.class, forVariable(variable), INITS);
     }
 
     public QAsyncTaskEntity(Path<? extends AsyncTaskEntity> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), path.getMetadata().isRoot() ? INITS : PathInits.DEFAULT);
     }
 
     public QAsyncTaskEntity(PathMetadata<?> metadata) {
-        super(AsyncTaskEntity.class, metadata);
+        this(metadata, metadata.isRoot() ? INITS : PathInits.DEFAULT);
+    }
+
+    public QAsyncTaskEntity(PathMetadata<?> metadata, PathInits inits) {
+        this(AsyncTaskEntity.class, metadata, inits);
+    }
+
+    public QAsyncTaskEntity(Class<? extends AsyncTaskEntity> type, PathMetadata<?> metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.errorDetails = inits.isInitialized("errorDetails") ? new QAsyncTaskErrorDetailsEntity(forProperty("errorDetails")) : null;
     }
 
 }

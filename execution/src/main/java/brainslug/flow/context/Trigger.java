@@ -13,7 +13,7 @@ public class Trigger<T extends Trigger> implements TriggerContext {
   protected Boolean async = false;
   protected Boolean signaling = false;
 
-  protected FlowProperties properties;
+  protected FlowProperties<?, ExecutionProperty<?>> properties;
 
   @Override
   public Identifier getDefinitionId() {
@@ -97,7 +97,7 @@ public class Trigger<T extends Trigger> implements TriggerContext {
   }
 
   @Override
-  public FlowProperties<ExecutionProperty> getProperties() {
+  public FlowProperties<?, ExecutionProperty<?>> getProperties() {
     if (properties == null) {
       properties = new ExecutionProperties();
     }

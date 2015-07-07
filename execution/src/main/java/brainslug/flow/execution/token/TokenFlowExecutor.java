@@ -105,9 +105,9 @@ public class TokenFlowExecutor implements FlowExecutor {
     FlowNodeDefinition<?> startNode = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
 
     Identifier instanceId = instanceStore.createInstance(trigger.getDefinitionId()).getIdentifier();
-    tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier>empty());
+    tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier<?>>empty());
 
-    propertyStore.storeProperties(trigger.getInstanceId(), trigger.getProperties());
+    propertyStore.setProperties(trigger.getInstanceId(), trigger.getProperties());
 
     trigger(new Trigger()
       .nodeId(startNode.getId())
@@ -134,7 +134,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     listenerManager.notifyListeners(EventType.BEFORE_EXECUTION, trigger);
 
     FlowNodeExecutionResult executionResult = nodeExecutor.execute(node, executionContext);
-    propertyStore.storeProperties(trigger.getInstanceId(), trigger.getProperties());
+    propertyStore.setProperties(trigger.getInstanceId(), trigger.getProperties());
 
     listenerManager.notifyListeners(EventType.AFTER_EXECUTION, trigger);
 
@@ -158,7 +158,7 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   protected void addToken(TriggerContext trigger, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
     if (trigger.getInstanceId() != null) {
-      tokenStore.addToken(trigger.getInstanceId(), nextNode.getId(), Option.of(node.getId()));
+      tokenStore.addToken(trigger.getInstanceId(), nextNode.getId(), Option.<Identifier<?>>of(node.getId()));
     }
   }
 

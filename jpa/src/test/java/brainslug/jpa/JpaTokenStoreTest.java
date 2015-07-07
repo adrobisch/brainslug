@@ -31,7 +31,7 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
     // then:
     TokenList instanceTokens = jpaTokenStore.getInstanceTokens(instanceId);
     assertThat(instanceTokens.getTokens())
-      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.of(instanceId), false))
+      .contains(new Token(tokenId, nodeId, Option.<Identifier<?>>empty(), Option.<Identifier<?>>of(instanceId), false))
       .hasSize(1);
   }
 
@@ -54,7 +54,7 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
     jpaInstanceStore.createInstance(flowId);
 
     when(idGeneratorMock.generateId()).thenReturn(tokenId);
-    jpaTokenStore.addToken(instanceId, nodeId, Option.<Identifier>empty());
+    jpaTokenStore.addToken(instanceId, nodeId, Option.<Identifier<?>>empty());
     return instanceId;
   }
 

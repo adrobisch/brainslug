@@ -15,12 +15,12 @@ import java.util.List;
 
 import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.*;
 
-class JpaPropertyFactoryExpression extends FactoryExpressionBase<ExecutionProperty> {
+class JpaPropertyFactoryExpression extends FactoryExpressionBase<ExecutionProperty<?>> {
   private final ObjectSerializer serializer;
   private List<Expression<?>> args;
 
-  public JpaPropertyFactoryExpression(ObjectSerializer serializer) {
-    super(ExecutionProperty.class);
+  public JpaPropertyFactoryExpression(ObjectSerializer serializer, Class<? extends ExecutionProperty<?>> type) {
+    super(type);
     this.serializer = serializer;
   }
 

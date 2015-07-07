@@ -21,9 +21,4 @@ public class AbstractProperty<PropertyType> implements ExecutionProperty<Propert
   public PropertyType getValue() {
     return value;
   }
-
-  @Override
-  public <AsType> AsType as(Class<AsType> clazz) {
-    return (AsType) getValue();
-  }
 }

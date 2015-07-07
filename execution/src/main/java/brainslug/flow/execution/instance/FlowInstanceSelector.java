@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class DefaultInstanceSelector implements InstanceSelector {
+public class FlowInstanceSelector implements InstanceSelector {
     Identifier instanceId;
     Identifier definitionId;
     List<EqualsExpression<Property<?>, Value<String>>> properties = new ArrayList<EqualsExpression<Property<?>, Value<String>>>();
@@ -31,18 +31,23 @@ public class DefaultInstanceSelector implements InstanceSelector {
       return properties;
     }
 
-    public DefaultInstanceSelector withInstanceId(Identifier instanceId) {
+    public FlowInstanceSelector withInstanceId(Identifier instanceId) {
         this.instanceId = instanceId;
         return this;
     }
 
-    public DefaultInstanceSelector withDefinitionId(Identifier definitionId) {
+    public FlowInstanceSelector withDefinitionId(Identifier definitionId) {
         this.definitionId = definitionId;
         return this;
     }
 
-    public DefaultInstanceSelector withProperty(Property<?> property, Value<String> value) {
+    public FlowInstanceSelector withProperty(Property<?> property, Value<String> value) {
         properties.add(new EqualsExpression<Property<?>, Value<String>>(property, value));
+        return this;
+    }
+
+    public FlowInstanceSelector withProperty(Identifier<?> id, String value) {
+        properties.add(new EqualsExpression<Property<?>, Value<String>>(new Property(id), new Value<String>(value)));
         return this;
     }
 }

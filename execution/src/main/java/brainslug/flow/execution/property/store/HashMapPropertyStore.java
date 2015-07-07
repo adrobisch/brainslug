@@ -12,15 +12,33 @@ import java.util.Map;
 
 public class HashMapPropertyStore implements PropertyStore {
 
-  Map<Identifier<?>, FlowProperties> propertiesByInstance = Collections.synchronizedMap(new HashMap<Identifier<?>, FlowProperties>());
+  Map<Identifier<?>, ExecutionProperties> propertiesByInstance = Collections.synchronizedMap(new HashMap<Identifier<?>, ExecutionProperties>());
 
   @Override
-  public void storeProperties(Identifier<?> instanceId, FlowProperties<ExecutionProperty> properties) {
-    propertiesByInstance.put(instanceId, properties);
+  public void setProperty(Identifier<?> instanceId, ExecutionProperty<?> property) {
+    ExecutionProperties instanceProperties = propertiesByInstance.get(instanceId);
+    if (instanceProperties != null) {
+      instanceProperties.with(property.getKey(), property.getValue());
+    }
   }
 
   @Override
-  public FlowProperties loadProperties(Identifier<?> instanceId) {
+  public void setProperties(Identifier<?> instanceId, FlowProperties<?, ExecutionProperty<?>> properties) {
+    propertiesByInstance.put(instanceId, new ExecutionProperties().from(properties.getValues()));
+  }
+
+  @Override
+  public Option<ExecutionProperty<?>> getProperty(Identifier<?> instanceId, Identifier<?> key) {
+    ExecutionProperties instanceProperties = propertiesByInstance.get(instanceId);
+    if (instanceProperties == null) {
+      return Option.empty();
+    } else {
+      return Option.<ExecutionProperty<?>>of(instanceProperties.get(key.stringValue()));
+    }
+  }
+
+  @Override
+  public FlowProperties<?, ExecutionProperty<?>> getProperties(Identifier<?> instanceId) {
     return Option.of(propertiesByInstance.get(instanceId)).orElse(new ExecutionProperties());
   }
 }
