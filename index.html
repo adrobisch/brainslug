@@ -506,7 +506,7 @@ table.CodeRay td.code>pre{padding:0}
 <h1>Brainslug Documentation</h1>
 <div class="details">
 <span id="author" class="author">A. Drobisch</span><br>
-<span id="revnumber">version 0.17</span>
+<span id="revnumber">version 0.19-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -570,6 +570,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_spring_support">Spring Support</a>
 <ul class="sectlevel1">
 <li><a href="#_setup_2">Setup</a></li>
+<li><a href="#_custom_brainslugcontext">Custom BrainslugContext</a></li>
 </ul>
 </li>
 <li><a href="#_bpmn_support">BPMN Support</a>
@@ -812,8 +813,8 @@ There are different type of event: Start Events, End Events, Wait (Intermediate)
 
   EventDefinition eventFlowStart = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Every 5 Seconds</span><span class="delimiter">&quot;</span></span>);
 
-  EventDefinition fiveSecondsElapsed = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">wait</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">After 5 Seconds</span><span class="delimiter">&quot;</span></span>)
-    .elapsedTime(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS);
+  EventDefinition fiveSecondsPassed = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">wait</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">After 5 Seconds</span><span class="delimiter">&quot;</span></span>)
+    .timePassed(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS);
 
   TaskDefinition theTask = task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">doIt</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Do Something</span><span class="delimiter">&quot;</span></span>);
 
@@ -822,7 +823,7 @@ There are different type of event: Start Events, End Events, Wait (Intermediate)
     flowId(eventFlowId);
 
     start(eventFlowStart, every(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS))
-      .waitFor(fiveSecondsElapsed)
+      .waitFor(fiveSecondsPassed)
       .execute(theTask);
   }
 }</code></pre>
@@ -867,10 +868,10 @@ where the predicate is fullfilled.</p>
   EventDefinition choiceEnd = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span>);
 
   Identifier meaningOfLiveChoice = id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning_choice</span><span class="delimiter">&quot;</span></span>);
-  <span class="predefined-type">Expression</span> meaningProperty = property(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning</span><span class="delimiter">&quot;</span></span>));
+  Value meaningProperty = property(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning</span><span class="delimiter">&quot;</span></span>));
 
-  EqualDefinition&lt;?,?&gt; equalsFortyTwo = eq(meaningProperty, <span class="integer">42</span>);
-  EqualDefinition&lt;?,?&gt; equalsFortyThree = eq(meaningProperty, <span class="integer">43</span>);
+  EqualsExpression equalsFortyTwo = eq(meaningProperty, <span class="integer">42</span>);
+  EqualsExpression equalsFortyThree = eq(meaningProperty, <span class="integer">43</span>);
 
   TaskDefinition meaningfulTask = task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning_ful</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Meaningful Task</span><span class="delimiter">&quot;</span></span>);
   TaskDefinition meaninglessTask = task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning_less</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Meaningless Task</span><span class="delimiter">&quot;</span></span>);
@@ -1066,6 +1067,7 @@ method you want be executed for a task:</p>
 <pre class="CodeRay highlight"><code data-lang="java"><span class="type">interface</span> <span class="class">TestService</span> {
   <span class="directive">public</span> <span class="predefined-type">String</span> getString();
   <span class="directive">public</span> <span class="predefined-type">String</span> echo(<span class="predefined-type">String</span> echo);
+  <span class="directive">public</span> <span class="predefined-type">String</span> multiEcho(<span class="predefined-type">String</span> echo, <span class="predefined-type">String</span> echo2);
 }</code></pre>
 </div>
 </div>
@@ -1075,10 +1077,13 @@ method you want be executed for a task:</p>
 
   <span class="annotation">@Override</span>
   <span class="directive">public</span> <span class="type">void</span> define() {
+    Property&lt;<span class="predefined-type">String</span>&gt; echoProperty = FlowBuilderSupport.property(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">echo</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">String</span>.class);
+
     TestService testService = service(TestService.class);
 
     start(event(id(START)))
       .execute(task(id(TASK)).call(method(testService.echo(testService.getString()))))
+      .execute(task(id(TASK2)).call(method(testService.echo(value(echoProperty)))))
     .end(event(id(END)));
 
   }
@@ -1115,9 +1120,7 @@ It is possible to use JPA for the persistence of flow instance information. This
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">new</span> Database(entityManager, <span class="keyword">new</span> HQLTemplates()); <span class="comment">// adjust templates to your JPA provider</span>
-
-JpaTokenStore jpaTokenStore = <span class="keyword">new</span> JpaTokenStore(...)
+<pre class="CodeRay highlight"><code data-lang="java">JpaTokenStore jpaTokenStore = <span class="keyword">new</span> JpaTokenStore(...)
 JpaAsyncTriggerStore jpaAsyncTriggerStore = <span class="keyword">new</span> JpaAsyncTriggerStore(...)
 JpaPropertyStore jpaPropertyStore = <span class="keyword">new</span> JpaPropertyStore(...)</code></pre>
 </div>
@@ -1141,6 +1144,7 @@ JpaPropertyStore jpaPropertyStore = <span class="keyword">new</span> JpaProperty
 <div class="content">
 It is possible integrate brainslug with the Spring application context, so that the Spring Beans
 are available in the execution context.
+To use it, you need to get the <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22brainslug-spring%22"><code>brainslug-spring</code> module</a>.
 </div>
 </div>
 <div class="sect1">
@@ -1150,7 +1154,10 @@ are available in the execution context.
 <p>Just import the spring configuration class into you application context.</p>
 </div>
 <div class="paragraph">
-<p>Calls to the <code>ExecutionContext</code> or the <code>Registry</code> will then return the beans from the Spring application context:</p>
+<p>Calls to the <code>ExecutionContext</code> or the <code>Registry</code> will then return the beans from the Spring application context.</p>
+</div>
+<div class="paragraph">
+<p>All beans of type <code>FlowBuilder</code> will be made available in the <code>BrainslugContext</code> as well:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1213,6 +1220,28 @@ are available in the execution context.
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="bash">Hello World!
 Hello again!</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_brainslugcontext">Custom BrainslugContext</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To configure the <code>BrainslugContext</code> in your <code>ApplicationContext</code> you can use the <code>SpringBrainslugContextBuilder</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@Import</span>(brainslug.spring.SpringBrainslugConfiguration.class)
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ContextBuilderExample</span> {
+  <span class="annotation">@Bean</span>
+  SpringBrainslugContextBuilder contextBuilder() {
+    <span class="keyword">return</span> <span class="keyword">new</span> SpringBrainslugContextBuilder()
+      .withPropertyStore(<span class="keyword">new</span> HashMapPropertyStore());
+      <span class="comment">// ...</span>
+  }
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1373,7 +1402,7 @@ BPEL engines make most sense in WS-* environments.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.17<br>
+Version 0.19-SNAPSHOT<br>
 Last updated 2015-03-10 23:15:36 CET
 </div>
 </div>

@@ -617,6 +617,7 @@ method you want be executed for a task:</p>
 <pre class="CodeRay highlight"><code data-lang="java"><span class="type">interface</span> <span class="class">TestService</span> {
   <span class="directive">public</span> <span class="predefined-type">String</span> getString();
   <span class="directive">public</span> <span class="predefined-type">String</span> echo(<span class="predefined-type">String</span> echo);
+  <span class="directive">public</span> <span class="predefined-type">String</span> multiEcho(<span class="predefined-type">String</span> echo, <span class="predefined-type">String</span> echo2);
 }</code></pre>
 </div>
 </div>
@@ -626,10 +627,13 @@ method you want be executed for a task:</p>
 
   <span class="annotation">@Override</span>
   <span class="directive">public</span> <span class="type">void</span> define() {
+    Property&lt;<span class="predefined-type">String</span>&gt; echoProperty = FlowBuilderSupport.property(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">echo</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">String</span>.class);
+
     TestService testService = service(TestService.class);
 
     start(event(id(START)))
       .execute(task(id(TASK)).call(method(testService.echo(testService.getString()))))
+      .execute(task(id(TASK2)).call(method(testService.echo(value(echoProperty)))))
     .end(event(id(END)));
 
   }
@@ -648,7 +652,7 @@ This will be done using reflection on the instance of the service, which must be
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-25 22:13:59 CET
+Last updated 2015-06-25 22:38:39 CEST
 </div>
 </div>
 </body>

@@ -537,8 +537,8 @@ There are different type of event: Start Events, End Events, Wait (Intermediate)
 
   EventDefinition eventFlowStart = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Every 5 Seconds</span><span class="delimiter">&quot;</span></span>);
 
-  EventDefinition fiveSecondsElapsed = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">wait</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">After 5 Seconds</span><span class="delimiter">&quot;</span></span>)
-    .elapsedTime(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS);
+  EventDefinition fiveSecondsPassed = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">wait</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">After 5 Seconds</span><span class="delimiter">&quot;</span></span>)
+    .timePassed(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS);
 
   TaskDefinition theTask = task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">doIt</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Do Something</span><span class="delimiter">&quot;</span></span>);
 
@@ -547,7 +547,7 @@ There are different type of event: Start Events, End Events, Wait (Intermediate)
     flowId(eventFlowId);
 
     start(eventFlowStart, every(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS))
-      .waitFor(fiveSecondsElapsed)
+      .waitFor(fiveSecondsPassed)
       .execute(theTask);
   }
 }</code></pre>
@@ -592,10 +592,10 @@ where the predicate is fullfilled.</p>
   EventDefinition choiceEnd = event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">end</span><span class="delimiter">&quot;</span></span>);
 
   Identifier meaningOfLiveChoice = id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning_choice</span><span class="delimiter">&quot;</span></span>);
-  <span class="predefined-type">Expression</span> meaningProperty = property(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning</span><span class="delimiter">&quot;</span></span>));
+  Value meaningProperty = property(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning</span><span class="delimiter">&quot;</span></span>));
 
-  EqualDefinition&lt;?,?&gt; equalsFortyTwo = eq(meaningProperty, <span class="integer">42</span>);
-  EqualDefinition&lt;?,?&gt; equalsFortyThree = eq(meaningProperty, <span class="integer">43</span>);
+  EqualsExpression equalsFortyTwo = eq(meaningProperty, <span class="integer">42</span>);
+  EqualsExpression equalsFortyThree = eq(meaningProperty, <span class="integer">43</span>);
 
   TaskDefinition meaningfulTask = task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning_ful</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Meaningful Task</span><span class="delimiter">&quot;</span></span>);
   TaskDefinition meaninglessTask = task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">meaning_less</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Meaningless Task</span><span class="delimiter">&quot;</span></span>);
@@ -681,7 +681,7 @@ A token is produced for every outgoing edge.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-13 14:55:37 CET
+Last updated 2015-03-26 20:49:49 CET
 </div>
 </div>
 </body>
