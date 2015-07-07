@@ -7,7 +7,7 @@ import brainslug.flow.execution.async.AsyncTriggerQuery;
 import brainslug.flow.execution.async.AsyncTriggerStore;
 import brainslug.jpa.entity.AsyncTaskEntity;
 import brainslug.jpa.entity.AsyncTaskErrorDetailsEntity;
-import brainslug.jpa.entity.query.QAsyncTaskEntity;
+import brainslug.jpa.entity.QAsyncTaskEntity;
 import brainslug.util.IdGenerator;
 import brainslug.util.IdUtil;
 import brainslug.util.Option;

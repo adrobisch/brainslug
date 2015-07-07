@@ -6,7 +6,7 @@ import brainslug.flow.execution.token.Token;
 import brainslug.flow.execution.token.TokenList;
 import brainslug.flow.execution.token.TokenStore;
 import brainslug.jpa.entity.FlowTokenEntity;
-import brainslug.jpa.entity.query.QFlowTokenEntity;
+import brainslug.jpa.entity.QFlowTokenEntity;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
 import com.mysema.query.types.ConstructorExpression;

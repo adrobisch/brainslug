@@ -6,7 +6,7 @@ import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.property.*;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.jpa.entity.InstancePropertyEntity;
-import brainslug.jpa.entity.query.QInstancePropertyEntity;
+import brainslug.jpa.entity.QInstancePropertyEntity;
 import brainslug.jpa.util.ObjectSerializer;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
