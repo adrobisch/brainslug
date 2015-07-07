@@ -53,7 +53,7 @@
             <column name="_EXCEPTION_TYPE" type="varchar(1024)">
                 <constraints nullable="false"/>
             </column>
-            <column name="_MESSAGE" type="clob" />
+            <column name="_MESSAGE" type="varchar(2048)" />
             <column name="_CREATED" type="bigint">
                 <constraints nullable="false"/>
             </column>

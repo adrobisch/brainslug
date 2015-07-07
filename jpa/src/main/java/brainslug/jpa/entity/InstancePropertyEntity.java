@@ -27,6 +27,7 @@ public class InstancePropertyEntity {
   @Column(name = "_PROPERTY_KEY")
   protected String propertyKey;
 
+  @Lob
   @Column(name = "_STRING_VALUE")
   protected String stringValue;
 

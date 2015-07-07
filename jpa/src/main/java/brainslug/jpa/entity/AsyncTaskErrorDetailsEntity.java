@@ -18,6 +18,7 @@ public class AsyncTaskErrorDetailsEntity {
   @Column(name = "_VERSION")
   protected Long version;
 
+  @Lob
   @NotNull
   @Column(name = "_STACK_TRACE")
   protected String stackTrace;
