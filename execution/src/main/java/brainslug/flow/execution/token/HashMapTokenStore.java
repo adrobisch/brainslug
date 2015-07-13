@@ -55,13 +55,31 @@ public class HashMapTokenStore implements TokenStore {
   }
 
   @Override
-  public boolean removeToken(Identifier instanceId, Identifier tokenIdToDelete) {
+  public boolean setDead(Identifier instanceId, Identifier tokenIdToDelete) {
+    Option<Token> token = findToken(instanceId, tokenIdToDelete);
+    if (token.isPresent()) {
+      token.get().setDead(true);
+      return true;
+    }
+    return false;
+  }
+
+  private Option<Token> findToken(Identifier instanceId, Identifier tokenIdToDelete) {
     for (final Iterator<Token> instanceTokens = tokensForInstance(instanceId).iterator(); instanceTokens.hasNext(); ) {
       Token nextToken = instanceTokens.next();
       if (nextToken.getId().equals(tokenIdToDelete)) {
-        nextToken.setDead(true);
-        return true;
+        return Option.of(nextToken);
       }
+    }
+    return Option.empty();
+  }
+
+  @Override
+  public boolean setFinal(Identifier instanceId, Identifier tokenId) {
+    Option<Token> token = findToken(instanceId, tokenId);
+    if (token.isPresent()) {
+      token.get().setFinal(true);
+      return true;
     }
     return false;
   }

@@ -41,7 +41,7 @@ public class TokenOperations {
 
   protected void removeToken(Identifier instanceId, FlowInstanceToken token) {
     if (token != null) {
-      tokenStore.removeToken(instanceId, token.getId());
+      tokenStore.setDead(instanceId, token.getId());
     }
   }
 }

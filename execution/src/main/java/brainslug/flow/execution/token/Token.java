@@ -11,7 +11,7 @@ public class Token implements FlowInstanceToken {
   Option<Identifier> sourceNode;
   Option<Identifier> instanceId;
   boolean isDead;
-  private boolean isFinal;
+  boolean isFinal;
 
   public Token(String id, String nodeId, String sourceNodeId, String instanceId, int isDead, int isFinal) {
     this(IdUtil.id(id),
@@ -63,6 +63,10 @@ public class Token implements FlowInstanceToken {
 
   public void setDead(boolean isDead) {
     this.isDead = isDead;
+  }
+
+  public void setFinal(boolean isFinal) {
+    this.isFinal = isFinal;
   }
 
   @Override

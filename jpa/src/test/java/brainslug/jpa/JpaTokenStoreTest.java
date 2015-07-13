@@ -2,9 +2,12 @@ package brainslug.jpa;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.token.Token;
+import brainslug.flow.instance.FlowInstanceToken;
 import brainslug.flow.instance.FlowInstanceTokenList;
 import brainslug.util.Option;
 import org.junit.Test;
+
+import java.util.List;
 
 import static brainslug.util.IdUtil.id;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,17 +39,35 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
   }
 
   @Test
-  public void shouldDeleteToken() throws Exception {
+  public void shouldSetTokenDead() throws Exception {
     // given:
     JpaTokenStore jpaTokenStore = createJpaTokenStore();
     JpaInstanceStore jpaInstanceStore = createJpaInstanceStore();
 
     Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore, jpaInstanceStore);
     // when:
-    jpaTokenStore.removeToken(instanceId, tokenId);
+    jpaTokenStore.setDead(instanceId, tokenId);
 
     assertThat(jpaTokenStore.getNodeTokens(nodeId, instanceId).getActiveTokens())
       .hasSize(0);
+  }
+
+  @Test
+  public void shouldSetTokenFinal() throws Exception {
+    // given:
+    JpaTokenStore jpaTokenStore = createJpaTokenStore();
+    JpaInstanceStore jpaInstanceStore = createJpaInstanceStore();
+
+    Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore, jpaInstanceStore);
+    // when:
+    jpaTokenStore.setFinal(instanceId, tokenId);
+
+    List<FlowInstanceToken> activeTokens = jpaTokenStore.getNodeTokens(nodeId, instanceId).getActiveTokens();
+
+    assertThat(activeTokens)
+      .hasSize(1);
+
+    assertThat(activeTokens.get(0).isFinal()).isTrue();
   }
 
   private Identifier createInstanceWithSingleRootToken(JpaTokenStore jpaTokenStore, JpaInstanceStore jpaInstanceStore) {

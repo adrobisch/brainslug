@@ -11,6 +11,7 @@ import brainslug.jpa.entity.FlowTokenEntity;
 import brainslug.jpa.entity.QFlowTokenEntity;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
+import com.mysema.query.jpa.impl.JPAUpdateClause;
 import com.mysema.query.types.ConstructorExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,17 +89,31 @@ public class JpaTokenStore implements TokenStore {
   }
 
   @Override
-  public boolean removeToken(Identifier instanceId, Identifier tokenId) {
+  public boolean setDead(Identifier instanceId, Identifier tokenId) {
     log.debug("removing token: {}", tokenId.stringValue());
 
-    Long updatedCount = database.update(QFlowTokenEntity.flowTokenEntity)
-      .where(
-        QFlowTokenEntity.flowTokenEntity.id.eq(tokenId.stringValue()),
-        QFlowTokenEntity.flowTokenEntity.flowInstanceId.eq(instanceId.stringValue())
-      ).set(QFlowTokenEntity.flowTokenEntity.isDead, 1)
+    Long updatedCount = tokenUpdate(instanceId, tokenId)
+      .set(QFlowTokenEntity.flowTokenEntity.isDead, 1)
       .execute();
 
     return updatedCount > 0;
+  }
+
+  @Override
+  public boolean setFinal(Identifier instanceId, Identifier tokenId) {
+    Long updatedCount = tokenUpdate(instanceId, tokenId)
+      .set(QFlowTokenEntity.flowTokenEntity.isFinal, 1)
+      .execute();
+
+    return updatedCount > 0;
+  }
+
+  JPAUpdateClause tokenUpdate(Identifier instanceId, Identifier tokenId) {
+    return database.update(QFlowTokenEntity.flowTokenEntity)
+      .where(
+        QFlowTokenEntity.flowTokenEntity.id.eq(tokenId.stringValue()),
+        QFlowTokenEntity.flowTokenEntity.flowInstanceId.eq(instanceId.stringValue())
+      );
   }
 
 }
