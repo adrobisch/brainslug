@@ -1,14 +1,14 @@
 package brainslug.flow.execution.instance;
 
-import brainslug.flow.context.ExecutionProperty;
-import brainslug.flow.context.FlowProperties;
+import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.expression.EqualsExpression;
 import brainslug.flow.expression.Property;
 import brainslug.flow.expression.Value;
 import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.InstanceSelector;
+import brainslug.flow.instance.FlowInstanceSelector;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
 
@@ -28,7 +28,7 @@ public class HashMapInstanceStore implements InstanceStore {
     }
 
     @Override
-    public List<FlowInstance> findInstances(InstanceSelector instanceSelector) {
+    public List<FlowInstance> findInstances(FlowInstanceSelector instanceSelector) {
       return filterProperties(instanceSelector.properties(), instancesByFlowIdAndInstanceId(instanceSelector));
     }
 
@@ -40,10 +40,10 @@ public class HashMapInstanceStore implements InstanceStore {
         List<FlowInstance> filteredInstances = new ArrayList<FlowInstance>();
 
         for (FlowInstance flowInstance : flowInstances) {
-          FlowProperties<?, ExecutionProperty<?>> instanceProperties = propertyStore.getProperties(flowInstance.getIdentifier());
+          FlowInstanceProperties<?, FlowInstanceProperty<?>> instanceProperties = propertyStore.getProperties(flowInstance.getIdentifier());
 
           for (EqualsExpression<Property<?>, Value<String>> propertyExpression : propertyExpressions) {
-              ExecutionProperty<?> propertyValue = instanceProperties.get(propertyExpression.getLeft().getValue().stringValue());
+              FlowInstanceProperty<?> propertyValue = instanceProperties.get(propertyExpression.getLeft().getValue().stringValue());
 
               if (propertyValue != null && propertyValue.getValue().equals(propertyExpression.getRight().getValue())) {
                 filteredInstances.add(flowInstance);
@@ -54,7 +54,7 @@ public class HashMapInstanceStore implements InstanceStore {
         return filteredInstances;
     }
 
-    private List<FlowInstance> instancesByFlowIdAndInstanceId(InstanceSelector instanceSelector) {
+    private List<FlowInstance> instancesByFlowIdAndInstanceId(FlowInstanceSelector instanceSelector) {
       if (!instanceSelector.definitionId().isPresent() && !instanceSelector.instanceId().isPresent()) {
           throw new IllegalArgumentException("you need to specify either instance or definition identifier");
       } else if (instanceSelector.definitionId().isPresent() && !instanceSelector.instanceId().isPresent()) {
@@ -73,12 +73,12 @@ public class HashMapInstanceStore implements InstanceStore {
         return Collections.singletonList(instance);
     }
 
-    protected FlowInstance instanceByDefinitionIdAndInstanceId(InstanceSelector instanceSelector) {
+    protected FlowInstance instanceByDefinitionIdAndInstanceId(FlowInstanceSelector instanceSelector) {
         return getOrCreateInstanceMap(instanceSelector.definitionId().get()).get(instanceSelector.instanceId().get());
     }
 
     @Override
-    public Option<FlowInstance> findInstance(InstanceSelector instanceSelector) {
+    public Option<FlowInstance> findInstance(FlowInstanceSelector instanceSelector) {
         List<FlowInstance> instances = filterProperties(instanceSelector.properties(), instancesByFlowIdAndInstanceId(instanceSelector));
         if (instances.isEmpty()) {
             return Option.empty();

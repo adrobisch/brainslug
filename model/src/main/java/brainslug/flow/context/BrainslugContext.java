@@ -3,9 +3,9 @@ package brainslug.flow.context;
 import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.InstanceSelector;
+import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.instance.FlowInstanceSelector;
 import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.util.Option;
 
 import java.util.Collection;
 
@@ -69,7 +69,7 @@ public interface BrainslugContext {
    * @return id of the started flow instance
    * @throws java.lang.IllegalStateException if more the one start node definition exists
    */
-  Identifier startFlow(FlowDefinition flowDefinition, FlowProperties properties);
+  Identifier startFlow(FlowDefinition flowDefinition, FlowInstanceProperties properties);
 
   /**
    * start an instance of the given flow definition
@@ -79,7 +79,7 @@ public interface BrainslugContext {
    * @param properties the properties to be available during execution
    * @return id of the started flow instance
    */
-  Identifier startFlow(FlowDefinition flowDefinition, FlowNodeDefinition startNode, FlowProperties properties);
+  Identifier startFlow(FlowDefinition flowDefinition, FlowNodeDefinition startNode, FlowInstanceProperties properties);
 
   /**
    * start the flow at the given startNodeId
@@ -102,7 +102,7 @@ public interface BrainslugContext {
    * @param properties the properties to be available during execution
    * @return id of the instance
    */
-  Identifier startFlow(Identifier definitionId, FlowProperties properties);
+  Identifier startFlow(Identifier definitionId, FlowInstanceProperties properties);
 
   /**
    * start the flow at the given startNodeId
@@ -111,7 +111,7 @@ public interface BrainslugContext {
    * @param properties the properties to be available during execution
    * @return id of the instance
    */
-  Identifier startFlow(Identifier definitionId, Identifier startNodeId, FlowProperties properties);
+  Identifier startFlow(Identifier definitionId, Identifier startNodeId, FlowInstanceProperties properties);
 
   /**
    * find the flow instance matching the given instance selector
@@ -119,7 +119,7 @@ public interface BrainslugContext {
    * @param instanceSelector
    * @return a optional flow instance
    */
-  Collection<? extends FlowInstance> findInstances(InstanceSelector instanceSelector);
+  Collection<? extends FlowInstance> findInstances(FlowInstanceSelector instanceSelector);
 
   /**
    *

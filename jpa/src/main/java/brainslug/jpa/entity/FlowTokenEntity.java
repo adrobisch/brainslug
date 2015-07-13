@@ -1,10 +1,15 @@
 package brainslug.jpa.entity;
 
+import brainslug.flow.definition.Identifier;
+import brainslug.flow.instance.FlowInstanceToken;
+import brainslug.util.IdUtil;
+import brainslug.util.Option;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "BS_FLOW_TOKEN")
-public class FlowTokenEntity {
+public class FlowTokenEntity implements FlowInstanceToken {
 
   @Id
   @Column(name = "_ID")
@@ -26,11 +31,19 @@ public class FlowTokenEntity {
   @Column(name = "_IS_DEAD")
   protected Integer isDead;
 
+  @Column(name = "_IS_FINAL")
+  protected Integer isFinal;
+
   @Column(name = "_SOURCE_NODE")
   protected String sourceNode;
 
-  public String getId() {
-    return id;
+  public Identifier getId() {
+    return IdUtil.id(id);
+  }
+
+  @Override
+  public Identifier getNodeId() {
+    return IdUtil.id(currentNode);
   }
 
   public FlowTokenEntity withId(String id) {
@@ -74,8 +87,8 @@ public class FlowTokenEntity {
     return this;
   }
 
-  public Integer getIsDead() {
-    return isDead;
+  public boolean isDead() {
+    return isDead == 1;
   }
 
   public FlowTokenEntity withIsDead(Integer isDead) {
@@ -83,8 +96,22 @@ public class FlowTokenEntity {
     return this;
   }
 
-  public String getSourceNode() {
-    return sourceNode;
+  public Option<Identifier> getSourceNodeId() {
+    return Option.of(IdUtil.id(sourceNode));
+  }
+
+  @Override
+  public Option<Identifier> getInstanceId() {
+    return Option.of(IdUtil.id(flowInstanceId));
+  }
+
+  @Override
+  public boolean isFinal() {
+    return isFinal == 1;
+  }
+
+  public void setDead(boolean isDead) {
+    this.isDead = isDead ? 1 : 0;
   }
 
   public FlowTokenEntity withSourceNode(String sourceNode) {

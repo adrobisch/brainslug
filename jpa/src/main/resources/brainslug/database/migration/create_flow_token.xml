@@ -32,6 +32,7 @@
             </column>
             <column name="_SOURCE_NODE" type="varchar(100)" />
             <column name="_IS_DEAD" type="integer" defaultValueNumeric="0" />
+            <column name="_IS_FINAL" type="integer" defaultValueNumeric="0" />
         </createTable>
         
         <createIndex tableName="BS_FLOW_TOKEN" indexName="IDX_TOKEN_INSTANCE">

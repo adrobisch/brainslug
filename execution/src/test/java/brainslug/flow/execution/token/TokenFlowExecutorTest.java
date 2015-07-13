@@ -2,11 +2,13 @@ package brainslug.flow.execution.token;
 
 import brainslug.AbstractExecutionTest;
 import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.node.task.SimpleTask;
+import brainslug.flow.execution.property.ExecutionProperties;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.util.IdUtil;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -154,10 +156,8 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
   }
 
   @Test
-  public void shouldPassPropertiesOnStartByTrigger() {
+  public void shouldStorePropertiesOnTrigger() {
     // given:
-    BrainslugContext contextSpy = spy(context);
-
     FlowBuilder flow = new FlowBuilder() {
       @Override
       public void define() {
@@ -170,9 +170,48 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
           }));
       }
     };
-    contextSpy.addFlowDefinition(flow.getDefinition());
+
+    when(definitionStore.findById(flow.getDefinition().getId())).thenReturn(flow.getDefinition());
+
+    Identifier<?> instanceId = id("instance");
+
+    Trigger property = new Trigger()
+            .instanceId(instanceId)
+            .nodeId(IdUtil.id("start"))
+            .definitionId(flow.getId())
+            .property("key", "value");
 
     // when:
-    context.trigger(new Trigger().nodeId(IdUtil.id("start")).definitionId(flow.getId()).property("key", "value"));
+    context.trigger(property);
+
+    // for each node trigger
+    verify(propertyStore, times(2)).setProperties(eq(instanceId), any(ExecutionProperties.class));
+  }
+
+  @Test
+  public void shouldStorePropertiesOnFlowStart() {
+    // given:
+    FlowBuilder startFlow = new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id("start")));
+      }
+    };
+
+    FlowDefinition definition = startFlow.getDefinition();
+
+    when(definitionStore.findById(definition.getId())).thenReturn(definition);
+
+    // when:
+    FlowInstance flowInstance = mock(FlowInstance.class);
+    Identifier newInstanceId = id("instance");
+    when(flowInstance.getIdentifier()).thenReturn(newInstanceId);
+
+    when(instanceStore.createInstance(definition.getId())).thenReturn(flowInstance);
+
+    context.startFlow(definition);
+
+    // before trigger and during start trigger
+    verify(propertyStore, times(2)).setProperties(eq(newInstanceId), any(ExecutionProperties.class));
   }
 }

@@ -105,9 +105,9 @@ public class TokenFlowExecutor implements FlowExecutor {
     FlowNodeDefinition<?> startNode = getStartNodeDefinition(trigger.getDefinitionId(), trigger.getNodeId());
 
     Identifier instanceId = instanceStore.createInstance(trigger.getDefinitionId()).getIdentifier();
-    tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier<?>>empty());
+    tokenStore.addToken(instanceId, startNode.getId(), Option.<Identifier>empty(), false);
 
-    propertyStore.setProperties(trigger.getInstanceId(), trigger.getProperties());
+    propertyStore.setProperties(instanceId, trigger.getProperties());
 
     trigger(new Trigger()
       .nodeId(startNode.getId())
@@ -125,6 +125,10 @@ public class TokenFlowExecutor implements FlowExecutor {
   @Override
   public void trigger(TriggerContext trigger) {
     log.debug("triggering {}", trigger);
+
+    if (trigger.getInstanceId() == null) {
+      throw new IllegalArgumentException("instance not specified for trigger");
+    }
 
     FlowNodeDefinition node = getNode(trigger.getDefinitionId(), trigger.getNodeId());
     FlowNodeExecutor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
@@ -158,7 +162,7 @@ public class TokenFlowExecutor implements FlowExecutor {
 
   protected void addToken(TriggerContext trigger, FlowNodeDefinition<?> node, FlowNodeDefinition nextNode) {
     if (trigger.getInstanceId() != null) {
-      tokenStore.addToken(trigger.getInstanceId(), nextNode.getId(), Option.<Identifier<?>>of(node.getId()));
+      tokenStore.addToken(trigger.getInstanceId(), nextNode.getId(), Option.of(node.getId()), false);
     }
   }
 

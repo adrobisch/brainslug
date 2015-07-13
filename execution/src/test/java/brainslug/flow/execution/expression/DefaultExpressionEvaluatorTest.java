@@ -5,6 +5,7 @@ import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.execution.property.ExecutionProperties;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.expression.PredicateExpression;
+import brainslug.flow.instance.FlowInstanceProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ public class DefaultExpressionEvaluatorTest {
 
     PropertyPredicate predicateSpy = spy(new PropertyPredicate() {
       @Override
-      public boolean isFulfilled(FlowProperties executionProperties) {
+      public boolean isFulfilled(FlowInstanceProperties executionProperties) {
         Assertions.assertThat(executionProperties).isNotNull();
         return false;
       }

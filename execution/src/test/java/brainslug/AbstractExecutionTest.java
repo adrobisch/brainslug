@@ -27,22 +27,27 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class AbstractExecutionTest {
-  protected BrainslugContext context = createContext();
-
   protected TestService testServiceMock =  mock(TestService.class);
+
+  protected Registry registry = registryWithServiceMock();
   protected DefinitionStore definitionStore = mock(DefinitionStore.class);
   protected ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
   protected AsyncTriggerStore asyncTriggerStore = mock(AsyncTriggerStore.class);
   protected AsyncTriggerScheduler asyncTriggerScheduler = mock(AsyncTriggerScheduler.class);
-  protected CallDefinitionExecutor callExecutor = mock(CallDefinitionExecutor.class);
+  protected CallDefinitionExecutor callExecutor = spy(new CallDefinitionExecutor());
   protected TokenStore tokenStore = new HashMapTokenStore(new UuidGenerator());
-  protected PropertyStore propertyStore = new HashMapPropertyStore();
-  protected InstanceStore instanceStore = new HashMapInstanceStore(new UuidGenerator(), propertyStore);
+  protected PropertyStore propertyStore = spy(new HashMapPropertyStore());
+  protected InstanceStore instanceStore = spy(new HashMapInstanceStore(new UuidGenerator(), propertyStore));
   protected ListenerManager listenerManager = mock(ListenerManager.class);
+
+  protected BrainslugContext context = createContext();
 
   BrainslugContext createContext() {
     return new BrainslugContextBuilder()
-      .build();
+            .withDefinitionStore(definitionStore)
+            .withRegistry(registry)
+            .withFlowExecutor(tokenFlowExecutorWithMocks())
+            .build();
   }
 
   protected TokenFlowExecutor tokenFlowExecutorWithMocks() {
@@ -51,8 +56,8 @@ public class AbstractExecutionTest {
       definitionStore,
       propertyStore,
       listenerManager,
-      registryWithServiceMock(),
-            expressionEvaluator,
+      registry,
+      expressionEvaluator,
       asyncTriggerStore,
       asyncTriggerScheduler,
       callExecutor));

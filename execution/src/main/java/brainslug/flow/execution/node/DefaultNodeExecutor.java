@@ -7,6 +7,7 @@ import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DefaultNodeExecutor<SelfType, T extends FlowNodeDefinition> implements FlowNodeExecutor<T> {
@@ -39,6 +40,6 @@ public class DefaultNodeExecutor<SelfType, T extends FlowNodeDefinition> impleme
   }
 
   protected FlowNodeExecutionResult takeNone() {
-    return new FlowNodeExecutionResult(new ArrayList<FlowNodeDefinition>());
+    return new FlowNodeExecutionResult(Collections.<FlowNodeDefinition>emptyList());
   }
 }

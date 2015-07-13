@@ -11,6 +11,7 @@ import brainslug.flow.execution.node.FlowNodeExecutor;
 import brainslug.flow.execution.expression.DefaultExpressionEvaluator;
 import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.expression.PropertyPredicate;
+import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.util.IdUtil;
 import org.junit.Test;
@@ -106,7 +107,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
         start(id("start")).choice(id("choice"))
           .when(predicate(new PropertyPredicate() {
             @Override
-            public boolean isFulfilled(FlowProperties executionProperties) {
+            public boolean isFulfilled(FlowInstanceProperties executionProperties) {
               return predicateFulfilled;
             }
           })).then().execute(task(id("task")))

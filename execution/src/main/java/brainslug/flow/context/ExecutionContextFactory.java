@@ -1,6 +1,7 @@
 package brainslug.flow.context;
 
 import brainslug.flow.execution.property.store.PropertyStore;
+import brainslug.flow.instance.FlowInstanceProperties;
 
 public class ExecutionContextFactory {
   private final PropertyStore propertyStore;
@@ -21,8 +22,8 @@ public class ExecutionContextFactory {
     return executionContext;
   }
 
-  protected FlowProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
-    FlowProperties properties = propertyStore
+  protected FlowInstanceProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
+    FlowInstanceProperties properties = propertyStore
       .getProperties(executionContext.getTrigger().getInstanceId());
 
     properties.withAll(trigger.getProperties());

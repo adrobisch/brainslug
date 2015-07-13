@@ -7,7 +7,7 @@ import brainslug.flow.expression.EqualsExpression;
 import brainslug.flow.expression.Property;
 import brainslug.flow.expression.Value;
 import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.InstanceSelector;
+import brainslug.flow.instance.FlowInstanceSelector;
 import brainslug.jpa.entity.FlowInstanceEntity;
 import brainslug.jpa.entity.QFlowInstanceEntity;
 import brainslug.jpa.entity.QInstancePropertyEntity;
@@ -30,7 +30,7 @@ public class JpaInstanceStore implements InstanceStore {
     }
 
     @Override
-    public List<? extends FlowInstance> findInstances(InstanceSelector instanceSelector) {
+    public List<? extends FlowInstance> findInstances(FlowInstanceSelector instanceSelector) {
         JPAQuery instanceQuery = database
                 .query()
                 .from(QFlowInstanceEntity.flowInstanceEntity);
@@ -40,7 +40,7 @@ public class JpaInstanceStore implements InstanceStore {
                  filterByProperties(instanceSelector, instanceQuery))).list(QFlowInstanceEntity.flowInstanceEntity);
     }
 
-    private JPAQuery filterByProperties(InstanceSelector instanceSelector, JPAQuery instanceQuery) {
+    private JPAQuery filterByProperties(FlowInstanceSelector instanceSelector, JPAQuery instanceQuery) {
       for (EqualsExpression<Property<?>, Value<String>> propertyExpression : instanceSelector.properties()) {
           QInstancePropertyEntity instanceProperty = QFlowInstanceEntity
                   .flowInstanceEntity
@@ -54,7 +54,7 @@ public class JpaInstanceStore implements InstanceStore {
       return instanceQuery;
     }
 
-    private JPAQuery filterByDefinitionId(InstanceSelector instanceSelector, JPAQuery instanceQuery) {
+    private JPAQuery filterByDefinitionId(FlowInstanceSelector instanceSelector, JPAQuery instanceQuery) {
         if (instanceSelector.definitionId().isPresent()) {
             BooleanExpression matchesDefinitionId = QFlowInstanceEntity
                     .flowInstanceEntity
@@ -66,7 +66,7 @@ public class JpaInstanceStore implements InstanceStore {
         return instanceQuery;
     }
 
-    private JPAQuery filterByInstance(InstanceSelector instanceSelector, JPAQuery instanceQuery) {
+    private JPAQuery filterByInstance(FlowInstanceSelector instanceSelector, JPAQuery instanceQuery) {
         if (instanceSelector.instanceId().isPresent()) {
             BooleanExpression matchesInstanceId = QFlowInstanceEntity
                     .flowInstanceEntity
@@ -79,7 +79,7 @@ public class JpaInstanceStore implements InstanceStore {
     }
 
     @Override
-    public Option<? extends FlowInstance> findInstance(InstanceSelector instanceSelector) {
+    public Option<? extends FlowInstance> findInstance(FlowInstanceSelector instanceSelector) {
         List<? extends FlowInstance> instances = findInstances(instanceSelector);
         if (instances.isEmpty()) {
             return Option.empty();

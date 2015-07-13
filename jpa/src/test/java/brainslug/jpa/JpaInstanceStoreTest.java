@@ -1,7 +1,7 @@
 package brainslug.jpa;
 
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.execution.instance.FlowInstanceSelector;
+import brainslug.flow.execution.instance.InstanceSelector;
 import brainslug.flow.expression.Property;
 import brainslug.flow.expression.Value;
 import brainslug.flow.instance.FlowInstance;
@@ -31,7 +31,7 @@ public class JpaInstanceStoreTest extends AbstractDatabaseTest {
         createInstance(instanceStore, instanceTwo);
 
         // when:
-        List<? extends FlowInstance> foundInstances = instanceStore.findInstances(new FlowInstanceSelector().withDefinitionId(flowId));
+        List<? extends FlowInstance> foundInstances = instanceStore.findInstances(new InstanceSelector().withDefinitionId(flowId));
 
         // then:
         assertThat(foundInstances).hasSize(2);
@@ -49,8 +49,8 @@ public class JpaInstanceStoreTest extends AbstractDatabaseTest {
         createInstance(instanceStore, instanceTwo);
 
         // when:
-        Option<? extends FlowInstance> foundInstance = instanceStore.findInstance(new FlowInstanceSelector().withInstanceId(instanceOne));
-        List<? extends FlowInstance> foundInstances = instanceStore.findInstances(new FlowInstanceSelector().withInstanceId(instanceOne));
+        Option<? extends FlowInstance> foundInstance = instanceStore.findInstance(new InstanceSelector().withInstanceId(instanceOne));
+        List<? extends FlowInstance> foundInstances = instanceStore.findInstances(new InstanceSelector().withInstanceId(instanceOne));
 
         // then:
         assertThat(foundInstance.isPresent()).isTrue();
@@ -75,11 +75,11 @@ public class JpaInstanceStoreTest extends AbstractDatabaseTest {
         jpaPropertyStore.setProperties(instanceOne, newProperties().with("foo", "bar"));
 
         // when:
-        FlowInstanceSelector matchingSelector = new FlowInstanceSelector()
+        InstanceSelector matchingSelector = new InstanceSelector()
                 .withInstanceId(instanceOne)
                 .withProperty(new Property<String>(id("foo")), new Value<String>("bar"));
 
-        FlowInstanceSelector nonMatchingSelector = new FlowInstanceSelector()
+        InstanceSelector nonMatchingSelector = new InstanceSelector()
                 .withInstanceId(instanceOne)
                 .withProperty(new Property<String>(id("foo")), new Value<String>("baz"));
 

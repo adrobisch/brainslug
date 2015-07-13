@@ -23,7 +23,7 @@ public class HashMapInstanceStoreTest {
         FlowInstance instance = instanceStore.createInstance(id("flow1"));
 
         Option<? extends FlowInstance> foundInstance = instanceStore
-                .findInstance(new FlowInstanceSelector().withInstanceId(instance.getIdentifier()));
+                .findInstance(new InstanceSelector().withInstanceId(instance.getIdentifier()));
 
         assertThat(foundInstance.isPresent()).isTrue();
     }
@@ -37,13 +37,13 @@ public class HashMapInstanceStoreTest {
         FlowInstance instance3 = instanceStore.createInstance(id("flow2"));
 
         Collection<? extends FlowInstance> foundByDefinitionId = instanceStore
-                .findInstances(new FlowInstanceSelector()
+                .findInstances(new InstanceSelector()
                         .withDefinitionId(id("flow2")));
 
         assertThat(foundByDefinitionId).hasSize(2);
 
         Collection<? extends FlowInstance> foundByIdAndDefinitionId = instanceStore
-                .findInstances(new FlowInstanceSelector()
+                .findInstances(new InstanceSelector()
                         .withInstanceId(instance1.getIdentifier())
                         .withDefinitionId(id("flow1")));
 
@@ -59,7 +59,7 @@ public class HashMapInstanceStoreTest {
         FlowInstance instanceId = instanceStore.createInstance(id("flow1"));
         propertyStore.setProperties(instanceId.getIdentifier(), newProperties().with("foo", "bar"));
 
-        Option<FlowInstance> instance = instanceStore.findInstance(new FlowInstanceSelector()
+        Option<FlowInstance> instance = instanceStore.findInstance(new InstanceSelector()
                 .withDefinitionId(id("flow1"))
                 .withProperty(id("foo"), "bar"));
 

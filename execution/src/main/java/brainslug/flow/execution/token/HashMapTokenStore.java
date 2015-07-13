@@ -1,5 +1,6 @@
 package brainslug.flow.execution.token;
 
+import brainslug.flow.instance.FlowInstanceTokenList;
 import brainslug.util.IdGenerator;
 import brainslug.flow.definition.Identifier;
 import brainslug.util.Option;
@@ -16,23 +17,27 @@ public class HashMapTokenStore implements TokenStore {
     this.idGenerator = idGenerator;
   }
 
-  @Override
-  public TokenList getInstanceTokens(Identifier instanceId) {
+  public List<Token> tokensForInstance(Identifier instanceId) {
     if (instanceToTokenMap.get(instanceId) == null) {
       List<Token> instanceTokens = new ArrayList<Token>();
       instanceToTokenMap.put(instanceId, instanceTokens);
-      return new TokenList(instanceTokens);
+      return instanceTokens;
     } else {
-      return new TokenList(instanceToTokenMap.get(instanceId));
+      return instanceToTokenMap.get(instanceId);
     }
   }
 
   @Override
-  public TokenList getNodeTokens(Identifier nodeId, Identifier instanceId) {
+  public FlowInstanceTokenList getInstanceTokens(Identifier instanceId) {
+    return new TokenList(tokensForInstance(instanceId));
+  }
+
+  @Override
+  public FlowInstanceTokenList getNodeTokens(Identifier nodeId, Identifier instanceId) {
     List<Token> nodeTokens = new ArrayList<Token>();
-    for (final Iterator<Token> instanceTokens = getInstanceTokens(instanceId).getIterator(); instanceTokens.hasNext(); ) {
+    for (final Iterator<Token> instanceTokens = tokensForInstance(instanceId).iterator(); instanceTokens.hasNext(); ) {
       Token token = instanceTokens.next();
-      if(token.getNodeId().equals(nodeId)) {
+      if(token.getNodeId().equals(nodeId) && !token.isDead()) {
         nodeTokens.add(token);
       }
     }
@@ -40,10 +45,10 @@ public class HashMapTokenStore implements TokenStore {
   }
 
   @Override
-  public Token addToken(Identifier<?> instanceId, Identifier<?> nodeId, Option<Identifier<?>> sourceNodeId) {
+  public Token addToken(Identifier instanceId, Identifier nodeId, Option<Identifier> sourceNodeId, boolean isFinal) {
     Token token = new Token(idGenerator.generateId(),
       nodeId, sourceNodeId,
-      Option.<Identifier<?>>of(instanceId), false);
+      Option.of(instanceId), false, isFinal);
 
     getInstanceTokens(instanceId).add(token);
     return token;
@@ -51,14 +56,13 @@ public class HashMapTokenStore implements TokenStore {
 
   @Override
   public boolean removeToken(Identifier instanceId, Identifier tokenIdToDelete) {
-    for (final Iterator<Token> instanceTokens = getInstanceTokens(instanceId).getIterator(); instanceTokens.hasNext(); ) {
+    for (final Iterator<Token> instanceTokens = tokensForInstance(instanceId).iterator(); instanceTokens.hasNext(); ) {
       Token nextToken = instanceTokens.next();
       if (nextToken.getId().equals(tokenIdToDelete)) {
-        instanceTokens.remove();
+        nextToken.setDead(true);
         return true;
       }
     }
     return false;
   }
-
 }

@@ -1,51 +1,68 @@
 package brainslug.flow.execution.token;
 
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.instance.FlowInstanceToken;
+import brainslug.flow.instance.FlowInstanceTokenList;
 
 import java.util.*;
 
-public class TokenList {
+public class TokenList implements FlowInstanceTokenList {
 
-  List<Token> tokenList = new ArrayList<Token>();
+  List<FlowInstanceToken> tokenList = new ArrayList<FlowInstanceToken>();
 
   public TokenList() {
   }
 
-  public TokenList(List<Token> tokenList) {
-    this.tokenList = tokenList;
+  public TokenList(List<? extends FlowInstanceToken> tokenList) {
+    this.tokenList = (List<FlowInstanceToken>) tokenList;
   }
 
-  public List<Token> getTokens() {
-    return tokenList;
+  @Override
+  public List<FlowInstanceToken> getActiveTokens() {
+    return notDead(tokenList);
   }
 
-  public Map<Identifier, List<Token>> groupedBySourceNode() {
-    return sourceNodeMap(tokenList);
+  @Override
+  public Map<Identifier, List<FlowInstanceToken>> groupedBySourceNode() {
+    return sourceNodeMap(getActiveTokens());
   }
 
-  protected Map<Identifier, List<Token>> sourceNodeMap(List<Token> instanceTokens) {
-    Map<Identifier, List<Token>> sourceNodeMap = new HashMap<Identifier, List<Token>>();
-    for (Token token : instanceTokens) {
-      if (token.getSourceNode().isPresent()) {
-        getOrCreateTokenList(sourceNodeMap, token.getSourceNode().get())
+  protected Map<Identifier, List<FlowInstanceToken>> sourceNodeMap(List<FlowInstanceToken> instanceTokens) {
+    Map<Identifier, List<FlowInstanceToken>> sourceNodeMap = new HashMap<Identifier, List<FlowInstanceToken>>();
+    for (FlowInstanceToken token : instanceTokens) {
+      if (token.getSourceNodeId().isPresent()) {
+        getOrCreateTokenList(sourceNodeMap, token.getSourceNodeId().get())
           .add(token);
       }
     }
     return Collections.unmodifiableMap(sourceNodeMap);
   }
 
-  protected List<Token> getOrCreateTokenList(Map<Identifier, List<Token>> sourceNodeMap, Identifier sourceNodeId) {
+  protected List<FlowInstanceToken> getOrCreateTokenList(Map<Identifier, List<FlowInstanceToken>> sourceNodeMap, Identifier sourceNodeId) {
     if (sourceNodeMap.get(sourceNodeId) == null) {
-      sourceNodeMap.put(sourceNodeId, new ArrayList<Token>());
+      sourceNodeMap.put(sourceNodeId, new ArrayList<FlowInstanceToken>());
     }
     return sourceNodeMap.get(sourceNodeId);
   }
 
-  public Iterator<Token> getIterator() {
-    return tokenList.iterator();
+  @Override
+  public Iterator<FlowInstanceToken> getIterator() {
+    return getActiveTokens().iterator();
   }
 
-  public void add(Token token) {
+  @Override
+  public void add(FlowInstanceToken token) {
     tokenList.add(token);
+  }
+
+  List<FlowInstanceToken> notDead(List<? extends FlowInstanceToken> tokens) {
+    List<FlowInstanceToken> activeTokens = new ArrayList<FlowInstanceToken>();
+    for (FlowInstanceToken token : tokens) {
+      if (!token.isDead()) {
+        activeTokens.add(token);
+      }
+    }
+
+    return activeTokens;
   }
 }

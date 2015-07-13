@@ -156,7 +156,6 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     }
 
     TestDelegate delegateInstance = spy(new TestDelegate());
-    context.registerService(Delegate.class, delegateInstance);
 
     FlowDefinition delegateFlow = new FlowBuilder() {
       @Override
@@ -166,6 +165,9 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
         .end(event(id(END)));
       }
     }.getDefinition();
+
+    when(definitionStore.findById(delegateFlow.getId())).thenReturn(delegateFlow);
+    when(registry.getService(Delegate.class)).thenReturn(delegateInstance);
 
     context.addFlowDefinition(delegateFlow);
     // when:

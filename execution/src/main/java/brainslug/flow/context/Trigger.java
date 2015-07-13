@@ -4,6 +4,8 @@ import brainslug.flow.definition.EnumIdentifier;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.definition.StringIdentifier;
 import brainslug.flow.execution.property.ExecutionProperties;
+import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.instance.FlowInstanceProperty;
 
 public class Trigger<T extends Trigger> implements TriggerContext {
 
@@ -13,7 +15,7 @@ public class Trigger<T extends Trigger> implements TriggerContext {
   protected Boolean async = false;
   protected Boolean signaling = false;
 
-  protected FlowProperties<?, ExecutionProperty<?>> properties;
+  protected FlowInstanceProperties<?, FlowInstanceProperty<?>> properties;
 
   @Override
   public Identifier getDefinitionId() {
@@ -67,12 +69,12 @@ public class Trigger<T extends Trigger> implements TriggerContext {
     return self();
   }
 
-  public T properties(FlowProperties properties) {
+  public T properties(FlowInstanceProperties properties) {
     this.properties = properties;
     return self();
   }
 
-  public void setProperties(FlowProperties properties) {
+  public void setProperties(FlowInstanceProperties properties) {
     this.properties = properties;
   }
 
@@ -97,7 +99,7 @@ public class Trigger<T extends Trigger> implements TriggerContext {
   }
 
   @Override
-  public FlowProperties<?, ExecutionProperty<?>> getProperties() {
+  public FlowInstanceProperties<?, FlowInstanceProperty<?>> getProperties() {
     if (properties == null) {
       properties = new ExecutionProperties();
     }

@@ -10,7 +10,8 @@ import brainslug.flow.execution.async.*;
 import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.token.TokenStore;
 import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.InstanceSelector;
+import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.instance.FlowInstanceSelector;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.util.Preconditions;
@@ -104,12 +105,12 @@ public class DefaultBrainslugContext implements BrainslugContext {
   }
 
   @Override
-  public Identifier startFlow(FlowDefinition flowDefinition, FlowProperties properties) {
+  public Identifier startFlow(FlowDefinition flowDefinition, FlowInstanceProperties properties) {
     return startFlow(flowDefinition, flowDefinition.requireSingleStartNode(), properties);
   }
 
   @Override
-  public Identifier startFlow(FlowDefinition flowDefinition, FlowNodeDefinition startNode, FlowProperties properties) {
+  public Identifier startFlow(FlowDefinition flowDefinition, FlowNodeDefinition startNode, FlowInstanceProperties properties) {
     return startFlow(flowDefinition.getId(), startNode.getId(), properties);
   }
 
@@ -124,12 +125,12 @@ public class DefaultBrainslugContext implements BrainslugContext {
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId, FlowProperties properties) {
+  public Identifier startFlow(Identifier definitionId, FlowInstanceProperties properties) {
     return startFlow(definitionId, getDefinitionById(definitionId).requireSingleStartNode().getId(), properties);
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, FlowProperties properties) {
+  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, FlowInstanceProperties properties) {
     TriggerContext trigger = new Trigger()
       .definitionId(definitionId)
       .nodeId(startNodeId)
@@ -139,7 +140,7 @@ public class DefaultBrainslugContext implements BrainslugContext {
   }
 
   @Override
-  public Collection<? extends FlowInstance> findInstances(InstanceSelector instanceSelector) {
+  public Collection<? extends FlowInstance> findInstances(FlowInstanceSelector instanceSelector) {
     return instanceStore.findInstances(instanceSelector);
   }
 

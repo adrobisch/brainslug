@@ -1,7 +1,7 @@
 package brainslug.jpa;
 
-import brainslug.flow.context.ExecutionProperty;
-import brainslug.flow.context.FlowProperties;
+import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.property.*;
 import brainslug.flow.execution.property.store.PropertyStore;
@@ -11,7 +11,6 @@ import brainslug.jpa.util.ObjectSerializer;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
 import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,28 +32,27 @@ public class JpaPropertyStore implements PropertyStore {
   }
 
   @Override
-  public void setProperty(Identifier<?> instanceId, ExecutionProperty<?> property) {
+  public void setProperty(Identifier<?> instanceId, FlowInstanceProperty<?> property) {
     InstancePropertyEntity instanceProperty = getOrCreatePropertyEntity(instanceId, property);
     database.insertOrUpdate(withPropertyValue(instanceProperty, property));
   }
 
   @Override
-  public void setProperties(Identifier<?> instanceId, FlowProperties<?, ExecutionProperty<?>> executionProperties) {
+  public void setProperties(Identifier<?> instanceId, FlowInstanceProperties<?, FlowInstanceProperty<?>> executionProperties) {
     log.debug("storing properties {} for instance {}", executionProperties, instanceId);
 
-    for (ExecutionProperty property : executionProperties.getValues()) {
+    for (FlowInstanceProperty property : executionProperties.getValues()) {
       setProperty(instanceId, property);
     }
   }
 
   @Override
-  public Option<ExecutionProperty<?>> getProperty(Identifier<?> instanceId, Identifier<?> key) {
-    Expression<?> expr = typedPropertyFactoryExpression(ExecutionProperty.class);
-    ExecutionProperty<?> propertyEntity = (ExecutionProperty) propertyQuery(instanceId, key.stringValue()).singleResult(expr);
-    return Option.<ExecutionProperty<?>>of(propertyEntity);
+  public Option<FlowInstanceProperty<?>> getProperty(Identifier<?> instanceId, Identifier<?> key) {
+    FlowInstanceProperty<?> propertyEntity = (FlowInstanceProperty) propertyQuery(instanceId, key.stringValue()).singleResult();
+    return Option.<FlowInstanceProperty<?>>of(propertyEntity);
   }
 
-  protected InstancePropertyEntity getOrCreatePropertyEntity(Identifier<?> instanceId, ExecutionProperty property) {
+  protected InstancePropertyEntity getOrCreatePropertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {
     InstancePropertyEntity instanceProperty = propertyEntity(instanceId, property);
 
     if (instanceProperty != null) {
@@ -64,7 +62,7 @@ public class JpaPropertyStore implements PropertyStore {
     }
   }
 
-  InstancePropertyEntity propertyEntity(Identifier<?> instanceId, ExecutionProperty property) {
+  InstancePropertyEntity propertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {
     return propertyQuery(instanceId, property.getKey()).singleResult(QInstancePropertyEntity.instancePropertyEntity);
   }
 
@@ -77,7 +75,7 @@ public class JpaPropertyStore implements PropertyStore {
         );
   }
 
-  protected InstancePropertyEntity newInstancePropertyEntity(Identifier<?> instanceId, ExecutionProperty property) {
+  protected InstancePropertyEntity newInstancePropertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {
     Identifier newId = idGenerator.generateId();
     Long created = new Date().getTime();
 
@@ -89,24 +87,15 @@ public class JpaPropertyStore implements PropertyStore {
   }
 
   @Override
-  public FlowProperties<?, ExecutionProperty<?>> getProperties(Identifier<?> instanceId) {
+  public FlowInstanceProperties<?, FlowInstanceProperty<?>> getProperties(Identifier<?> instanceId) {
     return new ExecutionProperties().from(
             database.query().from(QInstancePropertyEntity.instancePropertyEntity)
                     .where(QInstancePropertyEntity.instancePropertyEntity.instanceId.eq(instanceId.stringValue()))
-                    .list(typedPropertyFactoryExpression(ExecutionProperty.class))
+                    .list(QInstancePropertyEntity.instancePropertyEntity)
     );
   }
 
-  protected <T extends ExecutionProperty<T>> Expression typedPropertyFactoryExpression(Class<T> t) {
-    return new JpaPropertyFactoryExpression(serializer, t)
-            .withArgs(QInstancePropertyEntity.instancePropertyEntity.propertyKey,
-                    QInstancePropertyEntity.instancePropertyEntity.valueType,
-                    QInstancePropertyEntity.instancePropertyEntity.stringValue,
-                    QInstancePropertyEntity.instancePropertyEntity.longValue,
-                    QInstancePropertyEntity.instancePropertyEntity.doubleValue);
-  }
-
-  protected InstancePropertyEntity withPropertyValue(InstancePropertyEntity entity, ExecutionProperty<?> property) {
+  protected InstancePropertyEntity withPropertyValue(InstancePropertyEntity entity, FlowInstanceProperty<?> property) {
     if (property instanceof StringProperty) {
       return entity.withStringValue(((StringProperty) property).getValue())
         .withValueType(STRING.typeName());

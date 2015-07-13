@@ -1,11 +1,11 @@
-package brainslug.flow.context;
+package brainslug.flow.instance;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.Property;
 
 import java.util.Collection;
 
-public interface FlowProperties<SelfType extends FlowProperties, PropertyType> {
+public interface FlowInstanceProperties<SelfType extends FlowInstanceProperties, PropertyType> {
   SelfType with(String key, Object value);
 
   SelfType with(Identifier key, Object value);
@@ -14,11 +14,11 @@ public interface FlowProperties<SelfType extends FlowProperties, PropertyType> {
 
   SelfType withAll(SelfType executionProperties);
 
-  <T> T getValue(String key, Class<T> clazz);
-
   PropertyType get(String key);
 
-  <T> ExecutionProperty<T> getProperty(String key, Class<T> clazz);
+  <T> FlowInstanceProperty<T> getProperty(String key, Class<T> clazz);
+
+  <T> T getValue(String key, Class<T> clazz);
 
   <T extends PropertyType> Collection<T> getValues();
 }

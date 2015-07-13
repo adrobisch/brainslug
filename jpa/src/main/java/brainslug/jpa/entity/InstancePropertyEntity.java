@@ -1,11 +1,32 @@
 package brainslug.jpa.entity;
 
+import brainslug.flow.execution.property.BooleanProperty;
+import brainslug.flow.execution.property.DateProperty;
+import brainslug.flow.execution.property.DoubleProperty;
+import brainslug.flow.execution.property.FloatProperty;
+import brainslug.flow.execution.property.IntProperty;
+import brainslug.flow.execution.property.LongProperty;
+import brainslug.flow.execution.property.ObjectProperty;
+import brainslug.flow.execution.property.StringProperty;
+import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.jpa.util.ObjectSerializer;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
+
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.BOOLEAN;
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.DATE;
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.DOUBLE;
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.FLOAT;
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.INT;
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.LONG;
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.SERIALIZABLE;
+import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.STRING;
 
 @Entity
 @Table(name = "BS_INSTANCE_PROPERTY")
-public class InstancePropertyEntity {
+public class InstancePropertyEntity implements FlowInstanceProperty {
   @Id
   @Column(name = "_ID")
   protected String id;
@@ -118,6 +139,16 @@ public class InstancePropertyEntity {
     return this;
   }
 
+  @Override
+  public String getKey() {
+    return propertyKey;
+  }
+
+  @Override
+  public Object getValue() {
+    return propertyForType(getKey(), getValueType(), getStringValue(), getLongValue(), getDoubleValue()).getValue();
+  }
+
   public static class ValueType {
     public static final ValueType STRING = new ValueType("string");
     public static final ValueType DATE = new ValueType("date");
@@ -153,6 +184,30 @@ public class InstancePropertyEntity {
     @Override
     public int hashCode() {
       return typeName != null ? typeName.hashCode() : 0;
+    }
+  }
+
+  FlowInstanceProperty propertyForType(String key, String type, String stringValue, Long longValue, Double doubleValue) {
+    InstancePropertyEntity.ValueType valueType = new InstancePropertyEntity.ValueType(type);
+
+    if (valueType.equals(STRING)) {
+      return new StringProperty(key, stringValue);
+    } else if(valueType.equals(LONG)) {
+      return new LongProperty(key, longValue);
+    } else if(valueType.equals(DATE)) {
+      return new DateProperty(key, new Date(longValue));
+    } else if(valueType.equals(INT)) {
+      return new IntProperty(key, longValue.intValue());
+    } else if(valueType.equals(DOUBLE)) {
+      return new DoubleProperty(key, doubleValue);
+    } else if(valueType.equals(FLOAT)) {
+      return new FloatProperty(key, doubleValue.floatValue());
+    } else if(valueType.equals(BOOLEAN)) {
+      return new BooleanProperty(key, longValue == 1);
+    } else if(valueType.equals(SERIALIZABLE)) {
+      return new ObjectProperty(key, new ObjectSerializer().deserialize(stringValue));
+    } else {
+      throw new IllegalArgumentException("unhandled value type:" + valueType);
     }
   }
 

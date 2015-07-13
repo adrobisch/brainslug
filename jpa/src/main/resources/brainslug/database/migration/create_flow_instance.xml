@@ -30,7 +30,7 @@
         </createTable>
         
         <createIndex tableName="BS_FLOW_INSTANCE" indexName="IDX_INSTANCE_DEFINITION">
-            <column name="_DEFINITION_ID"></column>
+            <column name="_DEFINITION_ID" />
         </createIndex>
     </changeSet>
 

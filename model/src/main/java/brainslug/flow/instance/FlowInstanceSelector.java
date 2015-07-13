@@ -8,7 +8,7 @@ import brainslug.util.Option;
 
 import java.util.Collection;
 
-public interface InstanceSelector {
+public interface FlowInstanceSelector {
     Option<Identifier> instanceId();
     Option<Identifier> definitionId();
     Collection<EqualsExpression<Property<?>, Value<String>>> properties();

@@ -1,6 +1,7 @@
 package brainslug.flow.execution.token;
 
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.instance.FlowInstanceToken;
 
 import java.util.List;
 import java.util.Map;
@@ -12,19 +13,19 @@ public class TokenOperations {
     this.tokenStore = tokenStore;
   }
 
-  public Map<Identifier, List<Token>> getNodeTokensGroupedBySource(Identifier nodeId, Identifier instanceId) {
+  public Map<Identifier, List<FlowInstanceToken>> getNodeTokensGroupedBySource(Identifier nodeId, Identifier instanceId) {
     return tokenStore.getNodeTokens(nodeId, instanceId).groupedBySourceNode();
   }
 
   public void removeFirstIncomingTokens(Identifier nodeId, Identifier instanceId) {
-    Map<Identifier, List<Token>> nodeTokens = getNodeTokensGroupedBySource(nodeId, instanceId);
+    Map<Identifier, List<FlowInstanceToken>> nodeTokens = getNodeTokensGroupedBySource(nodeId, instanceId);
 
-    for (List<Token> tokens : nodeTokens.values()) {
+    for (List<FlowInstanceToken> tokens : nodeTokens.values()) {
       removeToken(instanceId, first(tokens));
     }
   }
 
-  protected Token first(List<Token> tokens) {
+  protected FlowInstanceToken first(List<FlowInstanceToken> tokens) {
     if (tokens.isEmpty()) {
       return null;
     } else {
@@ -32,13 +33,13 @@ public class TokenOperations {
     }
   }
 
-  public void removeTokens(Identifier instanceId, List<Token> tokens) {
-    for (Token token : tokens) {
+  public void removeTokens(Identifier instanceId, List<FlowInstanceToken> tokens) {
+    for (FlowInstanceToken token : tokens) {
       removeToken(instanceId, token);
     }
   }
 
-  protected void removeToken(Identifier instanceId, Token token) {
+  protected void removeToken(Identifier instanceId, FlowInstanceToken token) {
     if (token != null) {
       tokenStore.removeToken(instanceId, token.getId());
     }

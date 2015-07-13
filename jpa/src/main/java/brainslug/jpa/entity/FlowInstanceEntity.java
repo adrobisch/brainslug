@@ -2,10 +2,16 @@ package brainslug.jpa.entity;
 
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.execution.property.ExecutionProperties;
+import brainslug.flow.execution.token.TokenList;
 import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.instance.FlowInstanceTokenList;
+import brainslug.util.IdUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,6 +38,10 @@ public class FlowInstanceEntity implements FlowInstance {
   @JoinColumn(name = "_INSTANCE_ID")
   Set<InstancePropertyEntity> properties;
 
+  @OneToMany(fetch = FetchType.EAGER)
+  @JoinColumn(name = "_FLOW_INSTANCE_ID")
+  List<FlowTokenEntity> tokens;
+
   public String getId() {
     return id;
   }
@@ -50,8 +60,13 @@ public class FlowInstanceEntity implements FlowInstance {
     return this;
   }
 
-  public String getDefinitionId() {
-    return definitionId;
+  public Identifier getDefinitionId() {
+    return IdUtil.id(definitionId);
+  }
+
+  @Override
+  public FlowInstanceTokenList getTokens() {
+    return new TokenList(tokens);
   }
 
   public FlowInstanceEntity withDefinitionId(String definitionId) {
@@ -59,8 +74,8 @@ public class FlowInstanceEntity implements FlowInstance {
     return this;
   }
 
-  public Set<InstancePropertyEntity> getProperties() {
-    return properties;
+  public FlowInstanceProperties getProperties() {
+    return new ExecutionProperties().from(properties);
   }
 
   public Long getVersion() {

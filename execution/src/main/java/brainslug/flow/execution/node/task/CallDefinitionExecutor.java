@@ -70,6 +70,10 @@ public class CallDefinitionExecutor {
   }
 
   protected Object executeDelegate(Object delegateInstance, ExecutionContext context) {
+    if (delegateInstance == null) {
+      throw new IllegalArgumentException("cant execute null delegate in execution: " + context.getTrigger());
+    }
+
     Option<Method> executeAnnotatedMethod = ReflectionUtil.getFirstMethodAnnotatedWith(delegateInstance.getClass(), Execute.class);
 
     if (executeAnnotatedMethod.isPresent()) {

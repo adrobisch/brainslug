@@ -2,7 +2,7 @@ package brainslug.jpa;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.token.Token;
-import brainslug.flow.execution.token.TokenList;
+import brainslug.flow.instance.FlowInstanceTokenList;
 import brainslug.util.Option;
 import org.junit.Test;
 
@@ -29,9 +29,9 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
     assertThat(instanceId).isNotNull();
 
     // then:
-    TokenList instanceTokens = jpaTokenStore.getInstanceTokens(instanceId);
-    assertThat(instanceTokens.getTokens())
-      .contains(new Token(tokenId, nodeId, Option.<Identifier<?>>empty(), Option.<Identifier<?>>of(instanceId), false))
+    FlowInstanceTokenList instanceTokens = jpaTokenStore.getInstanceTokens(instanceId);
+    assertThat(instanceTokens.getActiveTokens())
+      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.of(instanceId), false, false))
       .hasSize(1);
   }
 
@@ -45,7 +45,7 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
     // when:
     jpaTokenStore.removeToken(instanceId, tokenId);
 
-    assertThat(jpaTokenStore.getNodeTokens(nodeId, instanceId).getTokens())
+    assertThat(jpaTokenStore.getNodeTokens(nodeId, instanceId).getActiveTokens())
       .hasSize(0);
   }
 
@@ -54,7 +54,7 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
     jpaInstanceStore.createInstance(flowId);
 
     when(idGeneratorMock.generateId()).thenReturn(tokenId);
-    jpaTokenStore.addToken(instanceId, nodeId, Option.<Identifier<?>>empty());
+    jpaTokenStore.addToken(instanceId, nodeId, Option.<Identifier>empty(), false);
     return instanceId;
   }
 
