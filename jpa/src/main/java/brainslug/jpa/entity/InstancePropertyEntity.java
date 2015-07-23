@@ -211,4 +211,40 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    InstancePropertyEntity that = (InstancePropertyEntity) o;
+
+    if (instanceId != null ? !instanceId.equals(that.instanceId) : that.instanceId != null) return false;
+    if (propertyKey != null ? !propertyKey.equals(that.propertyKey) : that.propertyKey != null) return false;
+    if (valueType != null ? !valueType.equals(that.valueType) : that.valueType != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = instanceId != null ? instanceId.hashCode() : 0;
+    result = 31 * result + (valueType != null ? valueType.hashCode() : 0);
+    result = 31 * result + (propertyKey != null ? propertyKey.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "InstancePropertyEntity{" +
+      "id='" + id + '\'' +
+      ", created=" + created +
+      ", version=" + version +
+      ", instanceId='" + instanceId + '\'' +
+      ", valueType='" + valueType + '\'' +
+      ", propertyKey='" + propertyKey + '\'' +
+      ", stringValue='" + stringValue + '\'' +
+      ", longValue=" + longValue +
+      ", doubleValue=" + doubleValue +
+      '}';
+  }
 }

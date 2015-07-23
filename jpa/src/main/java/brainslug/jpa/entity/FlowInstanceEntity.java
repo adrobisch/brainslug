@@ -11,6 +11,8 @@ import brainslug.util.IdUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,11 +38,14 @@ public class FlowInstanceEntity implements FlowInstance {
 
   @OneToMany(fetch = FetchType.EAGER)
   @JoinColumn(name = "_INSTANCE_ID")
-  Set<InstancePropertyEntity> properties;
+  Set<InstancePropertyEntity> properties = new HashSet<InstancePropertyEntity>();
 
   @OneToMany(fetch = FetchType.EAGER)
   @JoinColumn(name = "_FLOW_INSTANCE_ID")
-  List<FlowTokenEntity> tokens;
+  List<FlowTokenEntity> tokens = new ArrayList<FlowTokenEntity>();
+
+  public FlowInstanceEntity() {
+  }
 
   public String getId() {
     return id;
@@ -69,13 +74,22 @@ public class FlowInstanceEntity implements FlowInstance {
     return new TokenList(tokens);
   }
 
+  public List<FlowTokenEntity> getTokenEntities() {
+    return tokens;
+  }
+
   public FlowInstanceEntity withDefinitionId(String definitionId) {
     this.definitionId = definitionId;
     return this;
   }
 
+  @Override
   public FlowInstanceProperties getProperties() {
     return new ExecutionProperties().from(properties);
+  }
+
+  public Set<InstancePropertyEntity> getPropertiesEntities() {
+    return properties;
   }
 
   public Long getVersion() {

@@ -99,4 +99,13 @@ public class JpaInstanceStore implements InstanceStore {
 
         return newInstance;
     }
+
+    public FlowInstanceEntity findInstanceById(Identifier<?> instanceId) {
+      return database.query()
+        .from(QFlowInstanceEntity.flowInstanceEntity)
+        .where(QFlowInstanceEntity
+          .flowInstanceEntity
+          .id
+          .eq(instanceId.stringValue())).singleResult(QFlowInstanceEntity.flowInstanceEntity);
+    }
 }

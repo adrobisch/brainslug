@@ -40,12 +40,12 @@ public class SpringDatabaseConfiguration {
 
   @Bean
   SpringJpaPropertyStore springJpaPropertyStore() {
-    return new SpringJpaPropertyStore(database(), idGenerator());
+    return new SpringJpaPropertyStore(database(), idGenerator(), springJpaInstanceStore());
   }
 
   @Bean
   SpringJpaTokenStore springJpaTokenStore() {
-    return new SpringJpaTokenStore(database(), idGenerator());
+    return new SpringJpaTokenStore(database(), idGenerator(), springJpaInstanceStore());
   }
 
   @Bean

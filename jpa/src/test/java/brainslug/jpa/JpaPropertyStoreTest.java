@@ -23,10 +23,10 @@ public class JpaPropertyStoreTest extends AbstractDatabaseTest {
   @Before
   public void setup() {
     UuidGenerator idGenerator = new UuidGenerator();
-    jpaTokenStore = new JpaTokenStore(database, idGenerator);
+    jpaTokenStore = new JpaTokenStore(database, idGenerator, jpaInstanceStore);
     jpaInstanceStore = new JpaInstanceStore(database, idGenerator);
     instance = jpaInstanceStore.createInstance(id("definitionId"));
-    jpaPropertyStore = new JpaPropertyStore(database, idGenerator);
+    jpaPropertyStore = new JpaPropertyStore(database, idGenerator, jpaInstanceStore);
   }
 
   @Test

@@ -25,10 +25,12 @@ public class JpaTokenStore implements TokenStore {
 
   private final Database database;
   private final IdGenerator idGenerator;
+  private final JpaInstanceStore jpaInstanceStore;
 
-  public JpaTokenStore(Database database, IdGenerator idGenerator) {
+  public JpaTokenStore(Database database, IdGenerator idGenerator, JpaInstanceStore jpaInstanceStore) {
     this.database = database;
     this.idGenerator = idGenerator;
+    this.jpaInstanceStore = jpaInstanceStore;
   }
 
   @Override
@@ -86,6 +88,7 @@ public class JpaTokenStore implements TokenStore {
             .setDead(false);
 
     database.insertOrUpdate(newToken);
+    jpaInstanceStore.findInstanceById(instanceId).getTokenEntities().add(newToken);
 
     return newToken;
   }
@@ -94,28 +97,34 @@ public class JpaTokenStore implements TokenStore {
   public boolean setDead(Identifier instanceId, Identifier tokenId) {
     log.debug("removing token: {}", tokenId.stringValue());
 
-    Long updatedCount = tokenUpdate(instanceId, tokenId)
-      .set(QFlowTokenEntity.flowTokenEntity.isDead, 1)
-      .execute();
-
-    return updatedCount > 0;
+    Option<FlowTokenEntity> tokenEntity = getToken(instanceId, tokenId);
+    if(tokenEntity.isPresent()) {
+      tokenEntity.get().setDead(true);
+      database.insertOrUpdate(tokenEntity.get());
+      return true;
+    }
+    return false;
   }
 
   @Override
   public boolean setFinal(Identifier instanceId, Identifier tokenId) {
-    Long updatedCount = tokenUpdate(instanceId, tokenId)
-      .set(QFlowTokenEntity.flowTokenEntity.isFinal, 1)
-      .execute();
-
-    return updatedCount > 0;
+    Option<FlowTokenEntity> tokenEntity = getToken(instanceId, tokenId);
+    if(tokenEntity.isPresent()) {
+      tokenEntity.get().setFinal(true);
+      database.insertOrUpdate(tokenEntity.get());
+      return true;
+    }
+    return false;
   }
 
-  JPAUpdateClause tokenUpdate(Identifier instanceId, Identifier tokenId) {
-    return database.update(QFlowTokenEntity.flowTokenEntity)
-      .where(
-        QFlowTokenEntity.flowTokenEntity.id.eq(tokenId.stringValue()),
-        QFlowTokenEntity.flowTokenEntity.flowInstanceId.eq(instanceId.stringValue())
-      );
+  // TODO: optimize this with keyMap
+  Option<FlowTokenEntity> getToken(Identifier instanceId, Identifier tokenId) {
+    for (FlowTokenEntity token : jpaInstanceStore.findInstanceById(instanceId).getTokenEntities()) {
+      if (token.getId().equals(tokenId)) {
+        return Option.of(token);
+      }
+    }
+    return Option.empty();
   }
 
 }

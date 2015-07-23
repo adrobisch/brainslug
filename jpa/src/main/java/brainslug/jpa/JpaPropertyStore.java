@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.Set;
 
 import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.*;
 
@@ -25,16 +26,19 @@ public class JpaPropertyStore implements PropertyStore {
 
   protected final Database database;
   protected final IdGenerator idGenerator;
+  private final JpaInstanceStore jpaInstanceStore;
 
-  public JpaPropertyStore(Database database, IdGenerator idGenerator) {
+  public JpaPropertyStore(Database database, IdGenerator idGenerator, JpaInstanceStore jpaInstanceStore) {
     this.database = database;
     this.idGenerator = idGenerator;
+    this.jpaInstanceStore = jpaInstanceStore;
   }
 
   @Override
   public void setProperty(Identifier<?> instanceId, FlowInstanceProperty<?> property) {
     InstancePropertyEntity instanceProperty = getOrCreatePropertyEntity(instanceId, property);
-    database.insertOrUpdate(withPropertyValue(instanceProperty, property));
+    InstancePropertyEntity newProperty = database.insertOrUpdate(withPropertyValue(instanceProperty, property));
+    jpaInstanceStore.findInstanceById(instanceId).getPropertiesEntities().add(newProperty);
   }
 
   @Override

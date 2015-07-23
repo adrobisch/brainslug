@@ -23,8 +23,8 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
   @Test
   public void shouldInsertInstanceAndToken() throws Exception {
     // given:
-    JpaTokenStore jpaTokenStore = createJpaTokenStore();
     JpaInstanceStore jpaInstanceStore = createJpaInstanceStore();
+    JpaTokenStore jpaTokenStore = createJpaTokenStore(jpaInstanceStore);
 
     // when:
     Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore, jpaInstanceStore);
@@ -41,8 +41,8 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
   @Test
   public void shouldSetTokenDead() throws Exception {
     // given:
-    JpaTokenStore jpaTokenStore = createJpaTokenStore();
     JpaInstanceStore jpaInstanceStore = createJpaInstanceStore();
+    JpaTokenStore jpaTokenStore = createJpaTokenStore(jpaInstanceStore);
 
     Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore, jpaInstanceStore);
     // when:
@@ -55,8 +55,8 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
   @Test
   public void shouldSetTokenFinal() throws Exception {
     // given:
-    JpaTokenStore jpaTokenStore = createJpaTokenStore();
     JpaInstanceStore jpaInstanceStore = createJpaInstanceStore();
+    JpaTokenStore jpaTokenStore = createJpaTokenStore(jpaInstanceStore);
 
     Identifier instanceId = createInstanceWithSingleRootToken(jpaTokenStore, jpaInstanceStore);
     // when:
@@ -79,8 +79,8 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
     return instanceId;
   }
 
-  JpaTokenStore createJpaTokenStore() {
-    return new JpaTokenStore(database, idGeneratorMock);
+  JpaTokenStore createJpaTokenStore(JpaInstanceStore jpaInstanceStore) {
+    return new JpaTokenStore(database, idGeneratorMock, jpaInstanceStore);
   }
 
   JpaInstanceStore createJpaInstanceStore() {

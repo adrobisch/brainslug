@@ -64,7 +64,7 @@ public class JpaInstanceStoreTest extends AbstractDatabaseTest {
     public void shouldFilterInstancesByProperties() {
         // given:
         JpaInstanceStore instanceStore = jpaInstanceStore();
-        JpaPropertyStore jpaPropertyStore = jpaPropertyStore();
+        JpaPropertyStore jpaPropertyStore = jpaPropertyStore(instanceStore);
 
         Identifier instanceOne = id("1");
         createInstance(instanceStore, instanceOne);
@@ -101,8 +101,8 @@ public class JpaInstanceStoreTest extends AbstractDatabaseTest {
         return new JpaInstanceStore(database, idGeneratorMock);
     }
 
-    JpaPropertyStore jpaPropertyStore() {
-        return new JpaPropertyStore(database, idGeneratorMock);
+    JpaPropertyStore jpaPropertyStore(JpaInstanceStore jpaInstanceStore) {
+        return new JpaPropertyStore(database, idGeneratorMock, jpaInstanceStore);
     }
 
 }
