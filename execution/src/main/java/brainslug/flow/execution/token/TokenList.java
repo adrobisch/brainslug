@@ -23,30 +23,18 @@ public class TokenList implements FlowInstanceTokenList {
   }
 
   @Override
-  public Map<Identifier, List<FlowInstanceToken>> groupedBySourceNode() {
-    return sourceNodeMap(getActiveTokens());
-  }
-
-  protected Map<Identifier, List<FlowInstanceToken>> sourceNodeMap(List<FlowInstanceToken> instanceTokens) {
-    Map<Identifier, List<FlowInstanceToken>> sourceNodeMap = new HashMap<Identifier, List<FlowInstanceToken>>();
-    for (FlowInstanceToken token : instanceTokens) {
-      if (token.getSourceNodeId().isPresent()) {
-        getOrCreateTokenList(sourceNodeMap, token.getSourceNodeId().get())
-          .add(token);
+  public List<FlowInstanceToken> getNodeTokens(Identifier nodeId) {
+    List<FlowInstanceToken> nodeTokens = new ArrayList<FlowInstanceToken>();
+    for (FlowInstanceToken token : getActiveTokens()) {
+      if (token.getNodeId().equals(nodeId)) {
+        nodeTokens.add(token);
       }
     }
-    return Collections.unmodifiableMap(sourceNodeMap);
-  }
-
-  protected List<FlowInstanceToken> getOrCreateTokenList(Map<Identifier, List<FlowInstanceToken>> sourceNodeMap, Identifier sourceNodeId) {
-    if (sourceNodeMap.get(sourceNodeId) == null) {
-      sourceNodeMap.put(sourceNodeId, new ArrayList<FlowInstanceToken>());
-    }
-    return sourceNodeMap.get(sourceNodeId);
+    return Collections.unmodifiableList(nodeTokens);
   }
 
   @Override
-  public Iterator<FlowInstanceToken> getIterator() {
+  public Iterator<FlowInstanceToken> iterator() {
     return getActiveTokens().iterator();
   }
 

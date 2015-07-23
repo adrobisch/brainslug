@@ -11,6 +11,7 @@ import brainslug.flow.execution.node.FlowNodeExecutor;
 import brainslug.flow.execution.expression.DefaultExpressionEvaluator;
 import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.expression.PropertyPredicate;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.node.ChoiceDefinition;
 import brainslug.util.IdUtil;
@@ -31,7 +32,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
 
     FlowDefinition flowDefinition = choiceFlow();
     Trigger trigger = new Trigger().property("foo", "bar");
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(trigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),trigger, registryWithServiceMock());
 
     // when:
     FlowNodeExecutionResult result = choiceNodeExecutor.execute(flowDefinition.getNode(id(CHOICE), ChoiceDefinition.class), execution);
@@ -48,7 +49,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
 
     FlowDefinition flowDefinition = choiceFlow();
     Trigger trigger = new Trigger().property("foo", "oof");
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(trigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),trigger, registryWithServiceMock());
 
     // when:
     FlowNodeExecutionResult result = choiceNodeExecutor.execute(flowDefinition.getNode(id(CHOICE), ChoiceDefinition.class), execution);
@@ -58,12 +59,16 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
     assertThat(result.getNextNodes().get(0).getId()).isEqualTo(id(TASK2));
   }
 
+  private FlowInstance instanceMock() {
+    return mock(FlowInstance.class);
+  }
+
   @Test
   public void shouldEvaluatePropertyPredicate() {
     // given:
     BrainslugContext brainslugContext = new BrainslugContextBuilder().build();
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(expressionEvaluator).withTokenOperations(new TokenOperations(tokenStore));
-    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(expressionEvaluator);
+    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(instanceMock(),new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(true);
     // when:
@@ -78,8 +83,8 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldTakeOtherwisePathIfNoneMatches() {
     // given:
-    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(expressionEvaluator).withTokenOperations(new TokenOperations(tokenStore));
-    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(new Trigger(), registryWithServiceMock());
+    FlowNodeExecutor<ChoiceDefinition> choiceNodeExecutor = new ChoiceNodeExecutor(expressionEvaluator);
+    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(instanceMock(),new Trigger(), registryWithServiceMock());
 
     FlowDefinition flowDefinition = propertyPredicateFlow(false);
 
@@ -94,10 +99,7 @@ public class ChoiceNodeExecutorTest extends AbstractExecutionTest {
 
   ChoiceNodeExecutor createChoiceNodeExecutor() {
     ExpressionEvaluator mock = new DefaultExpressionEvaluator();
-    TokenOperations tokenOperations = mock(TokenOperations.class);
-
-    return new ChoiceNodeExecutor(mock)
-      .withTokenOperations(tokenOperations);
+    return new ChoiceNodeExecutor(mock);
   }
 
   private FlowDefinition propertyPredicateFlow(final boolean predicateFulfilled) {

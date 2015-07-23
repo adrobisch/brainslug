@@ -76,16 +76,18 @@ public class JpaTokenStore implements TokenStore {
   public FlowInstanceToken addToken(Identifier instanceId, Identifier nodeId, Option<Identifier> sourceNodeId, boolean isFinal) {
     Identifier tokenId = idGenerator.generateId();
 
-    database.insertOrUpdate(new FlowTokenEntity()
-      .withId(tokenId.stringValue())
-      .withCreated(new Date().getTime())
-      .withCurrentNode(nodeId.stringValue())
-      .withSourceNode(sourceNodeId.orElse(new StringIdentifier(null)).stringValue())
-      .withFlowInstanceId(instanceId.stringValue())
-      .withIsDead(0)
-    );
+    FlowTokenEntity newToken = new FlowTokenEntity()
+            .withId(tokenId.stringValue())
+            .withCreated(new Date().getTime())
+            .withCurrentNode(nodeId.stringValue())
+            .withSourceNode(sourceNodeId.orElse(new StringIdentifier(null)).stringValue())
+            .withFlowInstanceId(instanceId.stringValue())
+            .setFinal(isFinal)
+            .setDead(false);
 
-    return new Token(tokenId, nodeId, sourceNodeId, Option.of(instanceId), false, isFinal);
+    database.insertOrUpdate(newToken);
+
+    return newToken;
   }
 
   @Override

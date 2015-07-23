@@ -1,6 +1,7 @@
 package brainslug.flow.context;
 
 import brainslug.flow.execution.property.store.PropertyStore;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.instance.FlowInstanceProperties;
 
 public class ExecutionContextFactory {
@@ -12,13 +13,9 @@ public class ExecutionContextFactory {
     this.registry = registry;
   }
 
-  public ExecutionContext createExecutionContext(TriggerContext trigger) {
-    ExecutionContext executionContext = new BrainslugExecutionContext(trigger, registry);
-
-    if (trigger.getInstanceId() != null) {
-      executionContext.getTrigger().setProperties(mergeProperties(trigger, executionContext));
-    }
-
+  public ExecutionContext createExecutionContext(FlowInstance flowInstance, TriggerContext trigger) {
+    ExecutionContext executionContext = new BrainslugExecutionContext(flowInstance, trigger, registry);
+    executionContext.getTrigger().setProperties(mergeProperties(trigger, executionContext));
     return executionContext;
   }
 

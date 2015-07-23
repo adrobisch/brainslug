@@ -4,14 +4,13 @@ import brainslug.flow.definition.Identifier;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-public interface FlowInstanceTokenList {
+public interface FlowInstanceTokenList extends Iterable<FlowInstanceToken> {
     List<FlowInstanceToken> getActiveTokens();
 
-    Map<Identifier, List<FlowInstanceToken>> groupedBySourceNode();
+    List<FlowInstanceToken> getNodeTokens(Identifier nodeId);
 
-    Iterator<FlowInstanceToken> getIterator();
+    Iterator<FlowInstanceToken> iterator();
 
     void add(FlowInstanceToken token);
 }

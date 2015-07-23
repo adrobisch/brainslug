@@ -15,7 +15,7 @@ import brainslug.util.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, AbstractTaskDefinition<?>> {
+public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition<?>> {
 
   private Logger log = LoggerFactory.getLogger(TaskNodeExecutor.class);
 
@@ -33,19 +33,17 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, Abst
 
   @Override
   public FlowNodeExecutionResult execute(AbstractTaskDefinition<?> taskDefinition, ExecutionContext execution) {
-    removeIncomingTokens(execution.getTrigger());
-
     if (taskDefinition.getGoal().isPresent() && goalIsFulfilled(taskDefinition.getGoal().get(), execution)) {
-      return takeAll(taskDefinition);
+      return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
     } else if (taskDefinition.isAsync() && !execution.getTrigger().isAsync()) {
       scheduleAsyncTask(taskDefinition, execution);
-      return takeNone();
+      return takeNone(taskDefinition, execution.getInstance());
     } else if (isExecutable(taskDefinition)) {
       return executeWithOptionalAsyncRetry(taskDefinition, execution);
     } else {
       log.warn("executing task node without execution definition, " +
         "please specify the task node execution by using a delegate class or call definition to actually do something in this task");
-      return takeAll(taskDefinition);
+      return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
     }
   }
 
@@ -54,10 +52,10 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, Abst
       if (Option.of(taskDefinition.getDelegateClass()).isPresent()) {
         HandlerCallDefinition callDefinition = new HandlerCallDefinition(execution.service(taskDefinition.getDelegateClass()));
         callDefinitionExecutor.execute(callDefinition, execution);
-        return takeAll(taskDefinition);
+        return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
       } else if (Option.of(taskDefinition.getMethodCall()).isPresent()) {
         callDefinitionExecutor.execute(taskDefinition.getMethodCall(), execution);
-        return takeAll(taskDefinition);
+        return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
       }
       throw new IllegalStateException("this method should only be called with executable " + taskDefinition);
     } catch (Exception e) {
@@ -65,7 +63,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, Abst
       if (taskDefinition.isRetryAsync()) {
         return scheduleRetry(e, taskDefinition, execution);
       }
-      return takeNone();
+      return takeNone(taskDefinition, execution.getInstance());
     }
   }
 
@@ -79,7 +77,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<TaskNodeExecutor, Abst
           .withInstanceId(execution.getTrigger().getInstanceId())
           .withDefinitionId(execution.getTrigger().getDefinitionId())
       );
-    return new FlowNodeExecutionResult().failed(true);
+    return new FlowNodeExecutionResult(taskDefinition).failed(true);
   }
 
   protected boolean isExecutable(AbstractTaskDefinition taskDefinition) {

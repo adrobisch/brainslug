@@ -10,7 +10,7 @@ public interface FlowInstanceToken {
 
     Option<Identifier> getSourceNodeId();
 
-    Option<Identifier> getInstanceId();
+    Identifier getInstanceId();
 
     boolean isDead();
 

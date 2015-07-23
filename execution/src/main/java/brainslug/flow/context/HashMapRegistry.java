@@ -1,10 +1,11 @@
 package brainslug.flow.context;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HashMapRegistry implements Registry {
 
-  HashMap<Class<?>, Object> registry = new HashMap<Class<?>, Object>();
+  Map<Class<?>, Object> registry = new ConcurrentHashMap<Class<?>, Object>();
 
   @Override
   public <T> T getService(Class<T> serviceClass) {

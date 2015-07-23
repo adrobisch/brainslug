@@ -1,8 +1,7 @@
 package brainslug.flow.execution.node;
 
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.context.TriggerContext;
-import brainslug.flow.execution.token.TokenOperations;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 
@@ -10,23 +9,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultNodeExecutor<SelfType, T extends FlowNodeDefinition> implements FlowNodeExecutor<T> {
-
-  protected TokenOperations tokenOperations;
-
-  public SelfType withTokenOperations(TokenOperations tokenOperations) {
-    this.tokenOperations = tokenOperations;
-    return (SelfType) this;
-  }
+public class DefaultNodeExecutor<T extends FlowNodeDefinition> implements FlowNodeExecutor<T> {
 
   @Override
   public FlowNodeExecutionResult execute(T node, ExecutionContext execution) {
-    removeIncomingTokens(execution.getTrigger());
-    return takeAll(node);
+    return takeAllAndRemoveFirst(node, execution.getInstance());
   }
 
-  protected void removeIncomingTokens(TriggerContext trigger) {
-    tokenOperations.removeFirstIncomingTokens(trigger.getNodeId(), trigger.getInstanceId());
+  protected FlowNodeExecutionResult takeAllAndRemoveFirst(FlowNodeDefinition<?> node, FlowInstance flowInstance) {
+    return takeAll(node).withFirstIncomingTokensRemoved(flowInstance.getTokens());
   }
 
   protected FlowNodeExecutionResult takeAll(FlowNodeDefinition<?> node) {
@@ -36,10 +27,10 @@ public class DefaultNodeExecutor<SelfType, T extends FlowNodeDefinition> impleme
       next.add(edge.getTarget());
     }
 
-    return new FlowNodeExecutionResult(next);
+    return new FlowNodeExecutionResult(node, next);
   }
 
-  protected FlowNodeExecutionResult takeNone() {
-    return new FlowNodeExecutionResult(Collections.<FlowNodeDefinition>emptyList());
+  protected FlowNodeExecutionResult takeNone(FlowNodeDefinition<?> node, FlowInstance flowInstance) {
+    return new FlowNodeExecutionResult(node, Collections.<FlowNodeDefinition>emptyList());
   }
 }

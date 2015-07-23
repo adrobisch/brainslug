@@ -6,10 +6,11 @@ import brainslug.flow.definition.Identifier;
 import brainslug.util.Option;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HashMapTokenStore implements TokenStore {
 
-  Map<Identifier, List<Token>> instanceToTokenMap = new HashMap<Identifier, List<Token>>();
+  Map<Identifier, Map<Identifier, Token>> instanceToTokenMap = new ConcurrentHashMap<Identifier, Map<Identifier, Token>>();
 
   IdGenerator idGenerator;
 
@@ -18,8 +19,12 @@ public class HashMapTokenStore implements TokenStore {
   }
 
   public List<Token> tokensForInstance(Identifier instanceId) {
+    return new ArrayList<Token>(getOrCreateInstanceTokenMap(instanceId).values());
+  }
+
+  Map<Identifier, Token> getOrCreateInstanceTokenMap(Identifier instanceId)  {
     if (instanceToTokenMap.get(instanceId) == null) {
-      List<Token> instanceTokens = new ArrayList<Token>();
+      Map<Identifier, Token> instanceTokens = new ConcurrentHashMap<Identifier, Token>();
       instanceToTokenMap.put(instanceId, instanceTokens);
       return instanceTokens;
     } else {
@@ -35,10 +40,9 @@ public class HashMapTokenStore implements TokenStore {
   @Override
   public FlowInstanceTokenList getNodeTokens(Identifier nodeId, Identifier instanceId) {
     List<Token> nodeTokens = new ArrayList<Token>();
-    for (final Iterator<Token> instanceTokens = tokensForInstance(instanceId).iterator(); instanceTokens.hasNext(); ) {
-      Token token = instanceTokens.next();
-      if(token.getNodeId().equals(nodeId) && !token.isDead()) {
-        nodeTokens.add(token);
+    for (Token instanceToken : tokensForInstance(instanceId)) {
+      if(instanceToken.getNodeId().equals(nodeId) && !instanceToken.isDead()) {
+        nodeTokens.add(instanceToken);
       }
     }
     return new TokenList(nodeTokens);
@@ -46,11 +50,8 @@ public class HashMapTokenStore implements TokenStore {
 
   @Override
   public Token addToken(Identifier instanceId, Identifier nodeId, Option<Identifier> sourceNodeId, boolean isFinal) {
-    Token token = new Token(idGenerator.generateId(),
-      nodeId, sourceNodeId,
-      Option.of(instanceId), false, isFinal);
-
-    getInstanceTokens(instanceId).add(token);
+    Token token = new Token(idGenerator.generateId(), nodeId, sourceNodeId, instanceId, false, isFinal);
+    getOrCreateInstanceTokenMap(instanceId).put(token.getId(), token);
     return token;
   }
 

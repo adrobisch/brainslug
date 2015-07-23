@@ -2,9 +2,7 @@ package brainslug.flow.execution.token;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.instance.FlowInstanceToken;
-
-import java.util.List;
-import java.util.Map;
+import brainslug.util.Option;
 
 public class TokenOperations {
   TokenStore tokenStore;
@@ -13,33 +11,20 @@ public class TokenOperations {
     this.tokenStore = tokenStore;
   }
 
-  public Map<Identifier, List<FlowInstanceToken>> getNodeTokensGroupedBySource(Identifier nodeId, Identifier instanceId) {
-    return tokenStore.getNodeTokens(nodeId, instanceId).groupedBySourceNode();
-  }
-
-  public void removeFirstIncomingTokens(Identifier nodeId, Identifier instanceId) {
-    Map<Identifier, List<FlowInstanceToken>> nodeTokens = getNodeTokensGroupedBySource(nodeId, instanceId);
-
-    for (List<FlowInstanceToken> tokens : nodeTokens.values()) {
-      removeToken(instanceId, first(tokens));
-    }
-  }
-
-  protected FlowInstanceToken first(List<FlowInstanceToken> tokens) {
-    if (tokens.isEmpty()) {
-      return null;
-    } else {
-      return tokens.get(0);
-    }
-  }
-
-  public void removeTokens(Identifier instanceId, List<FlowInstanceToken> tokens) {
-    for (FlowInstanceToken token : tokens) {
+  public void removeTokens(Identifier instanceId, Identifier nodeId, Option<Identifier> sourceId, Integer quantity) {
+    int deleted = 0;
+    for (FlowInstanceToken token : tokenStore.getNodeTokens(nodeId,instanceId)) {
+      if (token.getSourceNodeId().isPresent() && sourceId.isPresent() && !token.getSourceNodeId().get().equals(sourceId.get())) {
+        continue;
+      }
       removeToken(instanceId, token);
+      if (++deleted >= quantity) {
+        break;
+      }
     }
   }
 
-  protected void removeToken(Identifier instanceId, FlowInstanceToken token) {
+  public void removeToken(Identifier instanceId, FlowInstanceToken token) {
     if (token != null) {
       tokenStore.setDead(instanceId, token.getId());
     }

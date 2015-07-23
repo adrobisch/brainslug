@@ -1,5 +1,6 @@
 package brainslug.flow.execution.instance;
 
+import brainslug.flow.execution.token.TokenStore;
 import brainslug.flow.instance.FlowInstanceProperty;
 import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.definition.Identifier;
@@ -13,18 +14,21 @@ import brainslug.util.IdGenerator;
 import brainslug.util.Option;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HashMapInstanceStore implements InstanceStore {
     final IdGenerator idGenerator;
     final PropertyStore propertyStore;
+    private TokenStore tokenStore;
     final Map<Identifier, Map<Identifier, FlowInstance>> instancesByDefinitionId;
     final Map<Identifier, FlowInstance> instancesById;
 
-    public HashMapInstanceStore(IdGenerator idGenerator, PropertyStore propertyStore) {
+    public HashMapInstanceStore(IdGenerator idGenerator, PropertyStore propertyStore, TokenStore tokenStore) {
         this.idGenerator = idGenerator;
         this.propertyStore = propertyStore;
-        this.instancesByDefinitionId = new HashMap<Identifier, Map<Identifier, FlowInstance>>();
-        this.instancesById = new HashMap<Identifier, FlowInstance>();
+        this.tokenStore = tokenStore;
+        this.instancesByDefinitionId = new ConcurrentHashMap<Identifier, Map<Identifier, FlowInstance>>();
+        this.instancesById = new ConcurrentHashMap<Identifier, FlowInstance>();
     }
 
     @Override
@@ -97,7 +101,7 @@ public class HashMapInstanceStore implements InstanceStore {
     @Override
     public FlowInstance createInstance(Identifier definitionId) {
         Identifier instanceId = idGenerator.generateId();
-        DefaultFlowInstance newInstance = new DefaultFlowInstance(instanceId);
+        DefaultFlowInstance newInstance = new DefaultFlowInstance(instanceId, propertyStore, tokenStore);
 
         addInstanceToDefinitionInstances(definitionId, newInstance);
         instancesById.put(instanceId, newInstance);
@@ -114,7 +118,7 @@ public class HashMapInstanceStore implements InstanceStore {
 
     private Map<Identifier, FlowInstance> getOrCreateInstanceMap(Identifier definitionId) {
         if (instancesByDefinitionId.get(definitionId) == null) {
-            instancesByDefinitionId.put(definitionId, new HashMap<Identifier, FlowInstance>());
+            instancesByDefinitionId.put(definitionId, new ConcurrentHashMap<Identifier, FlowInstance>());
         }
         return instancesByDefinitionId.get(definitionId);
     }

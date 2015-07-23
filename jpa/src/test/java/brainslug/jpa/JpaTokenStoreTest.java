@@ -34,7 +34,7 @@ public class JpaTokenStoreTest extends AbstractDatabaseTest {
     // then:
     FlowInstanceTokenList instanceTokens = jpaTokenStore.getInstanceTokens(instanceId);
     assertThat(instanceTokens.getActiveTokens())
-      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), Option.of(instanceId), false, false))
+      .contains(new Token(tokenId, nodeId, Option.<Identifier>empty(), instanceId, false, false))
       .hasSize(1);
   }
 

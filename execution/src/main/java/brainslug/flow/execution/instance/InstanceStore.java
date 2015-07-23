@@ -8,9 +8,9 @@ import brainslug.util.Option;
 import java.util.List;
 
 public interface InstanceStore {
-  List<? extends FlowInstance> findInstances(FlowInstanceSelector instanceSelector);
-
   Option<? extends FlowInstance> findInstance(FlowInstanceSelector instanceSelector);
+
+  List<? extends FlowInstance> findInstances(FlowInstanceSelector instanceSelector);
 
   FlowInstance createInstance(Identifier definitionId);
 }

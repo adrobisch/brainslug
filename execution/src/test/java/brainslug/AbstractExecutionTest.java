@@ -37,7 +37,7 @@ public class AbstractExecutionTest {
   protected CallDefinitionExecutor callExecutor = spy(new CallDefinitionExecutor());
   protected TokenStore tokenStore = new HashMapTokenStore(new UuidGenerator());
   protected PropertyStore propertyStore = spy(new HashMapPropertyStore());
-  protected InstanceStore instanceStore = spy(new HashMapInstanceStore(new UuidGenerator(), propertyStore));
+  protected InstanceStore instanceStore = spy(new HashMapInstanceStore(new UuidGenerator(), propertyStore, tokenStore));
   protected ListenerManager listenerManager = mock(ListenerManager.class);
 
   protected BrainslugContext context = createContext();
@@ -45,6 +45,7 @@ public class AbstractExecutionTest {
   BrainslugContext createContext() {
     return new BrainslugContextBuilder()
             .withDefinitionStore(definitionStore)
+            .withInstanceStore(instanceStore)
             .withRegistry(registry)
             .withFlowExecutor(tokenFlowExecutorWithMocks())
             .build();

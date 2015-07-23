@@ -1,6 +1,7 @@
 package brainslug.flow.context;
 
 import brainslug.flow.definition.Identifier;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.instance.FlowInstanceProperty;
 

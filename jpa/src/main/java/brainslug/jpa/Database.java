@@ -28,6 +28,7 @@ public class Database {
 
   public <T> T insertOrUpdate(T entity) {
     entityManager.persist(entity);
+    flush();
     return entity;
   }
 

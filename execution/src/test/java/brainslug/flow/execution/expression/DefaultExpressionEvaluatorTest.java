@@ -5,6 +5,7 @@ import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.execution.property.ExecutionProperties;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.expression.PredicateExpression;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.instance.FlowInstanceProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class DefaultExpressionEvaluatorTest {
   private BrainslugExecutionContext testContext() {
     PropertyStore propertyStoreMock = mock(PropertyStore.class);
 
-    return new BrainslugExecutionContext(new Trigger().property("test", "foo"),
+    return new BrainslugExecutionContext(mock(FlowInstance.class), new Trigger().property("test", "foo"),
         new BrainslugContextBuilder()
           .withPropertyStore(propertyStoreMock).build().getRegistry());
   }

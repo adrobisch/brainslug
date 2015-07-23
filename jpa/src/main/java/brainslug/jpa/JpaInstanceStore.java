@@ -1,7 +1,6 @@
 package brainslug.jpa;
 
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.execution.instance.DefaultFlowInstance;
 import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.expression.EqualsExpression;
 import brainslug.flow.expression.Property;
@@ -91,12 +90,13 @@ public class JpaInstanceStore implements InstanceStore {
     public FlowInstance createInstance(Identifier definitionId) {
         Identifier identifier = idGenerator.generateId();
 
-        database.insertOrUpdate(new FlowInstanceEntity()
-                        .withId(identifier.stringValue())
-                        .withCreated(new Date().getTime())
-                        .withDefinitionId(definitionId.stringValue())
-        );
+        FlowInstanceEntity newInstance = new FlowInstanceEntity()
+                .withId(identifier.stringValue())
+                .withCreated(new Date().getTime())
+                .withDefinitionId(definitionId.stringValue());
 
-        return new DefaultFlowInstance(identifier);
+        database.insertOrUpdate(newInstance);
+
+        return newInstance;
     }
 }

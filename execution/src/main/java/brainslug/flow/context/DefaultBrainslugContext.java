@@ -100,43 +100,43 @@ public class DefaultBrainslugContext implements BrainslugContext {
   }
 
   @Override
-  public Identifier startFlow(FlowDefinition flowDefinition) {
+  public FlowInstance startFlow(FlowDefinition flowDefinition) {
     return startFlow(flowDefinition.getId());
   }
 
   @Override
-  public Identifier startFlow(FlowDefinition flowDefinition, FlowInstanceProperties properties) {
+  public FlowInstance startFlow(FlowDefinition flowDefinition, FlowInstanceProperties properties) {
     return startFlow(flowDefinition, flowDefinition.requireSingleStartNode(), properties);
   }
 
   @Override
-  public Identifier startFlow(FlowDefinition flowDefinition, FlowNodeDefinition startNode, FlowInstanceProperties properties) {
+  public FlowInstance startFlow(FlowDefinition flowDefinition, FlowNodeDefinition startNode, FlowInstanceProperties properties) {
     return startFlow(flowDefinition.getId(), startNode.getId(), properties);
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId) {
+  public FlowInstance startFlow(Identifier definitionId) {
     return startFlow(definitionId, getDefinitionById(definitionId).requireSingleStartNode().getId());
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId, Identifier startNodeId) {
-    return flowExecutor.startFlow(new Trigger().definitionId(definitionId).nodeId(startNodeId)).getIdentifier();
+  public FlowInstance startFlow(Identifier definitionId, Identifier startNodeId) {
+    return flowExecutor.startFlow(new Trigger().definitionId(definitionId).nodeId(startNodeId));
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId, FlowInstanceProperties properties) {
+  public FlowInstance startFlow(Identifier definitionId, FlowInstanceProperties properties) {
     return startFlow(definitionId, getDefinitionById(definitionId).requireSingleStartNode().getId(), properties);
   }
 
   @Override
-  public Identifier startFlow(Identifier definitionId, Identifier startNodeId, FlowInstanceProperties properties) {
+  public FlowInstance startFlow(Identifier definitionId, Identifier startNodeId, FlowInstanceProperties properties) {
     TriggerContext trigger = new Trigger()
       .definitionId(definitionId)
       .nodeId(startNodeId)
       .properties(properties);
 
-    return flowExecutor.startFlow(trigger).getIdentifier();
+    return flowExecutor.startFlow(trigger);
   }
 
   @Override

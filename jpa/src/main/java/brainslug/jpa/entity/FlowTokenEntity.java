@@ -91,8 +91,8 @@ public class FlowTokenEntity implements FlowInstanceToken {
     return isDead == 1;
   }
 
-  public FlowTokenEntity withIsDead(Integer isDead) {
-    this.isDead = isDead;
+  public FlowTokenEntity setDead(boolean isDead) {
+    this.isDead = isDead ? 1 : 0;
     return this;
   }
 
@@ -101,8 +101,8 @@ public class FlowTokenEntity implements FlowInstanceToken {
   }
 
   @Override
-  public Option<Identifier> getInstanceId() {
-    return Option.of(IdUtil.id(flowInstanceId));
+  public Identifier getInstanceId() {
+    return IdUtil.id(flowInstanceId);
   }
 
   @Override
@@ -110,8 +110,9 @@ public class FlowTokenEntity implements FlowInstanceToken {
     return isFinal == 1;
   }
 
-  public void setDead(boolean isDead) {
-    this.isDead = isDead ? 1 : 0;
+  public FlowTokenEntity setFinal(boolean isFinal) {
+    this.isFinal = isFinal ? 1 : 0;
+    return this;
   }
 
   public FlowTokenEntity withSourceNode(String sourceNode) {

@@ -2,19 +2,27 @@ package brainslug.flow.context;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.Property;
+import brainslug.flow.instance.FlowInstance;
 
 public class BrainslugExecutionContext implements ExecutionContext {
 
   Registry registry;
+  private FlowInstance flowInstance;
   TriggerContext trigger;
 
-  public BrainslugExecutionContext(TriggerContext trigger, Registry registry) {
+  public BrainslugExecutionContext(FlowInstance flowInstance, TriggerContext trigger, Registry registry) {
+    this.flowInstance = flowInstance;
     this.trigger = trigger;
     this.registry = registry;
   }
 
   public TriggerContext getTrigger() {
     return trigger;
+  }
+
+  @Override
+  public FlowInstance getInstance() {
+    return flowInstance;
   }
 
   @Override

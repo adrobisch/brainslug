@@ -2,6 +2,7 @@ package brainslug.flow.execution.instance;
 
 import brainslug.flow.execution.property.store.HashMapPropertyStore;
 import brainslug.flow.execution.property.store.PropertyStore;
+import brainslug.flow.execution.token.HashMapTokenStore;
 import brainslug.flow.instance.FlowInstance;
 import brainslug.util.Option;
 import brainslug.util.UuidGenerator;
@@ -67,7 +68,8 @@ public class HashMapInstanceStoreTest {
     }
 
     HashMapInstanceStore instanceStore(PropertyStore propertyStore) {
-        return new HashMapInstanceStore(new UuidGenerator(), propertyStore);
+        UuidGenerator idGenerator = new UuidGenerator();
+        return new HashMapInstanceStore(idGenerator, propertyStore, new HashMapTokenStore(idGenerator));
     }
 
     HashMapPropertyStore propertyStore() {

@@ -13,7 +13,7 @@ import brainslug.flow.node.event.timer.TimerDefinition;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, EventDefinition> {
+public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
   AsyncTriggerStore asyncTriggerStore;
   ExpressionEvaluator expressionEvaluator;
 
@@ -24,17 +24,15 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, Ev
 
   @Override
   public FlowNodeExecutionResult execute(EventDefinition eventDefinition, ExecutionContext execution) {
-    removeIncomingTokens(execution.getTrigger());
-
     if (shouldContinueImmediately(eventDefinition, execution)) {
-      return takeAll(eventDefinition);
+      return takeAllAndRemoveFirst(eventDefinition, execution.getInstance());
     } else if (eventDefinition.getConditionPredicate().isPresent()) {
       return executeConditionalEvent(eventDefinition, execution);
     } else if (waitingForSignal(eventDefinition, execution.getTrigger())) {
       addTimersIfDefined(eventDefinition, execution);
-      return takeNone();
+      return takeNone(eventDefinition, execution.getInstance());
     } else {
-      return takeAll(eventDefinition);
+      return takeAllAndRemoveFirst(eventDefinition, execution.getInstance());
     }
   }
 
@@ -45,12 +43,12 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, Ev
 
   protected FlowNodeExecutionResult executeConditionalEvent(EventDefinition eventDefinition, ExecutionContext execution) {
     if (execution.getTrigger().isSignaling()) {
-      return takeAll(eventDefinition);
+      return takeAllAndRemoveFirst(eventDefinition, execution.getInstance());
     } else if (execution.getTrigger().isAsync() && predicateIsFulfilled(eventDefinition.getConditionPredicate().get(), execution)) {
-      return takeAll(eventDefinition);
+      return takeAllAndRemoveFirst(eventDefinition, execution.getInstance());
     } else {
       createAsyncTrigger(eventDefinition, execution, nextPollingDate(eventDefinition));
-      return takeNone();
+      return takeNone(eventDefinition, execution.getInstance());
     }
   }
 
@@ -71,11 +69,11 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventNodeExecutor, Ev
 
   protected void createAsyncTrigger(EventDefinition eventDefinition, ExecutionContext execution, long dueDate) {
     asyncTriggerStore.storeTrigger(
-      new AsyncTrigger()
-        .withNodeId(eventDefinition.getId())
-        .withDefinitionId(execution.getTrigger().getDefinitionId())
-        .withInstanceId(execution.getTrigger().getInstanceId())
-        .withDueDate(dueDate)
+            new AsyncTrigger()
+                    .withNodeId(eventDefinition.getId())
+                    .withDefinitionId(execution.getTrigger().getDefinitionId())
+                    .withInstanceId(execution.getTrigger().getInstanceId())
+                    .withDueDate(dueDate)
     );
   }
 

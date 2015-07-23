@@ -9,7 +9,7 @@ public class Token implements FlowInstanceToken {
   Identifier id;
   Identifier nodeId;
   Option<Identifier> sourceNode;
-  Option<Identifier> instanceId;
+  Identifier instanceId;
   boolean isDead;
   boolean isFinal;
 
@@ -17,12 +17,12 @@ public class Token implements FlowInstanceToken {
     this(IdUtil.id(id),
       IdUtil.id(nodeId),
       Option.of(IdUtil.id(sourceNodeId)),
-      Option.of(IdUtil.id(instanceId)),
+      IdUtil.id(instanceId),
       isDead == 1,
       isFinal == 1);
   }
 
-  public Token(Identifier id, Identifier nodeId, Option<Identifier> sourceNode, Option<Identifier> instanceId, boolean isDead, boolean isFinal) {
+  public Token(Identifier id, Identifier nodeId, Option<Identifier> sourceNode, Identifier instanceId, boolean isDead, boolean isFinal) {
     this.id = id;
     this.nodeId = nodeId;
     this.sourceNode = sourceNode;
@@ -47,7 +47,7 @@ public class Token implements FlowInstanceToken {
   }
 
   @Override
-  public Option<Identifier> getInstanceId() {
+  public Identifier getInstanceId() {
     return instanceId;
   }
 

@@ -6,10 +6,13 @@ import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Trigger;
+import brainslug.flow.execution.instance.DefaultFlowInstance;
+import brainslug.flow.execution.instance.InstanceSelector;
 import brainslug.flow.execution.node.task.SimpleTask;
 import brainslug.flow.execution.property.ExecutionProperties;
 import brainslug.flow.instance.FlowInstance;
 import brainslug.util.IdUtil;
+import brainslug.util.Option;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -174,6 +177,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     when(definitionStore.findById(flow.getDefinition().getId())).thenReturn(flow.getDefinition());
 
     Identifier<?> instanceId = id("instance");
+    givenInstance(instanceId);
 
     Trigger property = new Trigger()
             .instanceId(instanceId)
@@ -186,6 +190,12 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // for each node trigger
     verify(propertyStore, times(2)).setProperties(eq(instanceId), any(ExecutionProperties.class));
+  }
+
+  private FlowInstance givenInstance(Identifier<?> instanceId) {
+    FlowInstance flowInstance = new DefaultFlowInstance(instanceId, propertyStore, tokenStore);
+    doReturn(Option.of(flowInstance)).when(instanceStore).findInstance(any(InstanceSelector.class));
+    return flowInstance;
   }
 
   @Test
@@ -203,11 +213,10 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     when(definitionStore.findById(definition.getId())).thenReturn(definition);
 
     // when:
-    FlowInstance flowInstance = mock(FlowInstance.class);
     Identifier newInstanceId = id("instance");
-    when(flowInstance.getIdentifier()).thenReturn(newInstanceId);
 
-    when(instanceStore.createInstance(definition.getId())).thenReturn(flowInstance);
+    when(instanceStore.createInstance(definition.getId())).thenReturn(new DefaultFlowInstance(newInstanceId, propertyStore, tokenStore));
+    givenInstance(newInstanceId);
 
     context.startFlow(definition);
 

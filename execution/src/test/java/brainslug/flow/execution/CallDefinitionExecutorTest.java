@@ -4,13 +4,15 @@ import brainslug.AbstractExecutionTest;
 import brainslug.flow.builder.FlowBuilderSupport;
 import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.context.Trigger;
+import brainslug.flow.execution.instance.DefaultFlowInstance;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
-import brainslug.flow.expression.Property;
+import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.node.task.CallDefinition;
 import brainslug.util.IdUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import static brainslug.util.IdUtil.id;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,9 +25,13 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     CallDefinition callDefinition = dsl.method(service.getString());
 
-    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new BrainslugExecutionContext(new Trigger(), registryWithServiceMock()));
+    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new BrainslugExecutionContext(instanceMock(),new Trigger(), registryWithServiceMock()));
 
     Assertions.assertThat(callResult).isEqualTo("a String");
+  }
+
+  private FlowInstance instanceMock() {
+    return new DefaultFlowInstance(id("instance"), propertyStore, tokenStore);
   }
 
   @Test
@@ -37,7 +43,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     when(testServiceMock.echo(anyString())).then(answerWithFirstArgument());
 
-    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new BrainslugExecutionContext(new Trigger(), registryWithServiceMock()));
+    Object callResult = new CallDefinitionExecutor().execute(callDefinition, new BrainslugExecutionContext(instanceMock(),new Trigger(), registryWithServiceMock()));
 
     Assertions.assertThat(callResult).isEqualTo("a String");
   }
@@ -54,7 +60,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     when(testServiceMock.multiEcho(anyString(), anyString())).then(answerWithFirstArgumentAndSecondArgument());
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger()
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),new Trigger()
       .property("property", "prop1").property("property2", "prop2"), registryWithServiceMock());
 
     Object callResult = new CallDefinitionExecutor().execute(callDefinition, execution);
@@ -71,7 +77,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
 
     when(testServiceMock.echo(anyString())).then(answerWithFirstArgument());
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(new Trigger().property("property", "the property value"), registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),new Trigger().property("property", "the property value"), registryWithServiceMock());
 
     Object callResult = new CallDefinitionExecutor().execute(callDefinition, execution);
 
