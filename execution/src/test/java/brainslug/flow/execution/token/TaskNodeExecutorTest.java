@@ -7,6 +7,7 @@ import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Registry;
 import brainslug.flow.context.Trigger;
+import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.instance.DefaultFlowInstance;
 import brainslug.flow.execution.node.TaskNodeExecutor;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
@@ -48,7 +49,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
     // when:
-    BrainslugExecutionContext instance = new BrainslugExecutionContext(instanceMock(),new Trigger()
+    BrainslugExecutionContext instance = new BrainslugExecutionContext(instanceMock(serviceCallFlow.getId()),new Trigger()
       .definitionId(serviceCallFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registryWithServiceMock());
@@ -59,8 +60,8 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     verify(testServiceMock).getString();
   }
 
-  private FlowInstance instanceMock() {
-    return new DefaultFlowInstance(id("instance"), propertyStore, tokenStore);
+  private FlowInstance instanceMock(Identifier definitionId) {
+    return new DefaultFlowInstance(id("instance"), definitionId, propertyStore, tokenStore);
   }
 
   @Test
@@ -89,7 +90,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
     // when:
-    BrainslugExecutionContext instance = new BrainslugExecutionContext(instanceMock(),new Trigger()
+    BrainslugExecutionContext instance = new BrainslugExecutionContext(instanceMock(serviceCallFlow.getId()),new Trigger()
       .definitionId(serviceCallFlow.getId())
       .nodeId(id(TASK))
       .property("echo", "Echo!")
@@ -140,7 +141,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     when(registry.getService(TestDelegate.class)).thenReturn(testDelegate);
 
     // when:
-    BrainslugExecutionContext instance = new BrainslugExecutionContext(instanceMock(),new Trigger()
+    BrainslugExecutionContext instance = new BrainslugExecutionContext(instanceMock(handlerFlow.getId()),new Trigger()
       .definitionId(handlerFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registry);
@@ -202,7 +203,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     context.addFlowDefinition(asyncTaskFlow);
 
     // when:
-    taskNodeExecutor.execute(asyncTaskFlow.getNode(id(TASK), TaskDefinition.class), new BrainslugExecutionContext(instanceMock(),new Trigger()
+    taskNodeExecutor.execute(asyncTaskFlow.getNode(id(TASK), TaskDefinition.class), new BrainslugExecutionContext(instanceMock(asyncTaskFlow.getId()),new Trigger()
     .definitionId(asyncTaskFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registryWithServiceMock()));
@@ -245,7 +246,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   }
 
   private void taskNodeTriggered(GoalFlow goalFlow) {
-    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(instanceMock(),new Trigger()
+    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(instanceMock(goalFlow.getGoalFlow().getId()),new Trigger()
       .definitionId(goalFlow.getGoalFlow().getId())
       .nodeId(id(TASK)), registryWithServiceMock());
 

@@ -1,6 +1,6 @@
 package brainslug.maven;
 
-import brainslug.bpmn.BpmnModelTransformer;
+import brainslug.bpmn.BpmnModelExporter;
 import brainslug.flow.builder.FlowBuilder;
 import org.activiti.bpmn.BpmnAutoLayout;
 import org.activiti.bpmn.model.BpmnModel;
@@ -45,10 +45,10 @@ public class ExportBpmnMojo extends AbstractMojo {
   }
 
   private void exportBpmn(FlowBuilder flowBuilder, FileOutputStream fileOutputStream) {
-    BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
-    BpmnModel bpmnModel = bpmnModelTransformer.toBpmnModel(flowBuilder);
+    BpmnModelExporter bpmnModelExporter = new BpmnModelExporter();
+    BpmnModel bpmnModel = bpmnModelExporter.toBpmnModel(flowBuilder);
     new BpmnAutoLayout(bpmnModel).execute();
-    String bpmnXml = bpmnModelTransformer.toBpmnXml(bpmnModel);
+    String bpmnXml = bpmnModelExporter.toBpmnXml(bpmnModel);
     writeToFile(fileOutputStream, bpmnXml);
   }
 

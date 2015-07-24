@@ -35,7 +35,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
   public FlowNodeExecutionResult execute(AbstractTaskDefinition<?> taskDefinition, ExecutionContext execution) {
     if (taskDefinition.getGoal().isPresent() && goalIsFulfilled(taskDefinition.getGoal().get(), execution)) {
       return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
-    } else if (taskDefinition.isAsync() && !execution.getTrigger().isAsync()) {
+    } else if (taskDefinition.isAsync() && !execution.isAsync()) {
       scheduleAsyncTask(taskDefinition, execution);
       return takeNone(taskDefinition, execution.getInstance());
     } else if (isExecutable(taskDefinition)) {
@@ -74,8 +74,8 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
           .incrementRetries()
           .withErrorDetails(new AsyncTriggerErrorDetails(e))
           .withNodeId(taskDefinition.getId())
-          .withInstanceId(execution.getTrigger().getInstanceId())
-          .withDefinitionId(execution.getTrigger().getDefinitionId())
+          .withInstanceId(execution.getInstance().getIdentifier())
+          .withDefinitionId(execution.getInstance().getDefinitionId())
       );
     return new FlowNodeExecutionResult(taskDefinition).failed(true);
   }
@@ -95,8 +95,8 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
       .schedule(
         new AsyncTrigger()
           .withNodeId(taskDefinition.getId())
-          .withInstanceId(execution.getTrigger().getInstanceId())
-          .withDefinitionId(execution.getTrigger().getDefinitionId())
+          .withInstanceId(execution.getInstance().getIdentifier())
+          .withDefinitionId(execution.getInstance().getDefinitionId())
       );
   }
 }

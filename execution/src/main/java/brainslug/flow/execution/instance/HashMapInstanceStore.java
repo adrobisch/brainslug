@@ -101,7 +101,7 @@ public class HashMapInstanceStore implements InstanceStore {
     @Override
     public FlowInstance createInstance(Identifier definitionId) {
         Identifier instanceId = idGenerator.generateId();
-        DefaultFlowInstance newInstance = new DefaultFlowInstance(instanceId, propertyStore, tokenStore);
+        DefaultFlowInstance newInstance = new DefaultFlowInstance(instanceId, definitionId, propertyStore, tokenStore);
 
         addInstanceToDefinitionInstances(definitionId, newInstance);
         instancesById.put(instanceId, newInstance);

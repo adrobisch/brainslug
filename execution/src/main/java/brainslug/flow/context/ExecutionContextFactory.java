@@ -15,13 +15,13 @@ public class ExecutionContextFactory {
 
   public ExecutionContext createExecutionContext(FlowInstance flowInstance, TriggerContext trigger) {
     ExecutionContext executionContext = new BrainslugExecutionContext(flowInstance, trigger, registry);
-    executionContext.getTrigger().setProperties(mergeProperties(trigger, executionContext));
+    executionContext.setProperties(mergeProperties(trigger, executionContext));
     return executionContext;
   }
 
   protected FlowInstanceProperties mergeProperties(TriggerContext trigger, ExecutionContext executionContext) {
     FlowInstanceProperties properties = propertyStore
-      .getProperties(executionContext.getTrigger().getInstanceId());
+      .getProperties(executionContext.getInstance().getIdentifier());
 
     properties.withAll(trigger.getProperties());
     return properties;

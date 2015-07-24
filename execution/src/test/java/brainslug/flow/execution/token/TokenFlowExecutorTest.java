@@ -168,7 +168,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
           .execute(task(id("propertyTask"), new SimpleTask() {
             @Override
             public void execute(ExecutionContext context) {
-              assertThat(context.getTrigger().getProperty("key", String.class)).isEqualTo("value");
+              assertThat(context.property("key", String.class)).isEqualTo("value");
             }
           }));
       }
@@ -193,7 +193,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
   }
 
   private FlowInstance givenInstance(Identifier<?> instanceId) {
-    FlowInstance flowInstance = new DefaultFlowInstance(instanceId, propertyStore, tokenStore);
+    FlowInstance flowInstance = new DefaultFlowInstance(instanceId, id("definition"), propertyStore, tokenStore);
     doReturn(Option.of(flowInstance)).when(instanceStore).findInstance(any(InstanceSelector.class));
     return flowInstance;
   }
@@ -215,7 +215,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     // when:
     Identifier newInstanceId = id("instance");
 
-    when(instanceStore.createInstance(definition.getId())).thenReturn(new DefaultFlowInstance(newInstanceId, propertyStore, tokenStore));
+    when(instanceStore.createInstance(definition.getId())).thenReturn(new DefaultFlowInstance(newInstanceId, definition.getId(), propertyStore, tokenStore));
     givenInstance(newInstanceId);
 
     context.startFlow(definition);

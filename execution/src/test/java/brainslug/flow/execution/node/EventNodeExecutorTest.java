@@ -29,7 +29,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
   public void shouldWaitForTriggerAtIntermediateEvent() {
     // given:
     FlowDefinition eventFlow = eventFlow();
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger(), new BrainslugContextBuilder().build().getRegistry());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(eventFlow.getId()), new Trigger(), new BrainslugContextBuilder().build().getRegistry());
 
     // when:
     FlowNodeExecutionResult executionResult = eventNodeExecutor.execute(eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class), execution);
@@ -38,15 +38,15 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     Assertions.assertThat(executionResult.getNextNodes()).isEmpty();
   }
 
-  private FlowInstance instanceMock() {
-    return new DefaultFlowInstance(id("instance"), propertyStore, tokenStore);
+  private FlowInstance instanceMock(Identifier<?> definitionId) {
+    return new DefaultFlowInstance(id("instance"), definitionId, propertyStore, tokenStore);
   }
 
   @Test
   public void shouldContinueOnSignalingTrigger() {
     // given:
     FlowDefinition eventFlow = eventFlow();
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(eventFlow.getId()), new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
 
     // when:
     FlowNodeExecutionResult executionResult = eventNodeExecutor.execute(eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class), execution);
@@ -61,7 +61,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(eventFlow.getId()), new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, false);
 
     // when:
@@ -78,7 +78,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(eventFlow.getId()), new Trigger().signaling(true), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, true);
 
     // when:
@@ -95,7 +95,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger(), new BrainslugContextBuilder().build().getRegistry());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(eventFlow.getId()), new Trigger(), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, true);
 
     // when:
@@ -112,7 +112,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // given:
     FlowDefinition eventFlow = eventFlow();
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger(), new BrainslugContextBuilder().build().getRegistry());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(eventFlow.getId()), new Trigger(), new BrainslugContextBuilder().build().getRegistry());
     EventDefinition eventDefinitionWithPredicate = eventDefinitionWithPredicate(eventFlow, false);
 
     // when:
@@ -128,8 +128,9 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // given:
     FlowDefinition eventFlow = timerEventFlow();
     EventDefinition timerEventNode = eventFlow.getNode(id(INTERMEDIATE), EventDefinition.class);
+    FlowInstance flowInstance = instanceMock(eventFlow.getId());
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger(), registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(flowInstance, new Trigger(), registryWithServiceMock());
 
     // when:
     currentTimeIsMocked();
@@ -140,9 +141,11 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     Assertions.assertThat(executionResult.getNextNodes()).isEmpty();
 
     verify(asyncTriggerStore).storeTrigger(
-            new AsyncTrigger()
-                    .withNodeId(id(INTERMEDIATE))
-                    .withDueDate(5042l)
+      new AsyncTrigger()
+        .withDefinitionId(eventFlow.getId())
+        .withInstanceId(flowInstance.getIdentifier())
+        .withNodeId(id(INTERMEDIATE))
+        .withDueDate(5042l)
     );
   }
 
@@ -158,7 +161,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
 
     Trigger signalingTrigger = new Trigger().signaling(true);
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),signalingTrigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(eventFlow.getId()),signalingTrigger, registryWithServiceMock());
 
     // when:
     currentTimeIsMocked();
@@ -179,8 +182,10 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
     EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
     Identifier eventId = eventSetup.getEventId();
+    Identifier definitionId = id("event_flow");
+    FlowInstance flowInstance = instanceMock(definitionId);
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger(), registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(flowInstance, new Trigger(), registryWithServiceMock());
 
     // when:
     currentTimeIsMocked();
@@ -189,6 +194,8 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // then:
     verify(asyncTriggerStore).storeTrigger(
       new AsyncTrigger()
+        .withDefinitionId(definitionId)
+        .withInstanceId(flowInstance.getIdentifier())
         .withNodeId(eventId)
         .withDueDate(3042));
   }
@@ -200,8 +207,10 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
     conditionalEvent.pollingInterval(6, TimeUnit.SECONDS);
     Identifier eventId = eventSetup.getEventId();
+    Identifier definitionId = id("event_flow");
+    FlowInstance flowInstance = instanceMock(definitionId);
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(), new Trigger(), registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(flowInstance, new Trigger(), registryWithServiceMock());
 
     // when:
     currentTimeIsMocked();
@@ -210,6 +219,8 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     // then:
     verify(asyncTriggerStore).storeTrigger(
       new AsyncTrigger()
+        .withDefinitionId(definitionId)
+        .withInstanceId(flowInstance.getIdentifier())
         .withNodeId(eventId)
         .withDueDate(6042));
   }
@@ -224,7 +235,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
 
     Trigger trigger = new Trigger().async(true);
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),trigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(id("event_flow")),trigger, registryWithServiceMock());
     // when:
     FlowNodeExecutionResult result = eventNodeExecutor.execute(conditionalEvent, execution);
 
@@ -240,12 +251,14 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
     ConditionalEventSetup eventSetup = new ConditionalEventSetup().create();
     EventDefinition conditionalEvent = eventSetup.getConditionalEvent();
     Identifier eventId = eventSetup.getEventId();
+    Identifier definitionId = id("event_flow");
+    FlowInstance flowInstance = instanceMock(definitionId);
 
     when(eventSetup.getContextPredicate().isFulfilled(any(ExecutionContext.class))).thenReturn(false);
 
     Trigger trigger = new Trigger().async(true);
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),trigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(flowInstance,trigger, registryWithServiceMock());
 
     // when:
     currentTimeIsMocked();
@@ -256,6 +269,8 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
 
     verify(asyncTriggerStore, times(1)).storeTrigger(
       new AsyncTrigger()
+        .withDefinitionId(definitionId)
+        .withInstanceId(flowInstance.getIdentifier())
         .withNodeId(eventId)
         .withDueDate(3042));
   }
@@ -268,7 +283,7 @@ public class EventNodeExecutorTest extends AbstractExecutionTest {
 
     Trigger trigger = new Trigger().signaling(true);
 
-    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(),trigger, registryWithServiceMock());
+    BrainslugExecutionContext execution = new BrainslugExecutionContext(instanceMock(id("event_flow")),trigger, registryWithServiceMock());
     // when:
     FlowNodeExecutionResult result = eventNodeExecutor.execute(conditionalEvent, execution);
 

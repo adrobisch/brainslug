@@ -24,11 +24,11 @@ public class FlowPathDefinition<Self extends FlowPathDefinition> {
   }
 
   public ChoiceDefinition choice(Identifier id) {
-    return appendNode(new ChoiceDefinition(this)).id(id).self();
+    return appendNode(new ChoiceDefinition(definition)).id(id).self();
   }
 
   public AndDefinition parallel(Identifier id) {
-    return appendNode(new ParallelDefinition(this).id(id)).self().fork();
+    return appendNode(new ParallelDefinition(definition).id(id)).self().fork();
   }
 
   public Self execute(AbstractTaskDefinition taskDefinition) {
@@ -101,7 +101,7 @@ public class FlowPathDefinition<Self extends FlowPathDefinition> {
     return startNode;
   }
 
-  public FlowNodeDefinition getFirstNode() {
+  public FlowNodeDefinition getFirstPathNode() {
     return getPathNodes().peekFirst();
   }
 

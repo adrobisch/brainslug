@@ -8,12 +8,14 @@ import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.instance.FlowInstanceTokenList;
 
 public class DefaultFlowInstance implements FlowInstance {
-    final Identifier<?> id;
-    private PropertyStore propertyStore;
-    private TokenStore tokenStore;
+    private final Identifier<?> id;
+    private final Identifier<?> definitionId;
+    private final PropertyStore propertyStore;
+    private final TokenStore tokenStore;
 
-    public DefaultFlowInstance(Identifier<?> id, PropertyStore propertyStore, TokenStore tokenStore) {
+    public DefaultFlowInstance(Identifier<?> id, Identifier<?> definitionId, PropertyStore propertyStore, TokenStore tokenStore) {
         this.id = id;
+        this.definitionId = definitionId;
         this.propertyStore = propertyStore;
         this.tokenStore = tokenStore;
     }
@@ -25,7 +27,7 @@ public class DefaultFlowInstance implements FlowInstance {
 
     @Override
     public Identifier getDefinitionId() {
-        return null;
+        return definitionId;
     }
 
     @Override

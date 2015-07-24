@@ -9,6 +9,6 @@ public class JuelExpression extends Value<String> {
 
   @Override
   public String getString() {
-    return String.format("${%s}", getValue());
+    return getValue();
   }
 }

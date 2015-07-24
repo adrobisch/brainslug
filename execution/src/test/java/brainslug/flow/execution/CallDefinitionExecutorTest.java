@@ -31,7 +31,7 @@ public class CallDefinitionExecutorTest extends AbstractExecutionTest {
   }
 
   private FlowInstance instanceMock() {
-    return new DefaultFlowInstance(id("instance"), propertyStore, tokenStore);
+    return new DefaultFlowInstance(id("instance"), id("definition"), propertyStore, tokenStore);
   }
 
   @Test

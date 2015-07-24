@@ -3,6 +3,8 @@ package brainslug.flow.context;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.Property;
 import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.instance.FlowInstanceProperty;
 
 public class BrainslugExecutionContext implements ExecutionContext {
 
@@ -23,6 +25,31 @@ public class BrainslugExecutionContext implements ExecutionContext {
   @Override
   public FlowInstance getInstance() {
     return flowInstance;
+  }
+
+  @Override
+  public boolean isAsync() {
+    return trigger.isAsync();
+  }
+
+  @Override
+  public boolean isSignaling() {
+    return trigger.isSignaling();
+  }
+
+  @Override
+  public void setProperty(String key, Object value) {
+    trigger.setProperty(key, value);
+  }
+
+  @Override
+  public void setProperties(FlowInstanceProperties executionProperties) {
+    trigger.setProperties(executionProperties);
+  }
+
+  @Override
+  public FlowInstanceProperties<?, FlowInstanceProperty<?>> getProperties() {
+    return trigger.getProperties();
   }
 
   @Override

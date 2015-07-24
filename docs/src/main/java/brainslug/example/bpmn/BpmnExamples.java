@@ -1,6 +1,6 @@
 package brainslug.example.bpmn;
 
-import brainslug.bpmn.BpmnModelTransformer;
+import brainslug.bpmn.BpmnModelExporter;
 import brainslug.flow.renderer.DefaultSkin;
 import brainslug.flow.renderer.Format;
 import brainslug.flow.renderer.JGraphBpmnRenderer;
@@ -26,8 +26,8 @@ public class BpmnExamples {
 
   public void transformExample() {
 //# tag::transformer-example[]
-    BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
-    String bpmnXml = bpmnModelTransformer.toBpmnXml(simpleFlow);
+    BpmnModelExporter bpmnModelExporter = new BpmnModelExporter();
+    String bpmnXml = bpmnModelExporter.toBpmnXml(simpleFlow);
 //# end::transformer-example[]
   }
 

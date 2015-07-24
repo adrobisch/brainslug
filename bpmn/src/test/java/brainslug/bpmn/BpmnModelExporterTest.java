@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import static brainslug.util.FlowElementAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BpmnModelTransformerTest {
+public class BpmnModelExporterTest {
 
   @Test
   public void shouldTransformEmptyFlow() {
@@ -32,7 +32,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(emptyFlow);
     // THEN:
@@ -54,7 +54,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
@@ -74,7 +74,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
@@ -94,7 +94,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
@@ -118,7 +118,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(taskFlow);
     // THEN:
@@ -144,7 +144,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(taskFlow);
     // THEN:
@@ -169,7 +169,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(startEventFlow);
     // THEN:
@@ -199,7 +199,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(choiceFlow);
     // THEN:
@@ -215,7 +215,7 @@ public class BpmnModelTransformerTest {
     assertThat(process.getFlowElements()).hasFlowElement(ExclusiveGateway.class, "choice", "Foo or Bar");
 
     assertThat(process.getFlowElements()).hasSequenceFlow("start", "choice");
-    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task1", "${foo == '42'}==true");
+    assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task1", "foo == '42'==true");
     assertThat(process.getFlowElements()).hasSequenceFlowWithExpression("choice", "task2", "bar==true");
     assertThat(process.getFlowElements()).hasSequenceFlow("task1", "merge");
     assertThat(process.getFlowElements()).hasSequenceFlow("task2", "merge");
@@ -238,7 +238,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(flow);
     // THEN:
@@ -278,7 +278,7 @@ public class BpmnModelTransformerTest {
       }
     };
 
-    BpmnModelTransformer modelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter modelTransformer = new BpmnModelExporter();
     // WHEN:
     BpmnModel bpmnModel = modelTransformer.toBpmnModel(flow);
     // THEN:
@@ -299,7 +299,7 @@ public class BpmnModelTransformerTest {
   @Test
   public void shouldTransformToBpmnXmlString() throws IOException {
     // given:
-    BpmnModelTransformer bpmnModelTransformer = new BpmnModelTransformer();
+    BpmnModelExporter bpmnModelExporter = new BpmnModelExporter();
     FlowBuilder emptyFlow = new BpmnFlowBuilder() {
       @Override
       public void define() {}
@@ -310,7 +310,7 @@ public class BpmnModelTransformerTest {
       }
     };
     // when:
-    String bpmnXml = bpmnModelTransformer.toBpmnXml(emptyFlow);
+    String bpmnXml = bpmnModelExporter.toBpmnXml(emptyFlow);
     // then:
     assertThat(bpmnXml).isEqualTo(emptyFlowContent());
   }

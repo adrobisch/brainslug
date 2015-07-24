@@ -29,18 +29,6 @@ public class FlowBuilderTest {
   interface MyService {
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void nonUniqueIdThrowsException() {
-    FlowBuilder flowBuilder = new FlowBuilder() {
-
-      @Override
-      public void define() {
-        start(event(id(StartEvent))).waitFor(event(id(StartEvent))).end(event(id(End)));
-      }
-    };
-    flowBuilder.getDefinition();
-  }
-
   @Test
   public void buildStartEndFlow() {
     FlowBuilder flowBuilder = new FlowBuilder() {

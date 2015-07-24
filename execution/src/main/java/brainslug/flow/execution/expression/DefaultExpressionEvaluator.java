@@ -32,7 +32,7 @@ public class DefaultExpressionEvaluator implements ExpressionEvaluator {
 
   private Object propertyValue(Property<?> property, ExecutionContext context) {
     String propertyId = property.getValue().getId().toString();
-    return context.getTrigger().getProperty(propertyId, Object.class);
+    return context.property(propertyId, Object.class);
   }
 
   private Object getValue(Expression expression, ExecutionContext context) {
@@ -50,7 +50,7 @@ public class DefaultExpressionEvaluator implements ExpressionEvaluator {
       return ((ContextPredicate) value).isFulfilled(context);
     }
     if (value instanceof PropertyPredicate) {
-      return ((PropertyPredicate) value).isFulfilled(context.getTrigger().getProperties());
+      return ((PropertyPredicate) value).isFulfilled(context.getProperties());
     }
     if (value instanceof CallDefinition) {
       return executeCall((CallDefinition) value, context);

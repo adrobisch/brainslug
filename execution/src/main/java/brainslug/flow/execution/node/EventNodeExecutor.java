@@ -28,7 +28,7 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
       return takeAllAndRemoveFirst(eventDefinition, execution.getInstance());
     } else if (eventDefinition.getConditionPredicate().isPresent()) {
       return executeConditionalEvent(eventDefinition, execution);
-    } else if (waitingForSignal(eventDefinition, execution.getTrigger())) {
+    } else if (waitingForSignal(eventDefinition, execution)) {
       addTimersIfDefined(eventDefinition, execution);
       return takeNone(eventDefinition, execution.getInstance());
     } else {
@@ -42,9 +42,9 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
   }
 
   protected FlowNodeExecutionResult executeConditionalEvent(EventDefinition eventDefinition, ExecutionContext execution) {
-    if (execution.getTrigger().isSignaling()) {
+    if (execution.isSignaling()) {
       return takeAllAndRemoveFirst(eventDefinition, execution.getInstance());
-    } else if (execution.getTrigger().isAsync() && predicateIsFulfilled(eventDefinition.getConditionPredicate().get(), execution)) {
+    } else if (execution.isAsync() && predicateIsFulfilled(eventDefinition.getConditionPredicate().get(), execution)) {
       return takeAllAndRemoveFirst(eventDefinition, execution.getInstance());
     } else {
       createAsyncTrigger(eventDefinition, execution, nextPollingDate(eventDefinition));
@@ -69,11 +69,11 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
 
   protected void createAsyncTrigger(EventDefinition eventDefinition, ExecutionContext execution, long dueDate) {
     asyncTriggerStore.storeTrigger(
-            new AsyncTrigger()
-                    .withNodeId(eventDefinition.getId())
-                    .withDefinitionId(execution.getTrigger().getDefinitionId())
-                    .withInstanceId(execution.getTrigger().getInstanceId())
-                    .withDueDate(dueDate)
+      new AsyncTrigger()
+        .withNodeId(eventDefinition.getId())
+        .withDefinitionId(execution.getInstance().getDefinitionId())
+        .withInstanceId(execution.getInstance().getIdentifier())
+        .withDueDate(dueDate)
     );
   }
 
@@ -90,8 +90,8 @@ public class EventNodeExecutor extends DefaultNodeExecutor<EventDefinition> {
     return new Date().getTime();
   }
 
-  protected boolean waitingForSignal(EventDefinition eventDefinition, TriggerContext trigger) {
-    return eventDefinition.is(IntermediateEvent.class) && !trigger.isSignaling();
+  protected boolean waitingForSignal(EventDefinition eventDefinition, ExecutionContext context) {
+    return eventDefinition.is(IntermediateEvent.class) && !context.isSignaling();
   }
 
   protected boolean predicateIsFulfilled(PredicateExpression eventPredicate, ExecutionContext execution) {

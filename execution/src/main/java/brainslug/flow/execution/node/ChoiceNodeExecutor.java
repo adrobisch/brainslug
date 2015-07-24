@@ -17,7 +17,7 @@ public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceDefinition> {
   public FlowNodeExecutionResult execute(ChoiceDefinition choiceDefinition, ExecutionContext execution) {
     for (ThenDefinition thenPath : choiceDefinition.getThenPaths()) {
       if (expressionEvaluator.evaluate(thenPath.getExpression(), execution, Boolean.class)) {
-        return new FlowNodeExecutionResult(choiceDefinition).withNext(thenPath.getFirstNode());
+        return new FlowNodeExecutionResult(choiceDefinition).withNext(thenPath.getFirstPathNode());
       }
     }
 
@@ -26,9 +26,9 @@ public class ChoiceNodeExecutor extends DefaultNodeExecutor<ChoiceDefinition> {
 
   FlowNodeExecutionResult tryOtherwise(ChoiceDefinition choiceDefinition, ExecutionContext execution) {
     if (choiceDefinition.getOtherwisePath().isPresent()) {
-      return new FlowNodeExecutionResult(choiceDefinition).withNext(choiceDefinition.getOtherwisePath().get().getFirstNode());
+      return new FlowNodeExecutionResult(choiceDefinition).withNext(choiceDefinition.getOtherwisePath().get().getFirstPathNode());
     } else {
-      throw new IllegalStateException("no choice path was eligible for execution and no default path was set. " + choiceDefinition + ", trigger: " + execution.getTrigger());
+      throw new IllegalStateException("no choice path was eligible for execution and no default path was set. " + choiceDefinition + ", content: " + execution);
     }
   }
 

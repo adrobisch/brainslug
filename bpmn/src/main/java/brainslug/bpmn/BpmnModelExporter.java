@@ -2,6 +2,7 @@ package brainslug.bpmn;
 
 import brainslug.bpmn.task.UserTaskDefinition;
 import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.node.*;
 import brainslug.flow.node.event.AbstractEventDefinition;
 import brainslug.flow.node.event.IntermediateEvent;
@@ -14,32 +15,39 @@ import brainslug.util.Option;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class BpmnModelTransformer {
+public class BpmnModelExporter {
 
   List<SequenceFlow> sequenceFlows = new ArrayList<SequenceFlow>();
 
   public BpmnModel toBpmnModel(FlowBuilder flowBuilder) {
+    return toBpmnModel(flowBuilder.getDefinition());
+  }
+
+  public BpmnModel toBpmnModel(FlowDefinition definition) {
     Process process = new Process();
-    process.setId(flowBuilder.getDefinition().getId().toString());
-    process.setName(flowBuilder.getDefinition().getName());
+    process.setId(definition.getId().toString());
+    process.setName(definition.getName());
 
     BpmnModel model = new BpmnModel();
     model.addProcess(process);
 
-    addNodes(process, flowBuilder);
+    addNodes(process, definition);
     addFlows(process);
 
     return model;
   }
 
   public String toBpmnXml(FlowBuilder flowBuilder) {
+    return toBpmnXml(flowBuilder.getDefinition());
+  }
+
+  public String toBpmnXml(FlowDefinition definition) {
       BpmnXMLConverter bpmnXMLConverter = new BpmnXMLConverter();
       try {
-        return new String(bpmnXMLConverter.convertToXML(toBpmnModel(flowBuilder)), "UTF-8");
+        return new String(bpmnXMLConverter.convertToXML(toBpmnModel(definition)), "UTF-8");
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -60,8 +68,8 @@ public class BpmnModelTransformer {
     }
   }
 
-  private void addNodes(Process process, FlowBuilder flowBuilder) {
-    for (FlowNodeDefinition node : flowBuilder.getDefinition().getNodes()) {
+  private void addNodes(Process process, FlowDefinition definition) {
+    for (FlowNodeDefinition node : definition.getNodes()) {
       if (node instanceof AbstractEventDefinition) {
         addEvent((AbstractEventDefinition) node, process);
         collectOutgoingFlows(node);
