@@ -5,6 +5,7 @@ import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.property.*;
 import brainslug.flow.execution.property.store.PropertyStore;
+import brainslug.jpa.entity.FlowInstanceEntity;
 import brainslug.jpa.entity.InstancePropertyEntity;
 import brainslug.jpa.entity.QInstancePropertyEntity;
 import brainslug.jpa.util.ObjectSerializer;
@@ -37,8 +38,7 @@ public class JpaPropertyStore implements PropertyStore {
   @Override
   public void setProperty(Identifier<?> instanceId, FlowInstanceProperty<?> property) {
     InstancePropertyEntity instanceProperty = getOrCreatePropertyEntity(instanceId, property);
-    InstancePropertyEntity newProperty = database.insertOrUpdate(withPropertyValue(instanceProperty, property));
-    jpaInstanceStore.findInstanceById(instanceId).getPropertiesEntities().add(newProperty);
+    database.insertOrUpdate(withPropertyValue(instanceProperty, property));
   }
 
   @Override
@@ -56,27 +56,35 @@ public class JpaPropertyStore implements PropertyStore {
     return Option.<FlowInstanceProperty<?>>of(propertyEntity);
   }
 
-  protected InstancePropertyEntity getOrCreatePropertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {
-    InstancePropertyEntity instanceProperty = propertyEntity(instanceId, property);
+  JPAQuery propertyQuery(Identifier<?> instanceId, String propertyKey) {
+    return database.query()
+            .from(QInstancePropertyEntity.instancePropertyEntity)
+            .where(
+                    QInstancePropertyEntity.instancePropertyEntity.propertyKey.eq(propertyKey),
+                    QInstancePropertyEntity.instancePropertyEntity.instanceId.eq(instanceId.stringValue())
+            );
+  }
 
-    if (instanceProperty != null) {
-      return instanceProperty;
+  protected InstancePropertyEntity getOrCreatePropertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {
+    FlowInstanceEntity instance = jpaInstanceStore.findInstanceById(instanceId);
+    Option<InstancePropertyEntity> instanceProperty = propertyEntity(instance, property.getKey());
+
+    if (instanceProperty.isPresent()) {
+      return instanceProperty.get();
     } else {
-      return newInstancePropertyEntity(instanceId, property);
+      InstancePropertyEntity newProperty = newInstancePropertyEntity(instanceId, property);
+      instance.getPropertiesEntities().add(newProperty);
+      return newProperty;
     }
   }
 
-  InstancePropertyEntity propertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {
-    return propertyQuery(instanceId, property.getKey()).singleResult(QInstancePropertyEntity.instancePropertyEntity);
-  }
-
-  JPAQuery propertyQuery(Identifier<?> instanceId, String propertyKey) {
-    return database.query()
-        .from(QInstancePropertyEntity.instancePropertyEntity)
-        .where(
-                QInstancePropertyEntity.instancePropertyEntity.propertyKey.eq(propertyKey),
-                QInstancePropertyEntity.instancePropertyEntity.instanceId.eq(instanceId.stringValue())
-        );
+  Option<InstancePropertyEntity> propertyEntity(FlowInstanceEntity instanceEntity, String propertyKey) {
+    for (InstancePropertyEntity propertyEntity : instanceEntity.getPropertiesEntities()) {
+      if (propertyEntity.getKey().equals(propertyKey)) {
+        return Option.of(propertyEntity);
+      }
+    }
+    return Option.empty();
   }
 
   protected InstancePropertyEntity newInstancePropertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {

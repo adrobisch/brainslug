@@ -1,9 +1,9 @@
 package brainslug.jpa;
 
 import brainslug.flow.instance.FlowInstanceProperties;
-import brainslug.flow.execution.property.StringProperty;
-import brainslug.flow.instance.FlowInstance;
 import static brainslug.util.IdUtil.*;
+
+import brainslug.jpa.entity.FlowInstanceEntity;
 import brainslug.util.UuidGenerator;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -16,7 +16,7 @@ import static java.util.Arrays.asList;
 
 public class JpaPropertyStoreTest extends AbstractDatabaseTest {
   JpaTokenStore jpaTokenStore;
-  FlowInstance instance;
+  FlowInstanceEntity instance;
   JpaPropertyStore jpaPropertyStore;
   JpaInstanceStore jpaInstanceStore;
 
@@ -25,7 +25,7 @@ public class JpaPropertyStoreTest extends AbstractDatabaseTest {
     UuidGenerator idGenerator = new UuidGenerator();
     jpaTokenStore = new JpaTokenStore(database, idGenerator, jpaInstanceStore);
     jpaInstanceStore = new JpaInstanceStore(database, idGenerator);
-    instance = jpaInstanceStore.createInstance(id("definitionId"));
+    instance = (FlowInstanceEntity) jpaInstanceStore.createInstance(id("definitionId"));
     jpaPropertyStore = new JpaPropertyStore(database, idGenerator, jpaInstanceStore);
   }
 
@@ -91,11 +91,11 @@ public class JpaPropertyStoreTest extends AbstractDatabaseTest {
   public void shouldUpdateProperty() throws Exception {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("doubleTest", 1.2));
     database.flush();
-    Assertions.assertThat(jpaPropertyStore.propertyEntity(instance.getIdentifier(), new StringProperty("doubleTest", "")).getVersion()).isEqualTo(0);
+    Assertions.assertThat(jpaPropertyStore.propertyEntity(instance, "doubleTest").get().getVersion()).isEqualTo(0);
 
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("doubleTest", 1.3));
     database.flush();
-    Assertions.assertThat(jpaPropertyStore.propertyEntity(instance.getIdentifier(), new StringProperty("doubleTest", "")).getVersion()).isEqualTo(1);
+    Assertions.assertThat(jpaPropertyStore.propertyEntity(instance, "doubleTest").get().getVersion()).isEqualTo(1);
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
     Assertions.assertThat(loadedProperties.getValues().size()).isEqualTo(1);
