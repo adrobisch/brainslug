@@ -3,14 +3,19 @@ package brainslug.flow.node.task;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.util.Option;
 
+import java.util.HashMap;
+import java.util.Map;
+
 abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefinition> extends FlowNodeDefinition<SelfType> {
 
   protected Class<?> delegateClass;
+  protected TaskScript taskScript;
   protected boolean async;
   protected boolean retryAsync;
   protected CallDefinition methodCall;
   protected RetryStrategy retryStrategy;
   protected Option<GoalDefinition> goal = Option.empty();
+  protected Map<String, String> configuration = new HashMap<String, String>();
 
   /**
    * sets a delegate class to be executed as action for this task
@@ -165,12 +170,25 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
     return self();
   }
 
+  public SelfType script(String language, String text) {
+    this.taskScript = new TaskScript(language, text);
+    return self();
+  }
+
+  public ConfiugrationBuilder withConfiguration() {
+    return new ConfiugrationBuilder(self());
+  }
+
   public Class<?> getDelegateClass() {
     return delegateClass;
   }
 
   public CallDefinition getMethodCall() {
     return methodCall;
+  }
+
+  public Option<TaskScript> getTaskScript() {
+    return Option.of(taskScript);
   }
 
   public Option<GoalDefinition> getGoal() {
@@ -187,6 +205,32 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
 
   public Option<RetryStrategy> getRetryStrategy() {
     return Option.of(retryStrategy);
+  }
+
+  public Map<String, String> getConfiguration() {
+    return configuration;
+  }
+
+  public class ConfiugrationBuilder {
+    SelfType task;
+
+    public ConfiugrationBuilder(SelfType task) {
+      this.task = task;
+    }
+
+    public ConfiugrationBuilder parameter(String parameterName, String parameterValue) {
+      configuration.put(parameterName, parameterValue);
+      return this;
+    }
+
+    public ConfiugrationBuilder parameters(Map<? extends String, ? extends String> parameters) {
+      configuration.putAll(parameters);
+      return this;
+    }
+
+    public SelfType done() {
+      return task;
+    }
   }
 
 }

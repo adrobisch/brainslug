@@ -14,13 +14,24 @@ import org.camunda.bpm.model.bpmn.instance.*;
 import org.camunda.bpm.model.bpmn.instance.EndEvent;
 import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.StartEvent;
+import org.camunda.bpm.model.xml.instance.DomElement;
+import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static brainslug.util.Option.of;
+import static brainslug.util.Preconditions.notEmpty;
+import static brainslug.util.Preconditions.notNull;
+import static brainslug.util.Preconditions.singleItem;
+import static java.util.Collections.emptyMap;
 
 public class BpmnModelImporter {
+
     public Collection<FlowDefinition> fromBpmnXml(InputStream bpmnStream) {
         BpmnModelInstance modelInstance = Bpmn.readModelFromStream(bpmnStream);
         Collection<Process> processes = modelInstance.getModelElementsByType(Process.class);
@@ -92,14 +103,86 @@ public class BpmnModelImporter {
           task.delegate(getClassFor(delegate.get()));
         }
 
+        task.async(isAsync(bpmnTask));
+        task.retryAsync(isRetryAsync(bpmnTask));
+
+        if (bpmnTask.getExtensionElements() != null) {
+            addConfigParametersIfPresent(bpmnTask.getExtensionElements(), task);
+            addScriptIfPresent(bpmnTask.getExtensionElements(), task);
+        }
+
         flowDefinition.addNode(task);
       }
 
-      private Option<String> brainslugDelegate(Task bpmnTask) {
-        return Option.of(bpmnTask.getAttributeValueNs("http://brainslug.it/bpmn-ext", "delegate"));
+        private boolean isRetryAsync(Task bpmnTask) {
+            Option<DomElement> task = getTaskElement(bpmnTask);
+            if (task.isPresent()) {
+                return Boolean.parseBoolean(task.get().getAttribute("retryAsync"));
+            }
+            return false;
+        }
+
+        private void addScriptIfPresent(ExtensionElements extensionElements, TaskDefinition task) {
+          Option<ModelElementInstance> scriptElement = of(extensionElements.getUniqueChildElementByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "script"));
+          if (scriptElement.isPresent()) {
+              task.script(
+                      notEmpty(scriptElement.get().getAttributeValue("language")),
+                      notEmpty(scriptElement.get().getTextContent())
+              );
+          }
       }
 
-      private Class<?> getClassFor(String className) {
+      private void addConfigParametersIfPresent(ExtensionElements extensionElements, TaskDefinition task) {
+          Option<ModelElementInstance> configurationElement = of(extensionElements.getUniqueChildElementByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "configuration"));
+          Map<String, String> configurationValues = getConfigurationValues(configurationElement);
+          task.withConfiguration().parameters(configurationValues);
+      }
+
+      private Map<String, String> getConfigurationValues(Option<ModelElementInstance> configuration) {
+        if (!configuration.isPresent()) {
+            return emptyMap();
+        }
+        Map<String, String> configValues = new HashMap<String, String>();
+        for (DomElement parameter : configuration.get().getDomElement().getChildElementsByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "parameter")) {
+            configValues.put(notEmpty(parameter.getAttribute("name")), notNull(parameter.getAttribute("value")));
+        }
+        return configValues;
+      }
+
+      private Option<String> brainslugDelegate(Task bpmnTask) {
+          Option<DomElement> task = getTaskElement(bpmnTask);
+          if (task.isPresent()) {
+              return of(task.get().getAttribute("delegate"));
+          }
+          return Option.empty();
+      }
+
+        private Boolean isAsync(Task bpmnTask) {
+            Option<DomElement> task = getTaskElement(bpmnTask);
+            if (task.isPresent()) {
+                return Boolean.parseBoolean(task.get().getAttribute("async"));
+            }
+            return false;
+        }
+
+      private Option<DomElement> getTaskElement(Task bpmnTask) {
+            if (bpmnTask.getExtensionElements() == null) {
+                return Option.empty();
+            }
+
+            List<DomElement> taskElements = bpmnTask
+                    .getExtensionElements()
+                    .getDomElement()
+                    .getChildElementsByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "task");
+
+            if (taskElements.isEmpty()) {
+                return Option.empty();
+            }
+
+            return of(singleItem(taskElements));
+        }
+
+        private Class<?> getClassFor(String className) {
         try {
           return Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -131,7 +214,7 @@ public class BpmnModelImporter {
           ExclusiveGateway exclusiveGateway = (ExclusiveGateway) sequenceFlow.getSource();
 
           if (exclusiveGateway.getDefault() != null && exclusiveGateway.getDefault().getId().equals(sequenceFlow.getId())) {
-            choiceDefinition.setOtherwisePath(new ThenDefinition(new JuelExpression("${true}"), definition, choiceDefinition));
+            choiceDefinition.setOtherwisePath(new ThenDefinition(new JuelExpression("true"), definition, choiceDefinition));
           } else {
             choiceDefinition
               .when(getExpression(sequenceFlow)).getPathNodes().add(target);
@@ -141,9 +224,12 @@ public class BpmnModelImporter {
 
       private Expression getExpression(SequenceFlow sequenceFlow) {
         if (sequenceFlow.getConditionExpression() != null) {
-          return new JuelExpression(sequenceFlow.getConditionExpression().getTextContent());
+          return new JuelExpression(sequenceFlow.getConditionExpression().getTextContent()
+                  .replaceFirst("^\\$\\{", "")
+                  .replaceFirst("\\}$", "")
+          );
         }
-        return new JuelExpression("${false}");
+        return new JuelExpression("false");
       }
     }
 }

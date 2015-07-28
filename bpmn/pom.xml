@@ -29,13 +29,13 @@
         <dependency>
             <groupId>org.activiti</groupId>
             <artifactId>activiti-bpmn-converter</artifactId>
-            <version>5.14</version>
+            <version>5.17.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.activiti</groupId>
             <artifactId>activiti-bpmn-model</artifactId>
-            <version>5.14</version>
+            <version>5.17.0</version>
             <scope>provided</scope>
         </dependency>
 

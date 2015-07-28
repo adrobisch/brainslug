@@ -2,6 +2,8 @@ package brainslug.bpmn;
 
 import brainslug.flow.expression.Value;
 
+import static java.lang.String.format;
+
 public class JuelExpression extends Value<String> {
   public JuelExpression(String expression) {
     super(expression);
@@ -9,6 +11,6 @@ public class JuelExpression extends Value<String> {
 
   @Override
   public String getString() {
-    return getValue();
+    return format("${%s}", getValue());
   }
 }
