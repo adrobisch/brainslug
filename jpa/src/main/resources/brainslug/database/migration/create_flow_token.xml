@@ -8,7 +8,7 @@
         logicalFilePath="create_flow_token.xml">
 
     <changeSet id="1" author="brainslug">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="BS_FLOW_TOKEN" />
             </not>

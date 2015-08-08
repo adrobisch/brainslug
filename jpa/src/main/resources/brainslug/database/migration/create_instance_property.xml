@@ -8,7 +8,7 @@
         logicalFilePath="create_instance_property.xml">
 
     <changeSet id="1" author="brainslug">
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="BS_INSTANCE_PROPERTY" />
             </not>
