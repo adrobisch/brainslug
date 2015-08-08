@@ -37,7 +37,9 @@ public class FlowPathDefinition<Self extends FlowPathDefinition> {
   }
 
   public Self waitFor(AbstractEventDefinition eventDefinition) {
-    eventDefinition.with(new IntermediateEvent());
+    if (!eventDefinition.is(IntermediateEvent.class)) {
+      eventDefinition.with(new IntermediateEvent());
+    }
     appendNode(eventDefinition);
     return then();
   }
@@ -53,7 +55,10 @@ public class FlowPathDefinition<Self extends FlowPathDefinition> {
       return then();
     }
 
-    eventDefinition.with(new EndEvent());
+    if (!eventDefinition.is(EndEvent.class)) {
+      eventDefinition.with(new EndEvent());
+    }
+    
     appendNode(eventDefinition);
     return then();
   }

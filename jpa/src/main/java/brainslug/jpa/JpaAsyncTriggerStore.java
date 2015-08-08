@@ -98,14 +98,14 @@ public class JpaAsyncTriggerStore implements AsyncTriggerStore {
     return errorDetailsEntity
       .withExceptionType(asyncTriggerErrorDetails.getException().getClass().getName())
       .withMessage(asyncTriggerErrorDetails.getException().getMessage())
-      .withStackTrace(stackTraceToString(asyncTriggerErrorDetails.getException()).getBytes());
+      .withStackTrace(stackTraceToString(asyncTriggerErrorDetails.getException()));
   }
 
   String stackTraceToString(Throwable throwable) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     throwable.printStackTrace(pw);
-    return sw.toString(); // stack trace as a string
+    return sw.toString();
   }
 
   protected AsyncTrigger updatedTask(AsyncTrigger existingTask, AsyncTrigger updatedTask) {

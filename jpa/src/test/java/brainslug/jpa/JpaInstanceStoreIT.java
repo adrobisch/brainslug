@@ -15,7 +15,7 @@ import static brainslug.util.IdUtil.id;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class JpaInstanceStoreTest extends AbstractDatabaseTest {
+public class JpaInstanceStoreIT extends AbstractDatabaseTest {
 
     Identifier flowId = id("flow");
 

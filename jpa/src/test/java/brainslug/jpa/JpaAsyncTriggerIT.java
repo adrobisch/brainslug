@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 
-public class JpaAsyncTriggerStoreTest extends AbstractDatabaseTest {
+public class JpaAsyncTriggerIT extends AbstractDatabaseTest {
 
   @Test
   public void shouldStoreTask() throws Exception {

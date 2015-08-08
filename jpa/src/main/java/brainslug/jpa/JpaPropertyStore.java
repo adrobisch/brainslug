@@ -130,7 +130,7 @@ public class JpaPropertyStore implements PropertyStore {
       return entity.withLongValue(((DateProperty) property).getValue().getTime())
         .withValueType(DATE.typeName());
     } else {
-      return entity.withStringValue(getSerializer().serialize(property.getValue()))
+      return entity.withBytesValue(getSerializer().serialize(property.getValue()))
         .withValueType(SERIALIZABLE.typeName());
     }
   }

@@ -14,7 +14,7 @@ import java.util.List;
 import static brainslug.flow.execution.property.ExecutionProperties.newProperties;
 import static java.util.Arrays.asList;
 
-public class JpaPropertyStoreTest extends AbstractDatabaseTest {
+public class JpaPropertyStoreIT extends AbstractDatabaseTest {
   JpaTokenStore jpaTokenStore;
   FlowInstanceEntity instance;
   JpaPropertyStore jpaPropertyStore;

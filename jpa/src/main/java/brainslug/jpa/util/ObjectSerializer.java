@@ -3,7 +3,7 @@ package brainslug.jpa.util;
 import java.io.*;
 
 public class ObjectSerializer {
-  public String serialize(Object value) {
+  public byte[] serialize(Object value) {
     if (!(value instanceof Serializable)) {
       throw new IllegalArgumentException("object must be serializable: " + value);
     }
@@ -14,15 +14,15 @@ public class ObjectSerializer {
       objectOutputStream.writeObject(value);
       objectOutputStream.flush();
       objectOutputStream.close();
-      return new String(outputStream.toString("ISO-8859-1"));
+      return outputStream.toByteArray();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public Object deserialize(String stringValue) {
+  public Object deserialize(byte[] bytes) {
     try {
-      ObjectInputStream s = new ObjectInputStream(new ByteArrayInputStream(stringValue.getBytes("ISO-8859-1")));
+      ObjectInputStream s = new ObjectInputStream(new ByteArrayInputStream(bytes));
       return s.readObject();
     } catch (IOException e) {
       throw new RuntimeException(e);

@@ -5,12 +5,20 @@
         xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
-        logicalFilePath="update.xml">
+        logicalFilePath="add_bytes_value_to_property.xml">
 
-    <include file="brainslug/database/migration/create_flow_instance.xml" />
-    <include file="brainslug/database/migration/create_flow_token.xml" />
-    <include file="brainslug/database/migration/create_async_task.xml" />
-    <include file="brainslug/database/migration/create_instance_property.xml" />
-    <include file="brainslug/database/migration/add_bytes_value_to_property.xml" />
+    <changeSet id="1" author="brainslug">
+
+        <preConditions>
+            <not>
+                <columnExists tableName="BS_INSTANCE_PROPERTY" columnName="_BYTES_VALUE" />
+            </not>
+        </preConditions>
+        
+        <addColumn tableName="BS_INSTANCE_PROPERTY">
+            <column name="_BYTES_VALUE" type="BLOB" />
+        </addColumn>
+        
+    </changeSet>
 
 </databaseChangeLog>

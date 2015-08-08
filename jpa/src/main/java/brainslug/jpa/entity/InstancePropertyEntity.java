@@ -10,6 +10,7 @@ import brainslug.flow.execution.property.ObjectProperty;
 import brainslug.flow.execution.property.StringProperty;
 import brainslug.flow.instance.FlowInstanceProperty;
 import brainslug.jpa.util.ObjectSerializer;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -23,6 +24,7 @@ import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.INT;
 import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.LONG;
 import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.SERIALIZABLE;
 import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.STRING;
+import static brainslug.util.Preconditions.notNull;
 
 @Entity
 @Table(name = "BS_INSTANCE_PROPERTY")
@@ -49,6 +51,7 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
   protected String propertyKey;
 
   @Lob
+  @Type(type = "org.hibernate.type.TextType")
   @Column(name = "_STRING_VALUE")
   protected String stringValue;
 
@@ -57,6 +60,9 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
 
   @Column(name = "_DOUBLE_VALUE")
   protected Double doubleValue;
+
+  @Column(name = "_BYTES_VALUE")
+  protected byte[] bytesValue;
 
   public String getId() {
     return id;
@@ -118,6 +124,11 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
 
   public InstancePropertyEntity withStringValue(String stringValue) {
     this.stringValue = stringValue;
+    return this;
+  }
+
+  public InstancePropertyEntity withBytesValue(byte[] bytesValue) {
+    this.bytesValue = bytesValue;
     return this;
   }
 
@@ -205,7 +216,7 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
     } else if(valueType.equals(BOOLEAN)) {
       return new BooleanProperty(key, longValue == 1);
     } else if(valueType.equals(SERIALIZABLE)) {
-      return new ObjectProperty(key, new ObjectSerializer().deserialize(stringValue));
+      return new ObjectProperty(key, new ObjectSerializer().deserialize(notNull(bytesValue)));
     } else {
       throw new IllegalArgumentException("unhandled value type:" + valueType);
     }

@@ -13,7 +13,7 @@ import static brainslug.util.IdUtil.id;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class JpaTokenStoreTest extends AbstractDatabaseTest {
+public class JpaTokenStoreIT extends AbstractDatabaseTest {
 
   Identifier instanceId = id("instance");
   Identifier flowId = id("flow");

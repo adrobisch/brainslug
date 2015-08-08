@@ -63,8 +63,8 @@ public class AsyncTaskErrorDetailsEntity {
     return stackTrace.getBytes();
   }
 
-  public AsyncTaskErrorDetailsEntity withStackTrace(byte[] stackTrace) {
-    this.stackTrace = new String(stackTrace);
+  public AsyncTaskErrorDetailsEntity withStackTrace(String stackTrace) {
+    this.stackTrace = stackTrace;
     return this;
   }
 
