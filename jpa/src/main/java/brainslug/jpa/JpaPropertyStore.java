@@ -12,11 +12,12 @@ import brainslug.jpa.util.ObjectSerializer;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
 import com.mysema.query.jpa.impl.JPAQuery;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Blob;
 import java.util.Date;
-import java.util.Set;
 
 import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.*;
 
@@ -130,7 +131,13 @@ public class JpaPropertyStore implements PropertyStore {
       return entity.withLongValue(((DateProperty) property).getValue().getTime())
         .withValueType(DATE.typeName());
     } else {
-      return entity.withBytesValue(getSerializer().serialize(property.getValue()))
+      byte[] serialized = getSerializer().serialize(property.getValue());
+
+      Blob blob = database
+        .unwrap(Session.class)
+        .getLobHelper().createBlob(serialized);
+
+      return entity.withBlobValue(blob)
         .withValueType(SERIALIZABLE.typeName());
     }
   }

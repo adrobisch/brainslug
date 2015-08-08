@@ -1,5 +1,6 @@
 package brainslug.jpa.spring;
 
+import brainslug.jpa.migration.DatabaseMigration;
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
@@ -26,6 +27,9 @@ public class SpringHibernateConfiguration {
   @Autowired
   @Qualifier("brainslug")
   XADataSource xaDataSource;
+
+  @Autowired(required = false)
+  DatabaseMigration databaseMigration;
 
   @Bean
   @Qualifier("brainslug")
@@ -61,6 +65,7 @@ public class SpringHibernateConfiguration {
 
   protected Properties jpaProperties() {
     Properties properties = new Properties();
+    properties.setProperty("hibernate.hbm2ddl.auto", "validate");
     if (useJta()) {
       properties.setProperty("hibernate.transaction.jta.platform", SpringHibernateJtaPlatform.class.getName());
     }

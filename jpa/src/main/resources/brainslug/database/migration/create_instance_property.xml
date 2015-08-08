@@ -34,7 +34,7 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="_STRING_VALUE" type="clob" />
+            <column name="_STRING_VALUE" type="varchar(4000)" />
             <column name="_LONG_VALUE" type="bigint" />
             <column name="_DOUBLE_VALUE" type="double" />
         </createTable>

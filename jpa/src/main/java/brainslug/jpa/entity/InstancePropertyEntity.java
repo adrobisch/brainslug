@@ -14,6 +14,11 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.Date;
 
 import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.BOOLEAN;
@@ -51,8 +56,8 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
   protected String propertyKey;
 
   @Lob
-  @Type(type = "org.hibernate.type.TextType")
-  @Column(name = "_STRING_VALUE")
+  @Type(type = "org.hibernate.type.StringType")
+  @Column(name = "_STRING_VALUE", length = 4000)
   protected String stringValue;
 
   @Column(name = "_LONG_VALUE")
@@ -61,8 +66,8 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
   @Column(name = "_DOUBLE_VALUE")
   protected Double doubleValue;
 
-  @Column(name = "_BYTES_VALUE")
-  protected byte[] bytesValue;
+  @Column(name = "_BLOB_VALUE")
+  protected Blob blobValue;
 
   public String getId() {
     return id;
@@ -127,8 +132,8 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
     return this;
   }
 
-  public InstancePropertyEntity withBytesValue(byte[] bytesValue) {
-    this.bytesValue = bytesValue;
+  public InstancePropertyEntity withBlobValue(Blob blobValue) {
+    this.blobValue = blobValue;
     return this;
   }
 
@@ -216,10 +221,37 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
     } else if(valueType.equals(BOOLEAN)) {
       return new BooleanProperty(key, longValue == 1);
     } else if(valueType.equals(SERIALIZABLE)) {
-      return new ObjectProperty(key, new ObjectSerializer().deserialize(notNull(bytesValue)));
+      byte[] inputStream = bytesFromBlob(notNull(blobValue));
+      return new ObjectProperty(key, new ObjectSerializer().deserialize(inputStream));
     } else {
       throw new IllegalArgumentException("unhandled value type:" + valueType);
     }
+  }
+
+  private byte[] bytesFromBlob(Blob blob)  {
+    try {
+      return toBytes(notNull(blob.getBinaryStream()));
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  byte[] toBytes(InputStream inputStream) {
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    int nRead;
+    byte[] data = new byte[16384];
+    try {
+      while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+        buffer.write(data, 0, nRead);
+      }
+
+      buffer.flush();
+
+      return buffer.toByteArray();
+    } catch (IOException ioError) {
+      throw new RuntimeException(ioError);
+    }
+
   }
 
   @Override

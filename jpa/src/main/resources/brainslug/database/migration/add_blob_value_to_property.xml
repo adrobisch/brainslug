@@ -5,20 +5,35 @@
         xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
-        logicalFilePath="add_bytes_value_to_property.xml">
+        logicalFilePath="add_blob_value_to_property.xml">
 
     <changeSet id="1" author="brainslug">
 
-        <preConditions>
+        <preConditions onFail="MARK_RAN">
             <not>
-                <columnExists tableName="BS_INSTANCE_PROPERTY" columnName="_BYTES_VALUE" />
+                <dbms type="postgresql"/>
+                <columnExists tableName="BS_INSTANCE_PROPERTY" columnName="_BLOB_VALUE" />
             </not>
         </preConditions>
         
         <addColumn tableName="BS_INSTANCE_PROPERTY">
-            <column name="_BYTES_VALUE" type="BLOB" />
+            <column name="_BLOB_VALUE" type="BLOB" />
         </addColumn>
         
+    </changeSet>
+
+    <changeSet id="2" author="brainslug" dbms="postgresql">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="BS_INSTANCE_PROPERTY" columnName="_BLOB_VALUE" />
+            </not>
+        </preConditions>
+
+        <addColumn tableName="BS_INSTANCE_PROPERTY">
+            <column name="_BLOB_VALUE" type="OID" />
+        </addColumn>
+
     </changeSet>
 
 </databaseChangeLog>

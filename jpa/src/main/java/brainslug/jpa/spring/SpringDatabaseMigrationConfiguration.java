@@ -27,6 +27,6 @@ public class SpringDatabaseMigrationConfiguration {
 
   @Bean
   public DatabaseMigration migration() {
-    return new DatabaseMigration();
+    return new DatabaseMigration(liquibase());
   }
 }

@@ -11,6 +11,6 @@
     <include file="brainslug/database/migration/create_flow_token.xml" />
     <include file="brainslug/database/migration/create_async_task.xml" />
     <include file="brainslug/database/migration/create_instance_property.xml" />
-    <include file="brainslug/database/migration/add_bytes_value_to_property.xml" />
+    <include file="brainslug/database/migration/add_blob_value_to_property.xml" />
 
 </databaseChangeLog>

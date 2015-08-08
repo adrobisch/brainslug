@@ -1,17 +1,18 @@
 package brainslug.jpa.migration;
 
 import liquibase.Liquibase;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
 @Service
 public class DatabaseMigration {
 
-  @Autowired
   Liquibase liquibase;
+
+  public DatabaseMigration(Liquibase liquibase) {
+    this.liquibase = liquibase;
+  }
 
   @PostConstruct
   public void migrate() {

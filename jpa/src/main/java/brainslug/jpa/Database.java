@@ -36,6 +36,10 @@ public class Database {
     entityManager.flush();
   }
 
+  public <T> T unwrap(Class<T> clazz) {
+    return entityManager.unwrap(clazz);
+  }
+
   public JPADeleteClause delete(EntityPath<?> path) {
     return new JPADeleteClause(entityManager, path, jpqlDialect);
   }
