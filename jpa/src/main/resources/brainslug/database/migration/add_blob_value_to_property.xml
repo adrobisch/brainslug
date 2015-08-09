@@ -9,9 +9,10 @@
 
     <changeSet id="1" author="brainslug">
 
-        <preConditions onFail="MARK_RAN">
+        <preConditions onFail="CONTINUE">
             <not>
                 <dbms type="postgresql"/>
+                <dbms type="mysql"/>
                 <columnExists tableName="BS_INSTANCE_PROPERTY" columnName="_BLOB_VALUE" />
             </not>
         </preConditions>
@@ -24,7 +25,7 @@
 
     <changeSet id="2" author="brainslug" dbms="postgresql">
 
-        <preConditions onFail="MARK_RAN">
+        <preConditions onFail="CONTINUE">
             <not>
                 <columnExists tableName="BS_INSTANCE_PROPERTY" columnName="_BLOB_VALUE" />
             </not>
@@ -32,6 +33,20 @@
 
         <addColumn tableName="BS_INSTANCE_PROPERTY">
             <column name="_BLOB_VALUE" type="OID" />
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="3" author="brainslug" dbms="mysql">
+
+        <preConditions onFail="CONTINUE">
+            <not>
+                <columnExists tableName="BS_INSTANCE_PROPERTY" columnName="_BLOB_VALUE" />
+            </not>
+        </preConditions>
+
+        <addColumn tableName="BS_INSTANCE_PROPERTY">
+            <column name="_BLOB_VALUE" type="LONGBLOB" />
         </addColumn>
 
     </changeSet>

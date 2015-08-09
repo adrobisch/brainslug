@@ -4,6 +4,7 @@ import brainslug.jpa.migration.DatabaseMigration;
 import brainslug.jpa.spring.SpringDatabaseConfiguration;
 import brainslug.jpa.spring.SpringDatabaseMigrationConfiguration;
 import brainslug.jpa.spring.SpringHibernateConfiguration;
+import brainslug.spring.SpringBrainslugConfiguration;
 import brainslug.util.IdGenerator;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,8 @@ import static org.mockito.Mockito.mock;
   TestDataSourceConfiguration.class,
   SpringHibernateConfiguration.class,
   SpringDatabaseConfiguration.class,
-  SpringDatabaseMigrationConfiguration.class
+  SpringDatabaseMigrationConfiguration.class,
+  SpringBrainslugConfiguration.class
 })
 @Transactional
 public abstract class AbstractDatabaseTest {

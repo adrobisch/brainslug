@@ -38,8 +38,8 @@ public class JpaPropertyStore implements PropertyStore {
 
   @Override
   public void setProperty(Identifier<?> instanceId, FlowInstanceProperty<?> property) {
-    InstancePropertyEntity instanceProperty = getOrCreatePropertyEntity(instanceId, property);
-    database.insertOrUpdate(withPropertyValue(instanceProperty, property));
+    FlowInstanceEntity instance = jpaInstanceStore.findInstanceById(instanceId);
+    updateOrCreatePropertyEntity(instance, property);
   }
 
   @Override
@@ -66,16 +66,15 @@ public class JpaPropertyStore implements PropertyStore {
             );
   }
 
-  protected InstancePropertyEntity getOrCreatePropertyEntity(Identifier<?> instanceId, FlowInstanceProperty property) {
-    FlowInstanceEntity instance = jpaInstanceStore.findInstanceById(instanceId);
+  protected void updateOrCreatePropertyEntity(FlowInstanceEntity instance, FlowInstanceProperty property) {
     Option<InstancePropertyEntity> instanceProperty = propertyEntity(instance, property.getKey());
 
     if (instanceProperty.isPresent()) {
-      return instanceProperty.get();
+      database.insertOrUpdate(withPropertyValue(instanceProperty.get(), property));
     } else {
-      InstancePropertyEntity newProperty = newInstancePropertyEntity(instanceId, property);
+      InstancePropertyEntity newProperty = newInstancePropertyEntity(instance.getIdentifier(), property);
+      database.insertOrUpdate(withPropertyValue(newProperty, property));
       instance.getPropertiesEntities().add(newProperty);
-      return newProperty;
     }
   }
 

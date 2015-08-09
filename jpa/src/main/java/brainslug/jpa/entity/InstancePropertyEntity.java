@@ -46,6 +46,7 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
   @Column(name = "_VERSION")
   protected Long version;
 
+  @NotNull
   @Column(name = "_INSTANCE_ID")
   protected String instanceId;
 
@@ -66,6 +67,7 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
   @Column(name = "_DOUBLE_VALUE")
   protected Double doubleValue;
 
+  @Type(type = "org.hibernate.type.BlobType")
   @Column(name = "_BLOB_VALUE")
   protected Blob blobValue;
 

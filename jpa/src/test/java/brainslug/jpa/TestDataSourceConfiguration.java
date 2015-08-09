@@ -1,5 +1,6 @@
 package brainslug.jpa;
 
+import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import org.h2.jdbcx.JdbcDataSource;
 import org.postgresql.xa.PGXADataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,6 +13,7 @@ import javax.sql.XADataSource;
 public class TestDataSourceConfiguration {
 
   enum Database {
+    MYSQL,
     POSTGRES,
     H2
   }
@@ -20,11 +22,27 @@ public class TestDataSourceConfiguration {
   @Qualifier("brainslug")
   public XADataSource xaDataSource() {
     switch(getDb()) {
+      case MYSQL:
+        return createMySQLDatasource();
       case POSTGRES:
         return createPostgresDatasource();
       default:
         return createH2Datasource();
     }
+  }
+
+  private XADataSource createMySQLDatasource() {
+    System.out.println("URL: " + getJdbcUrl());
+    try {
+      Thread.sleep(10000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    MysqlXADataSource mysqlXADataSource = new MysqlXADataSource();
+    mysqlXADataSource.setURL(getJdbcUrl() + "?pinGlobalTxToPhysicalConnection=true");
+    mysqlXADataSource.setUser(getDbUser());
+    mysqlXADataSource.setPassword(getDbPassword());
+    return mysqlXADataSource;
   }
 
   private XADataSource createPostgresDatasource() {

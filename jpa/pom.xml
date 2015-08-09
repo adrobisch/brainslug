@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>de.androbit</groupId>
-            <artifactId>brainslug-execution</artifactId>
+            <artifactId>brainslug-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -61,6 +61,20 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.4-1201-jdbc41</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4-1201-jdbc41</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.36</version>
             <scope>test</scope>
         </dependency>
 
@@ -224,6 +238,87 @@
                         </configuration>
                     </plugin>
 
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>mysql</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jolokia</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.13.2</version>
+                        <configuration>
+                            <logDate>default</logDate>
+                            <autoPull>true</autoPull>
+                            <images>
+                                <image>
+                                    <alias>db</alias>
+                                    <name>mysql:5.5</name>
+                                    <run>
+                                        <env>
+                                            <MYSQL_ROOT_PASSWORD>root</MYSQL_ROOT_PASSWORD>
+                                            <MYSQL_USER>brainslug</MYSQL_USER>
+                                            <MYSQL_PASSWORD>brainslug</MYSQL_PASSWORD>
+                                            <MYSQL_DATABASE>brainslug</MYSQL_DATABASE>
+                                        </env>
+                                        <ports>
+                                            <port>db.port:3306</port>
+                                        </ports>
+                                        <wait>
+                                            <log>mysqld: ready for connections</log>
+                                            <time>20000</time>
+                                        </wait>
+                                        <log>
+                                            <prefix>DB</prefix>
+                                            <color>yellow</color>
+                                        </log>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>start</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.18.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <db>mysql</db>
+                                <db.jdbc.url>jdbc:mysql://localhost:${db.port}/brainslug</db.jdbc.url>
+                                <db.user>brainslug</db.user>
+                                <db.password>brainslug</db.password>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
