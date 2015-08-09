@@ -506,7 +506,7 @@ table.CodeRay td.code>pre{padding:0}
 <h1>Brainslug Documentation</h1>
 <div class="details">
 <span id="author" class="author">A. Drobisch</span><br>
-<span id="revnumber">version 0.20-SNAPSHOT</span>
+<span id="revnumber">version 0.21-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -564,7 +564,12 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#_jpa_support">JPA Support</a>
 <ul class="sectlevel1">
-<li><a href="#_setup">Setup</a></li>
+<li><a href="#_setup">Setup</a>
+<ul class="sectlevel2">
+<li><a href="#_using_spring">Using Spring</a></li>
+<li><a href="#_using_existing_entitymanager">Using existing EntityManager</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_spring_support">Spring Support</a>
@@ -1101,12 +1106,59 @@ This will be done using reflection on the instance of the service, which must be
 <h1 id="_jpa_support" class="sect0">JPA Support</h1>
 <div class="openblock partintro">
 <div class="content">
-It is possible to use JPA for the persistence of flow instance information. This support is implemented using querydsl.
+<div class="paragraph">
+<p>It is possible to use JPA for the persistence of flow instance information.
+This support is implemented using querydsl.</p>
+</div>
+<div class="paragraph">
+<p><strong>Tested Databases</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>MySQL 5.5</p>
+</li>
+<li>
+<p>PostgreSQL 9.5</p>
+</li>
+<li>
+<p>H2 1.3.170</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_setup">Setup</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_using_spring">Using Spring</h3>
+<div class="paragraph">
+<p>Spring configuration classes are provided and just need to be imported.
+Your application context only needs to provide <code>JPQLTemplates</code> and
+an <code>EntityManager</code> with the <code>brainslug.jpa.entity</code> package entities registered.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@Import</span>({SpringBrainslugConfiguration.class, SpringDatabaseConfiguration.class})
+<span class="directive">public</span> <span class="type">class</span> <span class="class">BrainslugConfiguration</span> {
+
+    <span class="annotation">@Bean</span>
+    JPQLTemplates jpqlTemplates() {
+      <span class="keyword">return</span> <span class="keyword">new</span> HQLTemplates();
+    }
+
+    <span class="annotation">@Bean</span>
+    FlowBuilder aFlow() {
+        ...
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_existing_entitymanager">Using existing EntityManager</h3>
 <div class="paragraph">
 <p>First you need an instance of <code>brainslug.jdbc.Database</code> :</p>
 </div>
@@ -1135,6 +1187,7 @@ JpaPropertyStore jpaPropertyStore = <span class="keyword">new</span> JpaProperty
   .withAsyncTriggerStore(jpaAsyncTriggerStore)
   .withPropertyStore(jpaPropertyStore)
   .build()</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -1301,8 +1354,8 @@ renderer.render(simpleFlow, outputFile, format);</code></pre>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">BpmnModelTransformer bpmnModelTransformer = <span class="keyword">new</span> BpmnModelTransformer();
-<span class="predefined-type">String</span> bpmnXml = bpmnModelTransformer.toBpmnXml(simpleFlow);</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java">BpmnModelExporter bpmnModelExporter = <span class="keyword">new</span> BpmnModelExporter();
+<span class="predefined-type">String</span> bpmnXml = bpmnModelExporter.toBpmnXml(simpleFlow);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1402,7 +1455,7 @@ BPEL engines make most sense in WS-* environments.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.20-SNAPSHOT<br>
+Version 0.21-SNAPSHOT<br>
 Last updated 2015-03-10 23:15:36 CET
 </div>
 </div>

@@ -508,10 +508,55 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="_jpa_support">JPA Support</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>It is possible to use JPA for the persistence of flow instance information. This support is implemented using querydsl.</p>
+<p>It is possible to use JPA for the persistence of flow instance information.
+This support is implemented using querydsl.</p>
+</div>
+<div class="paragraph">
+<p><strong>Tested Databases</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>MySQL 5.5</p>
+</li>
+<li>
+<p>PostgreSQL 9.5</p>
+</li>
+<li>
+<p>H2 1.3.170</p>
+</li>
+</ul>
 </div>
 <div class="sect2">
 <h3 id="_setup">Setup</h3>
+<div class="sect3">
+<h4 id="_using_spring">Using Spring</h4>
+<div class="paragraph">
+<p>Spring configuration classes are provided and just need to be imported.
+Your application context only needs to provide <code>JPQLTemplates</code> and
+an <code>EntityManager</code> with the <code>brainslug.jpa.entity</code> package entities registered.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Configuration</span>
+<span class="annotation">@Import</span>({SpringBrainslugConfiguration.class, SpringDatabaseConfiguration.class})
+<span class="directive">public</span> <span class="type">class</span> <span class="class">BrainslugConfiguration</span> {
+
+    <span class="annotation">@Bean</span>
+    JPQLTemplates jpqlTemplates() {
+      <span class="keyword">return</span> <span class="keyword">new</span> HQLTemplates();
+    }
+
+    <span class="annotation">@Bean</span>
+    FlowBuilder aFlow() {
+        ...
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_using_existing_entitymanager">Using existing EntityManager</h4>
 <div class="paragraph">
 <p>First you need an instance of <code>brainslug.jdbc.Database</code> :</p>
 </div>
@@ -546,9 +591,10 @@ JpaPropertyStore jpaPropertyStore = <span class="keyword">new</span> JpaProperty
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-26 20:43:21 CET
+Last updated 2015-08-09 22:47:40 CEST
 </div>
 </div>
 </body>
