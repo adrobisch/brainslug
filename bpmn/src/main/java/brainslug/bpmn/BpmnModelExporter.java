@@ -12,14 +12,13 @@ import brainslug.flow.path.AndDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.flow.path.FlowPathDefinition;
 import brainslug.flow.path.ThenDefinition;
+import brainslug.juel.JuelExpression;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.String.format;
 
 public class BpmnModelExporter {
 
@@ -225,20 +224,20 @@ public class BpmnModelExporter {
     serviceTask.setId(task.getId().toString());
     serviceTask.setName(task.getDisplayName());
 
-    addTaskOptions(task, serviceTask);
+    ExtensionElement taskElement = addTaskElement(task, serviceTask);
 
     if (!task.getConfiguration().isEmpty()) {
-      addConfiguration(task, serviceTask);
+      addConfiguration(task, taskElement);
     }
 
     if (task.getTaskScript().isPresent()) {
-      addScript(task, serviceTask);
+      addScript(task, taskElement);
     }
 
     return serviceTask;
   }
 
-  private void addScript(AbstractTaskDefinition<?> task, ServiceTask serviceTask) {
+  private void addScript(AbstractTaskDefinition<?> task, ExtensionElement taskElement) {
     ExtensionElement scriptElement = new ExtensionElement();
     scriptElement.setName("script");
     scriptElement.setNamespace(BrainslugBpmn.BRAINSLUG_BPMN_NS);
@@ -246,27 +245,28 @@ public class BpmnModelExporter {
     addAttribute("language", task.getTaskScript().get().getLanguage(), scriptElement);
     scriptElement.setElementText(task.getTaskScript().get().getText());
 
-    serviceTask.addExtensionElement(scriptElement);
+    taskElement.addChildElement(scriptElement);
   }
 
-  private void addTaskOptions(AbstractTaskDefinition task, ServiceTask serviceTask) {
-    ExtensionElement delegateElement = new ExtensionElement();
-    delegateElement.setName("task");
-    delegateElement.setNamespace(BrainslugBpmn.BRAINSLUG_BPMN_NS);
+  private ExtensionElement addTaskElement(AbstractTaskDefinition task, ServiceTask serviceTask) {
+    ExtensionElement taskElement = new ExtensionElement();
+    taskElement.setName("task");
+    taskElement.setNamespace(BrainslugBpmn.BRAINSLUG_BPMN_NS);
 
     if (task.getDelegateClass() != null) {
-      addAttribute("delegate", task.getDelegateClass().getName(), delegateElement);
+      addAttribute("delegate", task.getDelegateClass().getName(), taskElement);
     }
 
     if (task.isAsync()) {
-      addAttribute("async", "" + task.isAsync(), delegateElement);
+      addAttribute("async", "" + task.isAsync(), taskElement);
     }
 
     if (task.isRetryAsync()) {
-      addAttribute("retryAsync", "" + task.isRetryAsync(), delegateElement);
+      addAttribute("retryAsync", "" + task.isRetryAsync(), taskElement);
     }
 
-    serviceTask.addExtensionElement(delegateElement);
+    serviceTask.addExtensionElement(taskElement);
+    return taskElement;
   }
 
   private void addAttribute(String name, String value, ExtensionElement delegateElement) {
@@ -277,7 +277,7 @@ public class BpmnModelExporter {
     delegateElement.addAttribute(attribute);
   }
 
-  private void addConfiguration(AbstractTaskDefinition<?> task, ServiceTask serviceTask) {
+  private void addConfiguration(AbstractTaskDefinition<?> task, ExtensionElement taskElement) {
     ExtensionElement configurationElement = new ExtensionElement();
     configurationElement.setName("configuration");
     configurationElement.setNamespace(BrainslugBpmn.BRAINSLUG_BPMN_NS);
@@ -293,7 +293,7 @@ public class BpmnModelExporter {
       configurationElement.addChildElement(parameterElement);
     }
 
-    serviceTask.addExtensionElement(configurationElement);
+    taskElement.addChildElement(configurationElement);
   }
 
   protected UserTask createUserTask(AbstractTaskDefinition task) {

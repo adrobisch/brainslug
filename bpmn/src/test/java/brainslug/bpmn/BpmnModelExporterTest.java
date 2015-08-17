@@ -1,6 +1,7 @@
 package brainslug.bpmn;
 
 import brainslug.flow.builder.FlowBuilder;
+import brainslug.flow.definition.FlowDefinition;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
@@ -13,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static brainslug.util.FlowElementAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -313,8 +316,70 @@ public class BpmnModelExporterTest {
     assertThat(bpmnXml).isEqualTo(emptyFlowContent());
   }
 
-  private String emptyFlowContent() throws IOException {
-    return IOUtils.toString(getClass().getClassLoader().getResourceAsStream("emptyFlow.bpmn"), "UTF-8");
+  @Test
+  public void shouldExportBrainslugExtensions() {
+    Collection<FlowDefinition> flowDefinitions = new BpmnModelImporter().fromBpmnXml(file("simple-process.bpmn"));
+    FlowDefinition flowDefinition = flowDefinitions.iterator().next();
+
+    BpmnModelExporter bpmnModelExporter = new BpmnModelExporter();
+
+    BpmnModel bpmnModel = bpmnModelExporter.toBpmnModel(flowDefinition);
+
+    assertBrainslugTaskWithScript(bpmnModel.getFlowElement("Task_0zf0c5m"));
+
+    ExtensionElement brainslugTaskElement = validBrainslugTask(bpmnModel.getFlowElement("Task_09b543m"));
+    assertThat(brainslugTaskElement.getAttributeValue(null, "async")).isEqualToIgnoringCase("true");
+    assertThat(brainslugTaskElement.getAttributeValue(null, "delegate")).isEqualToIgnoringCase("brainslug.flow.node.task.Task");
+
+    ExtensionElement configurationElement = brainslugTaskElement.getChildElements().get("configuration").get(0);
+    List<ExtensionElement> parameterElements = configurationElement.getChildElements().get("parameter");
+
+    assertThat(parameterElements)
+            .hasSize(2);
+
+    assertThat(parameterElements.get(0).getAttributeValue(null, "name")).isEqualTo("param1");
+    assertThat(parameterElements.get(0).getAttributeValue(null, "value")).isEqualTo("value1");
+
+    assertThat(parameterElements.get(1).getAttributeValue(null, "name")).isEqualTo("param2");
+    assertThat(parameterElements.get(1).getAttributeValue(null, "value")).isEqualTo("value2");
+
+    System.out.println(bpmnModelExporter.toBpmnXml(bpmnModel));
+  }
+
+  private void assertBrainslugTaskWithScript(FlowElement task) {
+    assertThat(task.getExtensionElements())
+            .containsKey("task")
+            .hasSize(1);
+
+    ExtensionElement brainslugTaskElement = validBrainslugTask(task);
+    assertThat(brainslugTaskElement.getChildElements())
+            .containsKey("script")
+            .hasSize(1);
+
+    assertThat(brainslugTaskElement.getAttributeValue(null, "retryAsync")).isEqualToIgnoringCase("true");
+
+    ExtensionElement scriptElement = brainslugTaskElement.getChildElements().get("script").get(0);
+
+    assertThat(scriptElement.getAttributeValue(null, "language")).isEqualToIgnoringCase("JavaScript");
+    assertThat(scriptElement.getElementText()).isEqualToIgnoringCase("execution.setProperty(\"foo\", \"bar\");");
+  }
+
+  private ExtensionElement validBrainslugTask(FlowElement task) {
+    ExtensionElement brainslugTaskElement = task.getExtensionElements().get("task").get(0);
+    assertThat(brainslugTaskElement.getNamespace()).isEqualTo(BrainslugBpmn.BRAINSLUG_BPMN_NS);
+    return brainslugTaskElement;
+  }
+
+  private String emptyFlowContent()  {
+    try {
+      return IOUtils.toString(getClass().getClassLoader().getResourceAsStream("emptyFlow.bpmn"), "UTF-8");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private InputStream file(String fileName) {
+    return getClass().getClassLoader().getResourceAsStream(fileName);
   }
 
   private void writeBpmnXml(BpmnModel bpmnModel)  {

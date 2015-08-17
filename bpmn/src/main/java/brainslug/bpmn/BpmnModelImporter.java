@@ -7,6 +7,7 @@ import brainslug.flow.node.*;
 import brainslug.flow.node.event.*;
 import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.flow.path.ThenDefinition;
+import brainslug.juel.JuelExpression;
 import brainslug.util.Option;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
@@ -15,7 +16,6 @@ import org.camunda.bpm.model.bpmn.instance.EndEvent;
 import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.StartEvent;
 import org.camunda.bpm.model.xml.instance.DomElement;
-import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ import static brainslug.util.Option.of;
 import static brainslug.util.Preconditions.notEmpty;
 import static brainslug.util.Preconditions.notNull;
 import static brainslug.util.Preconditions.singleItem;
-import static java.util.Collections.emptyMap;
 
 public class BpmnModelImporter {
 
@@ -98,91 +97,84 @@ public class BpmnModelImporter {
         TaskDefinition task = task(id(bpmnTask.getId()))
           .display(bpmnTask.getName());
 
-        Option<String> delegate = brainslugDelegate(bpmnTask);
-        if (delegate.isPresent()) {
-          task.delegate(getClassFor(delegate.get()));
-        }
+        Option<DomElement> brainslugTask = getBrainslugTaskElement(bpmnTask);
 
-        task.async(isAsync(bpmnTask));
-        task.retryAsync(isRetryAsync(bpmnTask));
-
-        if (bpmnTask.getExtensionElements() != null) {
-            addConfigParametersIfPresent(bpmnTask.getExtensionElements(), task);
-            addScriptIfPresent(bpmnTask.getExtensionElements(), task);
-        }
+        handleBrainslugTaskElement(brainslugTask, bpmnTask, task);
 
         flowDefinition.addNode(task);
       }
 
-        private boolean isRetryAsync(Task bpmnTask) {
-            Option<DomElement> task = getTaskElement(bpmnTask);
-            if (task.isPresent()) {
-                return Boolean.parseBoolean(task.get().getAttribute("retryAsync"));
+        private void handleBrainslugTaskElement(Option<DomElement> brainslugTask, Task bpmnTask, TaskDefinition taskDefinition) {
+            if (!brainslugTask.isPresent()) {
+                return;
             }
-            return false;
+
+            Option<String> delegate = brainslugDelegate(brainslugTask.get());
+            if (delegate.isPresent()) {
+              taskDefinition.delegate(getClassFor(delegate.get()));
+            }
+
+            taskDefinition.async(isAsync(brainslugTask.get()));
+            taskDefinition.retryAsync(isRetryAsync(brainslugTask.get()));
+
+            addConfigParametersIfPresent(brainslugTask.get(), taskDefinition);
+            addScriptIfPresent(brainslugTask.get(), taskDefinition);
         }
 
-        private void addScriptIfPresent(ExtensionElements extensionElements, TaskDefinition task) {
-          Option<ModelElementInstance> scriptElement = of(extensionElements.getUniqueChildElementByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "script"));
+        private boolean isRetryAsync(DomElement brainslugTask) {
+            String retryAsyncAttribute = "retryAsync";
+            return brainslugTask.hasAttribute(retryAsyncAttribute) && Boolean.parseBoolean(brainslugTask.getAttribute(retryAsyncAttribute));
+        }
+
+        private void addScriptIfPresent(DomElement brainslugTask, TaskDefinition task) {
+          Option<DomElement> scriptElement = uniqueChild(brainslugTask, BrainslugBpmn.BRAINSLUG_BPMN_NS, "script");
           if (scriptElement.isPresent()) {
-              task.script(
-                      notEmpty(scriptElement.get().getAttributeValue("language")),
-                      notEmpty(scriptElement.get().getTextContent())
-              );
+              Option<String> textContent = of(scriptElement.get().getTextContent());
+              if (textContent.isPresent()) {
+                  task.script(
+                          notEmpty(scriptElement.get().getAttribute("language")),
+                          notEmpty(textContent.get().trim())
+                  );
+              }
           }
       }
 
-      private void addConfigParametersIfPresent(ExtensionElements extensionElements, TaskDefinition task) {
-          Option<ModelElementInstance> configurationElement = of(extensionElements.getUniqueChildElementByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "configuration"));
-          Map<String, String> configurationValues = getConfigurationValues(configurationElement);
-          task.withConfiguration().parameters(configurationValues);
+      private void addConfigParametersIfPresent(DomElement brainslugTask, TaskDefinition task) {
+          Option<DomElement> configElement = uniqueChild(brainslugTask, BrainslugBpmn.BRAINSLUG_BPMN_NS, "configuration");
+          if (configElement.isPresent()) {
+              Map<String, String> configurationValues = getConfigurationValues(configElement.get());
+              task.withConfiguration().parameters(configurationValues);
+          }
       }
 
-      private Map<String, String> getConfigurationValues(Option<ModelElementInstance> configuration) {
-        if (!configuration.isPresent()) {
-            return emptyMap();
-        }
+      private Map<String, String> getConfigurationValues(DomElement configuration) {
         Map<String, String> configValues = new HashMap<String, String>();
-        for (DomElement parameter : configuration.get().getDomElement().getChildElementsByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "parameter")) {
+        for (DomElement parameter : configuration.getChildElementsByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "parameter")) {
             configValues.put(notEmpty(parameter.getAttribute("name")), notNull(parameter.getAttribute("value")));
         }
         return configValues;
       }
 
-      private Option<String> brainslugDelegate(Task bpmnTask) {
-          Option<DomElement> task = getTaskElement(bpmnTask);
-          if (task.isPresent()) {
-              return of(task.get().getAttribute("delegate"));
-          }
-          return Option.empty();
+      private Option<String> brainslugDelegate(DomElement brainslugTask) {
+          return of(brainslugTask.getAttribute("delegate"));
       }
 
-        private Boolean isAsync(Task bpmnTask) {
-            Option<DomElement> task = getTaskElement(bpmnTask);
-            if (task.isPresent()) {
-                return Boolean.parseBoolean(task.get().getAttribute("async"));
-            }
-            return false;
+        private Boolean isAsync(DomElement brainslugTask) {
+            String asyncAttribute = "async";
+
+            return brainslugTask.hasAttribute(asyncAttribute) &&
+                    Boolean.parseBoolean(brainslugTask.getAttribute(asyncAttribute));
         }
 
-      private Option<DomElement> getTaskElement(Task bpmnTask) {
-            if (bpmnTask.getExtensionElements() == null) {
-                return Option.empty();
-            }
+      private Option<DomElement> getBrainslugTaskElement(Task bpmnTask) {
+          if (bpmnTask.getExtensionElements() == null) {
+              return Option.empty();
+          }
 
-            List<DomElement> taskElements = bpmnTask
-                    .getExtensionElements()
-                    .getDomElement()
-                    .getChildElementsByNameNs(BrainslugBpmn.BRAINSLUG_BPMN_NS, "task");
+          return uniqueChild(bpmnTask.getExtensionElements().getDomElement(), BrainslugBpmn.BRAINSLUG_BPMN_NS, "task");
+      }
 
-            if (taskElements.isEmpty()) {
-                return Option.empty();
-            }
-
-            return of(singleItem(taskElements));
-        }
-
-        private Class<?> getClassFor(String className) {
+      private Class<?> getClassFor(String className) {
         try {
           return Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -231,5 +223,15 @@ public class BpmnModelImporter {
         }
         return new JuelExpression("false");
       }
+    }
+
+    private Option<DomElement> uniqueChild(DomElement parent, String namespace, String tag) {
+        List<DomElement> childElements = parent.getChildElementsByNameNs(namespace, tag);
+
+        if (childElements.isEmpty()) {
+            return Option.empty();
+        }
+
+        return of(singleItem(childElements));
     }
 }

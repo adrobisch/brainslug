@@ -7,6 +7,7 @@ import brainslug.flow.node.EventDefinition;
 import brainslug.flow.node.JoinDefinition;
 import brainslug.flow.node.TaskDefinition;
 import brainslug.flow.node.task.Task;
+import brainslug.juel.JuelExpression;
 import brainslug.util.FlowDefinitionAssert;
 import org.junit.Test;
 
@@ -37,7 +38,7 @@ public class BpmnModelImporterTest {
 
         assertThat(task1.getTaskScript().isPresent()).isTrue();
         assertThat(task1.getTaskScript().get().getLanguage()).isEqualTo("JavaScript");
-        assertThat(task1.getTaskScript().get().getText()).isEqualTo("execution.getTrigger().setProperty(\"foo\", \"bar\");");
+        assertThat(task1.getTaskScript().get().getText()).isEqualTo("execution.setProperty(\"foo\", \"bar\");");
 
         TaskDefinition task2 = (TaskDefinition) importedDefinition.getNode(id("Task_09b543m"));
 

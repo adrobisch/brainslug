@@ -5,6 +5,7 @@ import brainslug.bpmn.task.UserTaskDefinition;
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.ExpressionBuilder;
+import brainslug.juel.JuelExpression;
 
 abstract public class BpmnFlowBuilder extends FlowBuilder {
 
