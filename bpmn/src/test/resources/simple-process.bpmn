@@ -14,12 +14,13 @@
     </bpmn2:startEvent>
     <bpmn2:task id="Task_0zf0c5m" name="Task 1">
       <bpmn2:extensionElements>
-        <brainslug:task retryAsync="true" />
-        <brainslug:script language="JavaScript">
-          <![CDATA[
-            execution.getTrigger().setProperty("foo", "bar");
-          ]]>
-        </brainslug:script>
+        <brainslug:task retryAsync="true">
+          <brainslug:script language="JavaScript">
+            <![CDATA[
+              execution.setProperty("foo", "bar");
+            ]]>
+          </brainslug:script>
+        </brainslug:task>
       </bpmn2:extensionElements>
       <bpmn2:incoming>SequenceFlow_1sclzvz</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_0z4yf0d</bpmn2:outgoing>
@@ -34,11 +35,12 @@
     <bpmn2:sequenceFlow id="SequenceFlow_1or8jki" sourceRef="IntermediateCatchEvent_1ip6p6q" targetRef="ExclusiveGateway_0s7cjkk" />
     <bpmn2:task id="Task_09b543m" name="Task 2">
       <bpmn2:extensionElements>
-        <brainslug:task delegate="brainslug.flow.node.task.Task" async="true" />
-        <brainslug:configuration>
-          <brainslug:parameter name="param1" value="value1"/>
-          <brainslug:parameter name="param2" value="value2"/>
-        </brainslug:configuration>
+        <brainslug:task delegate="brainslug.flow.node.task.Task" async="true">
+          <brainslug:configuration>
+            <brainslug:parameter name="param1" value="value1"/>
+            <brainslug:parameter name="param2" value="value2"/>
+          </brainslug:configuration>
+        </brainslug:task>
       </bpmn2:extensionElements>
       <bpmn2:incoming>SequenceFlow_1xei7kb</bpmn2:incoming>
       <bpmn2:outgoing>SequenceFlow_14pb3jz</bpmn2:outgoing>

@@ -19,6 +19,8 @@ import brainslug.flow.listener.ListenerManager;
 import brainslug.util.IdGenerator;
 import brainslug.util.UuidGenerator;
 
+import java.util.ServiceLoader;
+
 public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractBrainslugContextBuilder, T extends BrainslugContext> {
 
   protected AsyncTriggerExecutor asyncTriggerExecutor = new AsyncTriggerExecutor();
@@ -30,7 +32,8 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
   protected DefinitionStore definitionStore = new HashMapDefinitionStore();
   protected ListenerManager listenerManager = new DefaultListenerManager();
   protected CallDefinitionExecutor callDefinitionExecutor = new CallDefinitionExecutor();
-  protected ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
+  protected ExpressionEvaluator expressionEvaluator = createExpressionEvaluator();
+
   protected Registry registry = new HashMapRegistry();
 
   protected IdGenerator idGenerator;
@@ -170,6 +173,14 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
   public SelfType withCallDefinitionExecutor(CallDefinitionExecutor callDefinitionExecutor) {
     this.callDefinitionExecutor = callDefinitionExecutor;
     return self();
+  }
+
+  protected ExpressionEvaluator createExpressionEvaluator() {
+    ServiceLoader<ExpressionEvaluator> evaluatorLoader = ServiceLoader.load(ExpressionEvaluator.class);
+    if (evaluatorLoader.iterator().hasNext()) {
+      return evaluatorLoader.iterator().next();
+    }
+    return new DefaultExpressionEvaluator();
   }
 
 }

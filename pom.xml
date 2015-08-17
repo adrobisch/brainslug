@@ -15,6 +15,7 @@
       <module>model</module>
       <module>execution</module>
       <module>bpmn</module>
+      <module>juel</module>
       <module>renderer</module>
       <module>quartz</module>
       <module>jpa</module>

@@ -1,4 +1,4 @@
-package brainslug.bpmn;
+package brainslug.juel;
 
 import brainslug.flow.expression.Value;
 
