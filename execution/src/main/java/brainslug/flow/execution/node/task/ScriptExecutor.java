@@ -41,7 +41,7 @@ public class ScriptExecutor {
             scriptContext.setWriter(outputWriter);
             scriptContext.setErrorWriter(errorWriter);
 
-            scriptContext.setAttribute("context", context, ScriptContext.ENGINE_SCOPE);
+            scriptContext.setAttribute("brainslug", context, ScriptContext.ENGINE_SCOPE);
 
             Object result = scriptEngine.eval(taskScript.getText(), scriptContext);
 

@@ -37,8 +37,8 @@ public class ScriptExecutorTest {
     }
 
     private String testScript() {
-        return "context.service('test').echo('js');" +
-                "context.setProperty('bar', 2);";
+        return "brainslug.service('test').echo('js');" +
+                "brainslug.setProperty('bar', 2);";
     }
 
     ExecutionContext testContext() {
