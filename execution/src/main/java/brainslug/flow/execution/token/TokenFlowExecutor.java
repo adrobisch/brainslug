@@ -11,6 +11,7 @@ import brainslug.flow.execution.instance.InstanceSelector;
 import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.*;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
+import brainslug.flow.execution.node.task.ScriptExecutor;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.listener.EventType;
@@ -40,6 +41,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   protected AsyncTriggerStore asyncTriggerStore;
   protected AsyncTriggerScheduler asyncTriggerScheduler;
   protected CallDefinitionExecutor callDefinitionExecutor;
+  protected ScriptExecutor scriptExecutor;
 
   Map<Class<? extends FlowNodeDefinition>, FlowNodeExecutor> nodeExecutors = new HashMap<Class<? extends FlowNodeDefinition>, FlowNodeExecutor>();
 
@@ -53,7 +55,8 @@ public class TokenFlowExecutor implements FlowExecutor {
                            ExpressionEvaluator expressionEvaluator,
                            AsyncTriggerStore asyncTriggerStore,
                            AsyncTriggerScheduler asyncTriggerScheduler,
-                           CallDefinitionExecutor callDefinitionExecutor) {
+                           CallDefinitionExecutor callDefinitionExecutor,
+                           ScriptExecutor scriptExecutor) {
     this.tokenStore = tokenStore;
     this.instanceStore = instanceStore;
     this.definitionStore = definitionStore;
@@ -64,6 +67,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     this.asyncTriggerStore = asyncTriggerStore;
     this.asyncTriggerScheduler = asyncTriggerScheduler;
     this.callDefinitionExecutor = callDefinitionExecutor;
+    this.scriptExecutor = scriptExecutor;
 
     this.tokenOperations = new TokenOperations(tokenStore);
     this.executionContextFactory = new ExecutionContextFactory(propertyStore, registry);
@@ -81,7 +85,7 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   protected TaskNodeExecutor createTaskNodeExecutor() {
-    return new TaskNodeExecutor(definitionStore, expressionEvaluator, callDefinitionExecutor, asyncTriggerScheduler);
+    return new TaskNodeExecutor(definitionStore, expressionEvaluator, callDefinitionExecutor, asyncTriggerScheduler, scriptExecutor);
   }
 
   FlowNodeDefinition<?> getNode(Identifier definitionId, Identifier nodeId) {

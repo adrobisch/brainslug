@@ -21,4 +21,5 @@ public interface ExecutionContext {
   <T> T property(String key, Class<T> clazz);
   <T> T property(Enum key, Class<T> clazz);
   <T> T service(Class<T> clazz);
+  Object service(String className);
 }

@@ -1,6 +1,7 @@
 package brainslug.flow.execution.token;
 
 import brainslug.AbstractExecutionTest;
+import brainslug.TestService;
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.builder.FlowBuilderSupport;
 import brainslug.flow.definition.FlowDefinition;
@@ -216,7 +217,11 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   }
 
   private TaskNodeExecutor createTaskNodeExecutor() {
-    return new TaskNodeExecutor(definitionStore, expressionEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler);
+    return new TaskNodeExecutor(definitionStore,
+            expressionEvaluator,
+            new CallDefinitionExecutor(),
+            asyncTriggerScheduler,
+            scriptExecutor);
   }
 
   @Test
@@ -250,7 +255,7 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
       .definitionId(goalFlow.getGoalFlow().getId())
       .nodeId(id(TASK)), registryWithServiceMock());
 
-    new TaskNodeExecutor(definitionStore, expressionEvaluator, new CallDefinitionExecutor(), asyncTriggerScheduler)
+    createTaskNodeExecutor()
         .execute((TaskDefinition) goalFlow.getGoalFlow().getNode(IdUtil.id(TASK)), executionContext);
   }
 

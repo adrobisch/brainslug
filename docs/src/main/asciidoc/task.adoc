@@ -60,7 +60,7 @@ It possible to define service calls using a proxy-based approach similar to Mock
 
 [source, java]
 ----
-include::{projectBase}/execution/src/test/java/brainslug/AbstractExecutionTest.java[tags=test-service, indent=0]
+include::{projectBase}/execution/src/test/java/brainslug/TestService.java[tags=test-service, indent=0]
 ----
 
 [source, java]

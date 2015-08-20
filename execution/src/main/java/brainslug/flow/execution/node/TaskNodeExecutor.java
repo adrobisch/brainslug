@@ -7,6 +7,7 @@ import brainslug.flow.execution.async.AsyncTriggerErrorDetails;
 import brainslug.flow.execution.async.AsyncTriggerScheduler;
 import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
+import brainslug.flow.execution.node.task.ScriptExecutor;
 import brainslug.flow.expression.PredicateExpression;
 import brainslug.flow.node.task.AbstractTaskDefinition;
 import brainslug.flow.node.task.GoalDefinition;
@@ -23,12 +24,18 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
   ExpressionEvaluator expressionEvaluator;
   CallDefinitionExecutor callDefinitionExecutor;
   AsyncTriggerScheduler asyncTriggerScheduler;
+  ScriptExecutor scriptExecutor;
 
-  public TaskNodeExecutor(DefinitionStore definitionStore, ExpressionEvaluator expressionEvaluator, CallDefinitionExecutor callDefinitionExecutor, AsyncTriggerScheduler asyncTriggerScheduler) {
+  public TaskNodeExecutor(DefinitionStore definitionStore,
+                          ExpressionEvaluator expressionEvaluator,
+                          CallDefinitionExecutor callDefinitionExecutor,
+                          AsyncTriggerScheduler asyncTriggerScheduler,
+                          ScriptExecutor scriptExecutor) {
     this.definitionStore = definitionStore;
     this.expressionEvaluator = expressionEvaluator;
     this.callDefinitionExecutor = callDefinitionExecutor;
     this.asyncTriggerScheduler = asyncTriggerScheduler;
+    this.scriptExecutor = scriptExecutor;
   }
 
   @Override
@@ -47,7 +54,7 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
     }
   }
 
-  protected FlowNodeExecutionResult executeWithOptionalAsyncRetry(AbstractTaskDefinition taskDefinition, ExecutionContext execution) {
+  protected FlowNodeExecutionResult executeWithOptionalAsyncRetry(AbstractTaskDefinition<?> taskDefinition, ExecutionContext execution) {
     try {
       if (Option.of(taskDefinition.getDelegateClass()).isPresent()) {
         HandlerCallDefinition callDefinition = new HandlerCallDefinition(execution.service(taskDefinition.getDelegateClass()));
@@ -55,6 +62,9 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
         return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
       } else if (Option.of(taskDefinition.getMethodCall()).isPresent()) {
         callDefinitionExecutor.execute(taskDefinition.getMethodCall(), execution);
+        return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
+      } else if(taskDefinition.getTaskScript().isPresent()) {
+        scriptExecutor.execute(taskDefinition.getTaskScript().get(), execution);
         return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
       }
       throw new IllegalStateException("this method should only be called with executable " + taskDefinition);
@@ -81,7 +91,9 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
   }
 
   protected boolean isExecutable(AbstractTaskDefinition taskDefinition) {
-    return taskDefinition.getDelegateClass() != null || taskDefinition.getMethodCall() != null;
+    return taskDefinition.getDelegateClass() != null ||
+            taskDefinition.getMethodCall() != null ||
+            taskDefinition.getTaskScript().isPresent();
   }
 
   protected boolean goalIsFulfilled(GoalDefinition goal, ExecutionContext execution) {

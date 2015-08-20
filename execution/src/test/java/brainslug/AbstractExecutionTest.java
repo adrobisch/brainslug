@@ -7,6 +7,7 @@ import brainslug.flow.execution.instance.HashMapInstanceStore;
 import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.definition.DefinitionStore;
+import brainslug.flow.execution.node.task.ScriptExecutor;
 import brainslug.flow.execution.property.store.HashMapPropertyStore;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.execution.async.AsyncTriggerScheduler;
@@ -39,6 +40,7 @@ public class AbstractExecutionTest {
   protected PropertyStore propertyStore = spy(new HashMapPropertyStore());
   protected InstanceStore instanceStore = spy(new HashMapInstanceStore(new UuidGenerator(), propertyStore, tokenStore));
   protected ListenerManager listenerManager = mock(ListenerManager.class);
+  protected ScriptExecutor scriptExecutor = mock(ScriptExecutor.class);
 
   protected BrainslugContext context = createContext();
 
@@ -61,7 +63,8 @@ public class AbstractExecutionTest {
       expressionEvaluator,
       asyncTriggerStore,
       asyncTriggerScheduler,
-      callExecutor));
+      callExecutor,
+      scriptExecutor));
   }
 
   protected Registry registryWithServiceMock() {
@@ -92,13 +95,4 @@ public class AbstractExecutionTest {
       }
     };
   }
-
-  public static
-  // #tag::test-service[]
-  interface TestService {
-    public String getString();
-    public String echo(String echo);
-    public String multiEcho(String echo, String echo2);
-  }
-  // #end::test-service[]
 }

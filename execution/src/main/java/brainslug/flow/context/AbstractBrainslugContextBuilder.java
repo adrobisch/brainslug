@@ -9,6 +9,7 @@ import brainslug.flow.execution.expression.ExpressionEvaluator;
 import brainslug.flow.execution.instance.HashMapInstanceStore;
 import brainslug.flow.execution.instance.InstanceStore;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
+import brainslug.flow.execution.node.task.ScriptExecutor;
 import brainslug.flow.execution.property.store.HashMapPropertyStore;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.execution.token.HashMapTokenStore;
@@ -19,6 +20,7 @@ import brainslug.flow.listener.ListenerManager;
 import brainslug.util.IdGenerator;
 import brainslug.util.UuidGenerator;
 
+import javax.script.ScriptEngineManager;
 import java.util.ServiceLoader;
 
 public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractBrainslugContextBuilder, T extends BrainslugContext> {
@@ -32,6 +34,7 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
   protected DefinitionStore definitionStore = new HashMapDefinitionStore();
   protected ListenerManager listenerManager = new DefaultListenerManager();
   protected CallDefinitionExecutor callDefinitionExecutor = new CallDefinitionExecutor();
+  protected ScriptExecutor scriptExecutor = new ScriptExecutor(new ScriptEngineManager());
   protected ExpressionEvaluator expressionEvaluator = createExpressionEvaluator();
 
   protected Registry registry = new HashMapRegistry();
@@ -82,7 +85,8 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
         expressionEvaluator,
         asyncTriggerStore,
         asyncTriggerScheduler,
-        callDefinitionExecutor
+        callDefinitionExecutor,
+        scriptExecutor
       ));
     }
 
@@ -172,6 +176,11 @@ public abstract class AbstractBrainslugContextBuilder<SelfType extends AbstractB
 
   public SelfType withCallDefinitionExecutor(CallDefinitionExecutor callDefinitionExecutor) {
     this.callDefinitionExecutor = callDefinitionExecutor;
+    return self();
+  }
+
+  public SelfType withScriptExecutor(ScriptExecutor scriptExecutor) {
+    this.scriptExecutor = scriptExecutor;
     return self();
   }
 

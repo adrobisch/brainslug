@@ -76,4 +76,9 @@ public class BrainslugExecutionContext implements ExecutionContext {
   public <T> T service(Class<T> clazz) {
     return registry.getService(clazz);
   }
+
+  @Override
+  public Object service(String serviceName) {
+    return registry.getService(serviceName);
+  }
 }
