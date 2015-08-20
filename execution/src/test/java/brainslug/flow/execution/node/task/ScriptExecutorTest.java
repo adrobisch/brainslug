@@ -5,7 +5,7 @@ import brainslug.flow.context.BrainslugExecutionContext;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.HashMapRegistry;
 import brainslug.flow.context.Trigger;
-import brainslug.flow.execution.property.IntProperty;
+import brainslug.flow.execution.property.NumberProperty;
 import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.node.task.TaskScript;
 import org.junit.Test;
@@ -32,8 +32,9 @@ public class ScriptExecutorTest {
         // then:
         verify(testService).echo("js");
 
-        assertThat(executionContext.getProperties().get("bar"))
-                .isEqualTo(new IntProperty("bar", 2));
+        NumberProperty<?> barProperty = (NumberProperty<?>) executionContext.getProperties().get("bar");
+
+        assertThat(barProperty.getValue().intValue()).isEqualTo(2);
     }
 
     private String testScript() {
