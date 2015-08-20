@@ -1,8 +1,6 @@
 package brainslug.flow.execution.property;
 
-import brainslug.flow.execution.property.AbstractProperty;
-
-public class FloatProperty extends AbstractProperty<Float> {
+public class FloatProperty extends NumberProperty<Float> {
   public FloatProperty(String key, Float value) {
     super(key, value);
   }

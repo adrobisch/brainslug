@@ -1,7 +1,5 @@
 package brainslug.flow.execution.property;
 
-import brainslug.flow.execution.property.AbstractProperty;
-
 import java.util.Date;
 
 public class DateProperty extends AbstractProperty<Date> {
