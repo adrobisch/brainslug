@@ -290,16 +290,16 @@ public class FlowBuilderSupport {
     return new Value<T>(value);
   }
 
-  public static Property<?> property(Identifier id) {
-    return new Property(id);
+  public static Property<Object> property(Identifier id) {
+    return new Property<Object>(id, Object.class);
   }
 
   public static <T> Property<T> property(Identifier id, Class<T> clazz) {
-    return new Property<T>(id);
+    return new Property<T>(id, clazz);
   }
 
   public <T> T value(Identifier id, Class<T> clazz) {
-    return (T) value(new Property(id));
+    return (T) value(new Property(id, clazz));
   }
 
   public <T> T value(Property property, Class<T> clazz) {

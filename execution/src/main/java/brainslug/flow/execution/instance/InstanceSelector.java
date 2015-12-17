@@ -47,7 +47,7 @@ public class InstanceSelector implements FlowInstanceSelector {
     }
 
     public InstanceSelector withProperty(Identifier<?> id, String value) {
-        properties.add(new EqualsExpression<Property<?>, Value<String>>(new Property(id), new Value<String>(value)));
+        properties.add(new EqualsExpression<Property<?>, Value<String>>(new Property<String>(id, String.class), new Value<String>(value)));
         return this;
     }
 }

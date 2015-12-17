@@ -43,6 +43,21 @@ public class BrainslugExecutionContext implements ExecutionContext {
   }
 
   @Override
+  public <T> void setProperty(Property<T> property, T value) {
+    setProperty(property.getValue(), value);
+  }
+
+  @Override
+  public void setProperty(Identifier key, Object value) {
+    setProperty(key.stringValue(), value);
+  }
+
+  @Override
+  public void setProperty(Enum key, Object value) {
+    setProperty(key.name(), value);
+  }
+
+  @Override
   public void setProperties(FlowInstanceProperties executionProperties) {
     trigger.setProperties(executionProperties);
   }
@@ -53,8 +68,8 @@ public class BrainslugExecutionContext implements ExecutionContext {
   }
 
   @Override
-  public <T> T property(Property<T> key, Class<T> clazz) {
-    return property(key.getValue(), clazz);
+  public <T> T property(Property<T> property) {
+    return property(property.getValue(), property.getValueClass());
   }
 
   @Override

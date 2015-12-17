@@ -78,11 +78,11 @@ public class JpaInstanceStoreIT extends AbstractDatabaseTest {
         // when:
         InstanceSelector matchingSelector = new InstanceSelector()
                 .withInstanceId(instanceOne)
-                .withProperty(new Property<String>(id("foo")), new Value<String>("bar"));
+                .withProperty(new Property<String>(id("foo"), String.class), new Value<String>("bar"));
 
         InstanceSelector nonMatchingSelector = new InstanceSelector()
                 .withInstanceId(instanceOne)
-                .withProperty(new Property<String>(id("foo")), new Value<String>("baz"));
+                .withProperty(new Property<String>(id("foo"), String.class), new Value<String>("baz"));
 
         List<? extends FlowInstance> matchingInstances = instanceStore.findInstances(matchingSelector);
         List<? extends FlowInstance> nonMatchtingInstances = instanceStore.findInstances(nonMatchingSelector);

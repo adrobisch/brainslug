@@ -62,7 +62,7 @@ public class CallDefinitionExecutor {
     Object value = argument.getValue();
 
     if (value instanceof Property) {
-      return executionContext.property(((Property) value), Object.class);
+      return executionContext.property(((Property) value));
     } else if (value instanceof Value) {
       return ((Value) value).getValue();
     }

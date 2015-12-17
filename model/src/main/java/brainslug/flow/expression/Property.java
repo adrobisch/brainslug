@@ -4,7 +4,14 @@ import brainslug.flow.definition.Identifier;
 
 public class Property<T> extends Value<Identifier> {
 
-  public Property(Identifier expression) {
+  private final Class<T> valueClass;
+
+  public Property(Identifier expression, Class<T> valueClass) {
     super(expression);
+    this.valueClass = valueClass;
+  }
+
+  public Class<T> getValueClass() {
+    return valueClass;
   }
 }
