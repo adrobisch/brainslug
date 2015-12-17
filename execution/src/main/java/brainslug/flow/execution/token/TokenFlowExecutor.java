@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class TokenFlowExecutor implements FlowExecutor {
 
@@ -137,32 +138,54 @@ public class TokenFlowExecutor implements FlowExecutor {
   }
 
   @Override
-  public void trigger(TriggerContext trigger) {
+  public void trigger(final TriggerContext trigger) {
     log.debug("triggering {}", trigger);
 
     if (trigger.getInstanceId() == null) {
       throw new IllegalArgumentException("instance not specified for trigger");
     }
 
-    FlowNodeDefinition node = getNode(trigger.getDefinitionId(), trigger.getNodeId());
+    final FlowNodeDefinition node = getNode(trigger.getDefinitionId(), trigger.getNodeId());
 
     FlowInstance flowInstance = instanceStore
             .findInstance(new InstanceSelector().withInstanceId(trigger.getInstanceId()))
             .get();
 
-    FlowNodeExecutor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
+    final FlowNodeExecutor<FlowNodeDefinition> nodeExecutor = getNodeExecutor(node);
 
-    ExecutionContext executionContext = executionContextFactory.createExecutionContext(flowInstance, trigger);
+    final ExecutionContext executionContext = executionContextFactory.createExecutionContext(flowInstance, trigger);
 
-    listenerManager.notifyListeners(EventType.BEFORE_EXECUTION, trigger);
+    FlowNodeExecutionResult executionResult = executeWithListeners(trigger, new Callable<FlowNodeExecutionResult>() {
+      @Override
+      public FlowNodeExecutionResult call() throws Exception {
+        FlowNodeExecutionResult executionResult = nodeExecutor.execute(node, executionContext);
+        storeProperties(trigger, trigger.getInstanceId());
+        return executionResult;
+      }
+    });
 
-    FlowNodeExecutionResult executionResult = nodeExecutor.execute(node, executionContext);
-    storeProperties(trigger, trigger.getInstanceId());
+    triggerNextOnSuccess(trigger, node, executionResult);
+  }
 
-    listenerManager.notifyListeners(EventType.AFTER_EXECUTION, trigger);
+  private void triggerNextOnSuccess(TriggerContext trigger, FlowNodeDefinition node, FlowNodeExecutionResult executionResult) {
+    if (!executionResult.isFailed()) {
+      removeTokens(trigger, executionResult);
+      triggerNext(trigger, node, executionResult);
+    } else {
+      Exception cause = executionResult.getException().orElse(new RuntimeException());
+      throw new FlowNodeExecutionException(cause).setTriggerContext(trigger);
+    }
+  }
 
-    removeTokens(trigger, executionResult);
-    triggerNext(trigger, node, executionResult);
+  <T> T executeWithListeners(TriggerContext trigger, Callable<T> callable) {
+    try {
+      listenerManager.notifyListeners(EventType.BEFORE_EXECUTION, trigger);
+      T result = callable.call();
+      listenerManager.notifyListeners(EventType.AFTER_EXECUTION, trigger);
+      return result;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void removeTokens(TriggerContext trigger, FlowNodeExecutionResult executionResult) {

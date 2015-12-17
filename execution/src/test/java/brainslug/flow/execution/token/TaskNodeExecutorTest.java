@@ -10,6 +10,7 @@ import brainslug.flow.context.Registry;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.instance.DefaultFlowInstance;
+import brainslug.flow.execution.node.FlowNodeExecutionResult;
 import brainslug.flow.execution.node.TaskNodeExecutor;
 import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.context.BrainslugExecutionContext;
@@ -23,6 +24,8 @@ import brainslug.flow.node.TaskDefinition;
 import brainslug.flow.node.task.Delegate;
 import brainslug.flow.node.task.GoalDefinition;
 import brainslug.util.IdUtil;
+import brainslug.util.Option;
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 
 import static brainslug.util.IdUtil.id;
@@ -214,6 +217,43 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
       .withNodeId(id(TASK))
       .withInstanceId(id("instance"))
       .withDefinitionId(id(ASYNCID)));
+  }
+
+  @Test
+  public void shouldPropagateException() {
+    FlowDefinition serviceCallFlow = new FlowBuilder() {
+
+      @Override
+      public void define() {
+        start(event(id(START)))
+            .execute(task(id(TASK), new SimpleTask() {
+              @Override
+              public void execute(ExecutionContext context) {
+                throw new RuntimeException("error");
+              }
+            }))
+            .end(event(id(END)));
+      }
+
+    }.getDefinition();
+
+    TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
+
+    BrainslugExecutionContext context = new BrainslugExecutionContext(instanceMock(serviceCallFlow.getId()),new Trigger()
+        .definitionId(serviceCallFlow.getId())
+        .nodeId(id(TASK))
+        .instanceId(id("instance")), registryWithServiceMock());
+
+    FlowNodeExecutionResult result = taskNodeExecutor.execute(serviceCallFlow.getNode(id(TASK), TaskDefinition.class), context);
+    assertThat(result.isFailed()).isTrue();
+    assertThat(result.getException())
+        .isNotNull()
+        .has(new Condition<Option<Exception>>() {
+          @Override
+          public boolean matches(Option<Exception> exceptionOption) {
+            return exceptionOption.get().getMessage().equals("error");
+          }
+        });
   }
 
   private TaskNodeExecutor createTaskNodeExecutor() {

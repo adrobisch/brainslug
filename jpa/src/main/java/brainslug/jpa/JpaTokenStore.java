@@ -11,7 +11,6 @@ import brainslug.jpa.entity.FlowTokenEntity;
 import brainslug.jpa.entity.QFlowTokenEntity;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
-import com.mysema.query.jpa.impl.JPAUpdateClause;
 import com.mysema.query.types.ConstructorExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

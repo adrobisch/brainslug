@@ -4,7 +4,6 @@ import brainslug.flow.definition.Identifier;
 import brainslug.flow.instance.FlowInstanceToken;
 import brainslug.flow.instance.FlowInstanceTokenList;
 import brainslug.flow.node.FlowNodeDefinition;
-import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.util.Option;
 
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ public class FlowNodeExecutionResult {
   protected List<TokenRemoval> removedTokens = new ArrayList<TokenRemoval>();
   protected List<FlowNodeDefinition> nextNodes;
   protected boolean failed;
+  protected Exception exception;
   private FlowNodeDefinition<?> executedNode;
 
   public FlowNodeExecutionResult(FlowNodeDefinition<?> executedNode) {
@@ -66,6 +66,15 @@ public class FlowNodeExecutionResult {
 
   public FlowNodeExecutionResult failed(boolean failed) {
     this.failed = failed;
+    return this;
+  }
+
+  public Option<Exception> getException() {
+    return Option.of(exception);
+  }
+
+  public FlowNodeExecutionResult setException(Exception exception) {
+    this.exception = exception;
     return this;
   }
 

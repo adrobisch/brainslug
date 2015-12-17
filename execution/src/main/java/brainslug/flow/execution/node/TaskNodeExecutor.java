@@ -68,12 +68,14 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
         return takeAllAndRemoveFirst(taskDefinition, execution.getInstance());
       }
       throw new IllegalStateException("this method should only be called with executable " + taskDefinition);
-    } catch (Exception e) {
-      log.error(String.format("error during task (%s) execution: ", taskDefinition), e);
+    } catch (Exception executionException) {
+      log.error(String.format("error during task (%s) execution: ", taskDefinition), executionException);
       if (taskDefinition.isRetryAsync()) {
-        return scheduleRetry(e, taskDefinition, execution);
+        return scheduleRetry(executionException, taskDefinition, execution);
       }
-      return takeNone(taskDefinition, execution.getInstance());
+      return takeNone(taskDefinition, execution.getInstance())
+          .failed(true)
+          .setException(executionException);
     }
   }
 
@@ -87,7 +89,9 @@ public class TaskNodeExecutor extends DefaultNodeExecutor<AbstractTaskDefinition
           .withInstanceId(execution.getInstance().getIdentifier())
           .withDefinitionId(execution.getInstance().getDefinitionId())
       );
-    return new FlowNodeExecutionResult(taskDefinition).failed(true);
+    return new FlowNodeExecutionResult(taskDefinition)
+        .setException(e)
+        .failed(true);
   }
 
   protected boolean isExecutable(AbstractTaskDefinition taskDefinition) {

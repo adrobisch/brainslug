@@ -9,6 +9,7 @@ import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.instance.DefaultFlowInstance;
 import brainslug.flow.execution.instance.InstanceSelector;
+import brainslug.flow.execution.node.FlowNodeExecutionException;
 import brainslug.flow.execution.node.task.SimpleTask;
 import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.instance.FlowInstanceProperty;
@@ -21,7 +22,6 @@ import static brainslug.flow.execution.property.ExecutionProperties.newPropertie
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class TokenFlowExecutorTest extends AbstractExecutionTest {
@@ -248,6 +248,30 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
 
     // never store
     verify(propertyStore, never()).setProperty(eq(instance.getIdentifier()), any(FlowInstanceProperty.class));
+  }
+
+  @Test(expected = FlowNodeExecutionException.class)
+  public void shouldRethrowExceptionOnFailedExecution() {
+    // given:
+    FlowBuilder flow = givenFlow(new FlowBuilder() {
+      @Override
+      public void define() {
+        start(id("start")).execute(task(id("task_with_error"), new SimpleTask() {
+          @Override
+          public void execute(ExecutionContext context) {
+            throw new RuntimeException("an error");
+          }
+        }));
+      }
+    });
+
+    FlowInstance instance = givenInstance(id("instance"));
+
+    when(instanceStore.createInstance(flow.getDefinition().getId()))
+        .thenReturn(instance);
+
+    // when:
+    context.startFlow(flow.getDefinition(), newProperties().with("key", "value"));
   }
 
   private FlowBuilder givenFlow(FlowBuilder flowBuilder) {
