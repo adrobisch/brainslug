@@ -6,6 +6,7 @@ import brainslug.flow.execution.property.ExecutionProperties;
 import brainslug.flow.execution.token.TokenList;
 import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.instance.FlowInstanceProperty;
 import brainslug.flow.instance.FlowInstanceTokenList;
 import brainslug.util.IdUtil;
 
@@ -84,7 +85,7 @@ public class FlowInstanceEntity implements FlowInstance {
   }
 
   @Override
-  public FlowInstanceProperties getProperties() {
+  public FlowInstanceProperties<?, FlowInstanceProperty<?>> getProperties() {
     return new ExecutionProperties().from(properties);
   }
 

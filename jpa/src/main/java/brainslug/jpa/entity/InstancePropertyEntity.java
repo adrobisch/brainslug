@@ -164,7 +164,16 @@ public class InstancePropertyEntity implements FlowInstanceProperty {
 
   @Override
   public Object getValue() {
-    return propertyForType(getKey(), getValueType(), getStringValue(), getLongValue(), getDoubleValue()).getValue();
+    return propertyForType(getKey(),
+        getValueType(),
+        getStringValue(),
+        getLongValue(),
+        getDoubleValue()).getValue();
+  }
+
+  @Override
+  public boolean isTransient() {
+    return false;
   }
 
   public static class ValueType {

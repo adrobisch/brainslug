@@ -23,14 +23,16 @@ import static brainslug.jpa.entity.InstancePropertyEntity.ValueType.*;
 
 public class JpaPropertyStore implements PropertyStore {
 
-  private Logger log = LoggerFactory.getLogger(JpaPropertyStore.class);
-  private ObjectSerializer serializer = new ObjectSerializer();
+  protected Logger log = LoggerFactory.getLogger(JpaPropertyStore.class);
+  protected ObjectSerializer serializer = new ObjectSerializer();
 
   protected final Database database;
   protected final IdGenerator idGenerator;
-  private final JpaInstanceStore jpaInstanceStore;
+  protected final JpaInstanceStore jpaInstanceStore;
 
-  public JpaPropertyStore(Database database, IdGenerator idGenerator, JpaInstanceStore jpaInstanceStore) {
+  public JpaPropertyStore(Database database,
+                          IdGenerator idGenerator,
+                          JpaInstanceStore jpaInstanceStore) {
     this.database = database;
     this.idGenerator = idGenerator;
     this.jpaInstanceStore = jpaInstanceStore;
@@ -46,7 +48,7 @@ public class JpaPropertyStore implements PropertyStore {
   public void setProperties(Identifier<?> instanceId, FlowInstanceProperties<?, FlowInstanceProperty<?>> executionProperties) {
     log.debug("storing properties {} for instance {}", executionProperties, instanceId);
 
-    for (FlowInstanceProperty property : executionProperties.getValues()) {
+    for (FlowInstanceProperty property : executionProperties.values()) {
       setProperty(instanceId, property);
     }
   }
@@ -147,5 +149,10 @@ public class JpaPropertyStore implements PropertyStore {
 
   public ObjectSerializer getSerializer() {
     return serializer;
+  }
+
+  public JpaPropertyStore withSerializer(ObjectSerializer serializer) {
+    this.serializer = serializer;
+    return this;
   }
 }

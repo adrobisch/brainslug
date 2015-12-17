@@ -13,6 +13,8 @@ public interface TriggerContext {
 
   void setProperty(String key, Object value);
 
+  void setProperty(String key, Object value, boolean isTransient);
+
   void setProperties(FlowInstanceProperties executionProperties);
 
   <P> P getProperty(String key, Class<P> type);

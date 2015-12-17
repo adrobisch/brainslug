@@ -4,6 +4,8 @@ import brainslug.flow.instance.FlowInstanceProperties;
 import static brainslug.util.IdUtil.*;
 
 import brainslug.jpa.entity.FlowInstanceEntity;
+import brainslug.jpa.util.ObjectSerializer;
+import brainslug.util.Option;
 import brainslug.util.UuidGenerator;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -34,7 +36,7 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("stringTest", "value"));
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    Assertions.assertThat(loadedProperties.getValue("stringTest", String.class)).isEqualTo("value");
+    Assertions.assertThat(loadedProperties.value("stringTest", String.class)).isEqualTo("value");
   }
 
   @Test
@@ -42,7 +44,7 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("doubleTest", 1.2));
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    Assertions.assertThat(loadedProperties.getValue("doubleTest", Double.class)).isEqualTo(1.2);
+    Assertions.assertThat(loadedProperties.value("doubleTest", Double.class)).isEqualTo(1.2);
   }
 
   @Test
@@ -50,7 +52,7 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("floatTest", 1.2f));
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    Assertions.assertThat(loadedProperties.getValue("floatTest", Float.class)).isEqualTo(1.2f);
+    Assertions.assertThat(loadedProperties.value("floatTest", Float.class)).isEqualTo(1.2f);
   }
 
   @Test
@@ -58,7 +60,7 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("longTest", 12l));
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    Assertions.assertThat(loadedProperties.getValue("longTest", Long.class)).isEqualTo(12l);
+    Assertions.assertThat(loadedProperties.value("longTest", Long.class)).isEqualTo(12l);
   }
 
   @Test
@@ -66,7 +68,7 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("booleanTest", true));
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    Assertions.assertThat(loadedProperties.getValue("booleanTest", Boolean.class)).isEqualTo(true);
+    Assertions.assertThat(loadedProperties.value("booleanTest", Boolean.class)).isEqualTo(true);
   }
 
   @Test
@@ -74,7 +76,7 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("intTest", 1));
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    Assertions.assertThat(loadedProperties.getValue("intTest", Double.class)).isEqualTo(1);
+    Assertions.assertThat(loadedProperties.value("intTest", Double.class)).isEqualTo(1);
   }
 
   @Test
@@ -82,7 +84,7 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     jpaPropertyStore.setProperties(instance.getIdentifier(), newProperties().with("serializableTest", asList("1", "2")));
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    List list = (List) loadedProperties.getValue("serializableTest", List.class);
+    List list = (List) loadedProperties.value("serializableTest", List.class);
 
     Assertions.assertThat(list).contains("1", "2");
   }
@@ -98,8 +100,8 @@ public class JpaPropertyStoreIT extends AbstractDatabaseTest {
     Assertions.assertThat(jpaPropertyStore.propertyEntity(instance, "doubleTest").get().getVersion()).isEqualTo(1);
 
     FlowInstanceProperties loadedProperties = jpaPropertyStore.getProperties(instance.getIdentifier());
-    Assertions.assertThat(loadedProperties.getValues().size()).isEqualTo(1);
-    Assertions.assertThat(loadedProperties.getValue("doubleTest", Double.class)).isEqualTo(1.3);
+    Assertions.assertThat(loadedProperties.values().size()).isEqualTo(1);
+    Assertions.assertThat(loadedProperties.value("doubleTest", Double.class)).isEqualTo(1.3);
   }
 
 }

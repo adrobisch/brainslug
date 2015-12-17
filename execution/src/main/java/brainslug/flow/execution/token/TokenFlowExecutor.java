@@ -14,6 +14,7 @@ import brainslug.flow.execution.node.task.CallDefinitionExecutor;
 import brainslug.flow.execution.node.task.ScriptExecutor;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.instance.FlowInstanceProperty;
 import brainslug.flow.listener.EventType;
 import brainslug.flow.listener.ListenerManager;
 import brainslug.flow.node.*;
@@ -111,7 +112,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     FlowInstance instance = instanceStore.createInstance(trigger.getDefinitionId());
     tokenStore.addToken(instance.getIdentifier(), startNode.getId(), Option.<Identifier>empty(), false);
 
-    propertyStore.setProperties(instance.getIdentifier(), trigger.getProperties());
+    storeProperties(trigger, instance.getIdentifier());
 
     trigger(new Trigger()
             .nodeId(startNode.getId())
@@ -121,6 +122,14 @@ public class TokenFlowExecutor implements FlowExecutor {
 
     // get a fresh copy of the instance after triggering
     return instanceStore.findInstance(new InstanceSelector().withInstanceId(instance.getIdentifier())).get();
+  }
+
+  protected void storeProperties(TriggerContext trigger, Identifier instanceId) {
+    for (FlowInstanceProperty<?> property : trigger.getProperties().values()) {
+      if (!property.isTransient()) {
+        propertyStore.setProperty(instanceId, property);
+      }
+    }
   }
 
   protected FlowNodeDefinition<?> getStartNodeDefinition(Identifier definitionId, Identifier nodeId) {
@@ -148,7 +157,7 @@ public class TokenFlowExecutor implements FlowExecutor {
     listenerManager.notifyListeners(EventType.BEFORE_EXECUTION, trigger);
 
     FlowNodeExecutionResult executionResult = nodeExecutor.execute(node, executionContext);
-    propertyStore.setProperties(trigger.getInstanceId(), trigger.getProperties());
+    storeProperties(trigger, trigger.getInstanceId());
 
     listenerManager.notifyListeners(EventType.AFTER_EXECUTION, trigger);
 

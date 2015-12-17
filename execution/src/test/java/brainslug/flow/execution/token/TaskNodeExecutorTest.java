@@ -50,12 +50,12 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
     TaskNodeExecutor taskNodeExecutor = createTaskNodeExecutor();
 
     // when:
-    BrainslugExecutionContext instance = new BrainslugExecutionContext(instanceMock(serviceCallFlow.getId()),new Trigger()
+    BrainslugExecutionContext context = new BrainslugExecutionContext(instanceMock(serviceCallFlow.getId()),new Trigger()
       .definitionId(serviceCallFlow.getId())
       .nodeId(id(TASK))
       .instanceId(id("instance")), registryWithServiceMock());
 
-    taskNodeExecutor.execute(serviceCallFlow.getNode(id(TASK), TaskDefinition.class), instance);
+    taskNodeExecutor.execute(serviceCallFlow.getNode(id(TASK), TaskDefinition.class), context);
 
     // then:
     verify(testServiceMock).getString();

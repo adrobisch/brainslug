@@ -6,10 +6,21 @@ public class AbstractProperty<PropertyType> implements FlowInstanceProperty<Prop
 
   PropertyType value;
   String key;
+  boolean isTransient = false;
 
   public AbstractProperty(String key, PropertyType value) {
     this.key = key;
     this.value = value;
+  }
+
+  public AbstractProperty<PropertyType> setTransient(boolean isTransient) {
+    this.isTransient = isTransient;
+    return this;
+  }
+
+  @Override
+  public boolean isTransient() {
+    return isTransient;
   }
 
   @Override

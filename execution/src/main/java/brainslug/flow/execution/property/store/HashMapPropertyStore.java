@@ -24,7 +24,7 @@ public class HashMapPropertyStore implements PropertyStore {
 
   @Override
   public void setProperties(Identifier<?> instanceId, FlowInstanceProperties<?, FlowInstanceProperty<?>> properties) {
-    propertiesByInstance.put(instanceId, new ExecutionProperties().from(properties.getValues()));
+    propertiesByInstance.put(instanceId, new ExecutionProperties().from(properties.values()));
   }
 
   @Override

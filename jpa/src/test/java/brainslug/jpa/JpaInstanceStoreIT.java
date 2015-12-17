@@ -5,6 +5,7 @@ import brainslug.flow.execution.instance.InstanceSelector;
 import brainslug.flow.expression.Property;
 import brainslug.flow.expression.Value;
 import brainslug.flow.instance.FlowInstance;
+import brainslug.jpa.util.ObjectSerializer;
 import brainslug.util.Option;
 import org.junit.Test;
 

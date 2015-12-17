@@ -6,5 +6,5 @@ public interface FlowInstance {
   Identifier getIdentifier();
   Identifier getDefinitionId();
   FlowInstanceTokenList getTokens();
-  FlowInstanceProperties getProperties();
+  FlowInstanceProperties<?, FlowInstanceProperty<?>> getProperties();
 }

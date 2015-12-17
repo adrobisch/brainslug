@@ -10,16 +10,18 @@ import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.instance.DefaultFlowInstance;
 import brainslug.flow.execution.instance.InstanceSelector;
 import brainslug.flow.execution.node.task.SimpleTask;
-import brainslug.flow.execution.property.ExecutionProperties;
 import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.instance.FlowInstanceProperty;
 import brainslug.util.IdUtil;
 import brainslug.util.Option;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import static brainslug.flow.execution.property.ExecutionProperties.newProperties;
 import static brainslug.util.IdUtil.id;
 import static brainslug.util.TestId.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class TokenFlowExecutorTest extends AbstractExecutionTest {
@@ -162,18 +164,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldStorePropertiesOnTrigger() {
     // given:
-    FlowBuilder flow = new FlowBuilder() {
-      @Override
-      public void define() {
-        start(event(id("start")))
-          .execute(task(id("propertyTask"), new SimpleTask() {
-            @Override
-            public void execute(ExecutionContext context) {
-              assertThat(context.property("key", String.class)).isEqualTo("value");
-            }
-          }));
-      }
-    };
+    FlowBuilder flow = propertyFlow();
 
     when(definitionStore.findById(flow.getDefinition().getId())).thenReturn(flow.getDefinition());
 
@@ -190,7 +181,22 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     context.trigger(property);
 
     // for each node trigger
-    verify(propertyStore, times(2)).setProperties(eq(instanceId), any(ExecutionProperties.class));
+    verify(propertyStore, times(2)).setProperty(eq(instanceId), any(FlowInstanceProperty.class));
+  }
+
+  private FlowBuilder propertyFlow() {
+    return new FlowBuilder() {
+      @Override
+      public void define() {
+        start(event(id("start")))
+          .execute(task(id("propertyTask"), new SimpleTask() {
+            @Override
+            public void execute(ExecutionContext context) {
+              assertThat(context.property("key", String.class)).isEqualTo("value");
+            }
+          }));
+      }
+    };
   }
 
   private FlowInstance givenInstance(Identifier<?> instanceId) {
@@ -202,12 +208,7 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
   @Test
   public void shouldStorePropertiesOnFlowStart() {
     // given:
-    FlowBuilder startFlow = new FlowBuilder() {
-      @Override
-      public void define() {
-        start(event(id("start")));
-      }
-    };
+    FlowBuilder startFlow = startFlow();
 
     FlowDefinition definition = startFlow.getDefinition();
 
@@ -219,9 +220,48 @@ public class TokenFlowExecutorTest extends AbstractExecutionTest {
     when(instanceStore.createInstance(definition.getId())).thenReturn(new DefaultFlowInstance(newInstanceId, definition.getId(), propertyStore, tokenStore));
     givenInstance(newInstanceId);
 
-    context.startFlow(definition);
+    context.startFlow(definition, newProperties().with("foo", "bar"));
 
     // before trigger and during start trigger
-    verify(propertyStore, times(2)).setProperties(eq(newInstanceId), any(ExecutionProperties.class));
+    verify(propertyStore, times(2)).setProperty(eq(newInstanceId), any(FlowInstanceProperty.class));
+  }
+
+  @Test
+  public void shouldNotStoreTransientProperties() {
+    // given:
+    FlowBuilder flow = givenFlow(propertyFlow());
+    FlowInstance instance = givenInstance(id("instance"));
+
+    when(instanceStore.createInstance(flow.getDefinition().getId()))
+        .thenReturn(instance);
+
+    // when:
+    context.startFlow(flow.getDefinition(), newProperties().with("key", "value", true));
+
+    Trigger startNodeTrigger = new Trigger()
+        .instanceId(instance.getIdentifier())
+        .nodeId(IdUtil.id("start"))
+        .definitionId(flow.getId())
+        .property("key", "value", true);
+
+    context.trigger(startNodeTrigger);
+
+    // never store
+    verify(propertyStore, never()).setProperty(eq(instance.getIdentifier()), any(FlowInstanceProperty.class));
+  }
+
+  private FlowBuilder givenFlow(FlowBuilder flowBuilder) {
+    FlowDefinition definition = flowBuilder.getDefinition();
+    when(definitionStore.findById(definition.getId())).thenReturn(definition);
+    return flowBuilder;
+  }
+
+  private FlowBuilder startFlow() {
+    return new FlowBuilder() {
+        @Override
+        public void define() {
+          start(event(id("start")));
+        }
+      };
   }
 }

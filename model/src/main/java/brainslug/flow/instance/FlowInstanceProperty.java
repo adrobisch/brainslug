@@ -4,4 +4,6 @@ public interface FlowInstanceProperty<ValueType> {
   String getKey();
 
   ValueType getValue();
+
+  boolean isTransient();
 }

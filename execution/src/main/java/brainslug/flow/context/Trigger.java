@@ -88,14 +88,34 @@ public class Trigger<T extends Trigger> implements TriggerContext {
     return self();
   }
 
+  public T property(String key, Object value, boolean isTransient) {
+    setProperty(key, value, isTransient);
+    return self();
+  }
+
+  public T property(Identifier<?> key, Object value) {
+    setProperty(key.stringValue(), value);
+    return self();
+  }
+
+  public T property(Identifier<?> key, Object value, boolean isTransient) {
+    setProperty(key.stringValue(), value, isTransient);
+    return self();
+  }
+
   @Override
   public void setProperty(String key, Object value) {
     getProperties().with(key, value);
   }
 
   @Override
+  public void setProperty(String key, Object value, boolean isTransient) {
+    getProperties().with(key, value, isTransient);
+  }
+
+  @Override
   public <P> P getProperty(String key, Class<P> type) {
-    return getProperties().getValue(key, type);
+    return getProperties().value(key, type);
   }
 
   @Override

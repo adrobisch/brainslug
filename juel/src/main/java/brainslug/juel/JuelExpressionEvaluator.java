@@ -23,7 +23,7 @@ public class JuelExpressionEvaluator extends DefaultExpressionEvaluator {
 
         de.odysseus.el.util.SimpleContext juelContext = new de.odysseus.el.util.SimpleContext();
 
-        for (FlowInstanceProperty<?> property : context.getProperties().getValues()) {
+        for (FlowInstanceProperty<?> property : context.getProperties().values()) {
             juelContext.setVariable(property.getKey(), valueExpression(property, factory));
         }
 
