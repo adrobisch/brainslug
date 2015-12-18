@@ -58,6 +58,26 @@ public class BrainslugExecutionContext implements ExecutionContext {
   }
 
   @Override
+  public void setProperty(String key, Object value, boolean isTransient) {
+    trigger.setProperty(key, value, isTransient);
+  }
+
+  @Override
+  public <T> void setProperty(Property<T> property, T value, boolean isTransient) {
+    setProperty(property.getValue(), value, isTransient);
+  }
+
+  @Override
+  public void setProperty(Identifier key, Object value, boolean isTransient) {
+    setProperty(key.stringValue(), value, isTransient);
+  }
+
+  @Override
+  public void setProperty(Enum key, Object value, boolean isTransient) {
+    setProperty(key.name(), value, isTransient);
+  }
+
+  @Override
   public void setProperties(FlowInstanceProperties executionProperties) {
     trigger.setProperties(executionProperties);
   }

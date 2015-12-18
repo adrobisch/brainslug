@@ -17,6 +17,11 @@ public interface ExecutionContext {
   void setProperty(Identifier key, Object value);
   void setProperty(Enum key, Object value);
 
+  void setProperty(String key, Object value, boolean isTransient);
+  <T> void setProperty(Property<T> property, T value, boolean isTransient);
+  void setProperty(Identifier key, Object value, boolean isTransient);
+  void setProperty(Enum key, Object value, boolean isTransient);
+
   void setProperties(FlowInstanceProperties executionProperties);
   FlowInstanceProperties<?, FlowInstanceProperty<?>> getProperties();
 

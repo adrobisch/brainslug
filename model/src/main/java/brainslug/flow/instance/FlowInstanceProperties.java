@@ -36,7 +36,7 @@ public interface FlowInstanceProperties<SelfType extends FlowInstanceProperties,
 
   <T> T value(Identifier id, Class<T> clazz);
 
-  <T> T value(Property<?> property, Class<T> clazz);
+  <T> T value(Property<T> property);
 
   <T extends PropertyType> Collection<T> values();
 }

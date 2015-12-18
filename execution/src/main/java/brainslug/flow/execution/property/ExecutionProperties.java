@@ -102,8 +102,8 @@ public class ExecutionProperties implements FlowInstanceProperties<ExecutionProp
   }
 
   @Override
-  public <T> T value(Property<?> property, Class<T> clazz) {
-    return value(property.getValue(), clazz);
+  public <T> T value(Property<T> property) {
+    return value(property.getValue(), property.getValueClass());
   }
 
   @Override
