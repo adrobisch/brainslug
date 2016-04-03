@@ -1,4 +1,4 @@
-package brainslug.flow.instance;
+package brainslug.flow.execution.instance;
 
 public interface FlowInstanceProperty<ValueType> {
   String getKey();

@@ -4,8 +4,7 @@ import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.instance.InstanceSelector;
 import brainslug.flow.expression.Property;
 import brainslug.flow.expression.Value;
-import brainslug.flow.instance.FlowInstance;
-import brainslug.jpa.util.ObjectSerializer;
+import brainslug.flow.execution.instance.FlowInstance;
 import brainslug.util.Option;
 import org.junit.Test;
 

@@ -1,7 +1,7 @@
 package brainslug.flow.execution.node;
 
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstance;
 import brainslug.flow.node.FlowNodeDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 

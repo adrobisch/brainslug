@@ -1,7 +1,6 @@
 package brainslug.flow;
 
 import brainslug.flow.builder.FlowBuilder;
-import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.node.*;
@@ -387,9 +386,9 @@ public class FlowBuilderTest {
       public void define() {
         flowId(id("recurringTimerFlow"));
 
-        Task callee = new Task() {
+        Task callee = new Task<Void>() {
           @Override
-          public void execute(ExecutionContext o) {
+          public void execute(Void o) {
           }
         };
 

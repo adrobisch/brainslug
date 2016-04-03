@@ -1,7 +1,7 @@
 package brainslug.flow.execution.property;
 
-import brainslug.flow.instance.FlowInstanceProperty;
-import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.execution.instance.FlowInstanceProperty;
+import brainslug.flow.execution.instance.FlowInstanceProperties;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.Property;
 

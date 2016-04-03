@@ -3,7 +3,6 @@ package brainslug.flow.execution.instance;
 import brainslug.flow.execution.property.store.HashMapPropertyStore;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.execution.token.HashMapTokenStore;
-import brainslug.flow.instance.FlowInstance;
 import brainslug.util.Option;
 import brainslug.util.UuidGenerator;
 import org.junit.Test;

@@ -8,7 +8,7 @@ import brainslug.flow.execution.property.IntProperty;
 import brainslug.flow.execution.property.LongProperty;
 import brainslug.flow.execution.property.ObjectProperty;
 import brainslug.flow.execution.property.StringProperty;
-import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.flow.execution.instance.FlowInstanceProperty;
 import brainslug.jpa.util.ObjectSerializer;
 import org.hibernate.annotations.Type;
 

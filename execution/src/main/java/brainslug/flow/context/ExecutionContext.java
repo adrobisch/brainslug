@@ -2,9 +2,9 @@ package brainslug.flow.context;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.Property;
-import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.FlowInstanceProperties;
-import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.flow.execution.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstanceProperties;
+import brainslug.flow.execution.instance.FlowInstanceProperty;
 
 public interface ExecutionContext {
   FlowInstance getInstance();

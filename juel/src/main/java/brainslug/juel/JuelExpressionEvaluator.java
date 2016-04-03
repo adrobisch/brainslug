@@ -3,7 +3,7 @@ package brainslug.juel;
 import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.execution.expression.DefaultExpressionEvaluator;
 import brainslug.flow.expression.Expression;
-import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.flow.execution.instance.FlowInstanceProperty;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;

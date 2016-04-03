@@ -4,7 +4,6 @@ import brainslug.flow.definition.Identifier;
 import brainslug.flow.expression.EqualsExpression;
 import brainslug.flow.expression.Property;
 import brainslug.flow.expression.Value;
-import brainslug.flow.instance.FlowInstanceSelector;
 import brainslug.util.Option;
 
 import java.util.ArrayList;

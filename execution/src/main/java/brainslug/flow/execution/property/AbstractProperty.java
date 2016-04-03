@@ -1,6 +1,6 @@
 package brainslug.flow.execution.property;
 
-import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.flow.execution.instance.FlowInstanceProperty;
 
 public class AbstractProperty<PropertyType> implements FlowInstanceProperty<PropertyType> {
 

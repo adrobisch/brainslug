@@ -2,7 +2,7 @@ package brainslug.example;
 
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.node.task.Task;
+import brainslug.flow.execution.node.task.SimpleTask;
 
 public class TaskExamples {
 
@@ -22,7 +22,7 @@ public class TaskExamples {
       flowId(id("task_flow"));
 
       start(event(id("start")).display("Start"))
-        .execute(task(id("task"), new Task() {
+        .execute(task(id("task"), new SimpleTask() {
           @Override
           public void execute(ExecutionContext ctx) {
             ctx.service(ExampleService.class).doSomething();

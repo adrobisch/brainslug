@@ -13,7 +13,7 @@ import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.expression.ContextPredicate;
 import brainslug.flow.execution.instance.DefaultFlowInstance;
 import brainslug.flow.expression.PredicateExpression;
-import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstance;
 import brainslug.flow.node.EventDefinition;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;

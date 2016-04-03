@@ -2,8 +2,8 @@ package brainslug.jpa;
 
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.token.Token;
-import brainslug.flow.instance.FlowInstanceToken;
-import brainslug.flow.instance.FlowInstanceTokenList;
+import brainslug.flow.execution.instance.FlowInstanceToken;
+import brainslug.flow.execution.instance.FlowInstanceTokenList;
 import brainslug.util.Option;
 import org.junit.Test;
 

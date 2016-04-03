@@ -4,10 +4,10 @@ import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.property.ExecutionProperties;
 import brainslug.flow.execution.token.TokenList;
-import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.FlowInstanceProperties;
-import brainslug.flow.instance.FlowInstanceProperty;
-import brainslug.flow.instance.FlowInstanceTokenList;
+import brainslug.flow.execution.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstanceProperties;
+import brainslug.flow.execution.instance.FlowInstanceProperty;
+import brainslug.flow.execution.instance.FlowInstanceTokenList;
 import brainslug.util.IdUtil;
 
 import javax.persistence.*;

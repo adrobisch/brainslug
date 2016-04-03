@@ -1,11 +1,9 @@
 package brainslug.jpa;
 
-import brainslug.flow.instance.FlowInstanceProperties;
+import brainslug.flow.execution.instance.FlowInstanceProperties;
 import static brainslug.util.IdUtil.*;
 
 import brainslug.jpa.entity.FlowInstanceEntity;
-import brainslug.jpa.util.ObjectSerializer;
-import brainslug.util.Option;
 import brainslug.util.UuidGenerator;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;

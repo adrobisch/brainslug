@@ -6,7 +6,7 @@ import brainslug.flow.context.ExecutionContext;
 import brainslug.flow.context.HashMapRegistry;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.execution.property.NumberProperty;
-import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstance;
 import brainslug.flow.node.task.TaskScript;
 import org.junit.Test;
 

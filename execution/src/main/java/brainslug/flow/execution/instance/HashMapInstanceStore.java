@@ -1,15 +1,11 @@
 package brainslug.flow.execution.instance;
 
 import brainslug.flow.execution.token.TokenStore;
-import brainslug.flow.instance.FlowInstanceProperty;
-import brainslug.flow.instance.FlowInstanceProperties;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.expression.EqualsExpression;
 import brainslug.flow.expression.Property;
 import brainslug.flow.expression.Value;
-import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.FlowInstanceSelector;
 import brainslug.util.IdGenerator;
 import brainslug.util.Option;
 

@@ -1,7 +1,7 @@
 package brainslug.flow.execution.token;
 
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.instance.FlowInstanceToken;
+import brainslug.flow.execution.instance.FlowInstanceToken;
 import brainslug.util.IdUtil;
 import brainslug.util.Option;
 

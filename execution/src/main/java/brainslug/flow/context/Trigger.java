@@ -4,8 +4,8 @@ import brainslug.flow.definition.EnumIdentifier;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.definition.StringIdentifier;
 import brainslug.flow.execution.property.ExecutionProperties;
-import brainslug.flow.instance.FlowInstanceProperties;
-import brainslug.flow.instance.FlowInstanceProperty;
+import brainslug.flow.execution.instance.FlowInstanceProperties;
+import brainslug.flow.execution.instance.FlowInstanceProperty;
 
 public class Trigger<T extends Trigger> implements TriggerContext {
 

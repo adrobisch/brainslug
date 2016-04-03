@@ -19,7 +19,7 @@ import brainslug.flow.execution.node.task.SimpleTask;
 import brainslug.flow.execution.async.AsyncTrigger;
 import brainslug.flow.execution.expression.ContextPredicate;
 import brainslug.flow.expression.Property;
-import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstance;
 import brainslug.flow.node.TaskDefinition;
 import brainslug.flow.node.task.Delegate;
 import brainslug.flow.node.task.GoalDefinition;
@@ -291,9 +291,13 @@ public class TaskNodeExecutorTest extends AbstractExecutionTest {
   }
 
   private void taskNodeTriggered(GoalFlow goalFlow) {
-    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(instanceMock(goalFlow.getGoalFlow().getId()),new Trigger()
-      .definitionId(goalFlow.getGoalFlow().getId())
-      .nodeId(id(TASK)), registryWithServiceMock());
+    Trigger trigger = new Trigger()
+            .definitionId(goalFlow.getGoalFlow().getId())
+            .nodeId(id(TASK));
+
+    FlowInstance flowInstance = instanceMock(goalFlow.getGoalFlow().getId());
+    
+    BrainslugExecutionContext executionContext = new BrainslugExecutionContext(flowInstance, trigger, registryWithServiceMock());
 
     createTaskNodeExecutor()
         .execute((TaskDefinition) goalFlow.getGoalFlow().getNode(IdUtil.id(TASK)), executionContext);

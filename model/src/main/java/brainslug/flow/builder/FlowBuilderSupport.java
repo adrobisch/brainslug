@@ -96,7 +96,7 @@ public class FlowBuilderSupport {
     return start(timerEvent(event, startTimerDefinition));
   }
 
-  protected AbstractEventDefinition<?> startEvent(AbstractEventDefinition<?> event) {
+  protected <T extends AbstractEventDefinition> AbstractEventDefinition<T> startEvent(AbstractEventDefinition<T> event) {
     if (event.is(StartEvent.class)) {
       return event;
     }
@@ -105,7 +105,8 @@ public class FlowBuilderSupport {
   }
 
   protected AbstractEventDefinition timerEvent(AbstractEventDefinition event, StartTimerDefinition startTimerDefinition) {
-    startEvent(event).as(StartEvent.class).withRecurringTimerDefinition(startTimerDefinition);
+    StartEvent startEvent = (StartEvent) startEvent(event).as(StartEvent.class);
+    startEvent.withRecurringTimerDefinition(startTimerDefinition);
     return event;
   }
 

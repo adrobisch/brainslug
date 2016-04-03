@@ -1,8 +1,8 @@
 package brainslug.flow.execution.token;
 
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.instance.FlowInstanceToken;
-import brainslug.flow.instance.FlowInstanceTokenList;
+import brainslug.flow.execution.instance.FlowInstanceToken;
+import brainslug.flow.execution.instance.FlowInstanceTokenList;
 
 import java.util.*;
 

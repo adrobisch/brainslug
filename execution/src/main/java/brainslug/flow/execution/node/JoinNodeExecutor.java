@@ -1,7 +1,7 @@
 package brainslug.flow.execution.node;
 
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.instance.FlowInstanceToken;
+import brainslug.flow.execution.instance.FlowInstanceToken;
 import brainslug.flow.node.JoinDefinition;
 import brainslug.flow.path.FlowEdgeDefinition;
 import brainslug.util.Option;

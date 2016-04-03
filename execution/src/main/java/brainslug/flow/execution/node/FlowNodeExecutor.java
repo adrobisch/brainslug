@@ -1,7 +1,6 @@
 package brainslug.flow.execution.node;
 
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.instance.FlowInstance;
 import brainslug.flow.node.FlowNodeDefinition;
 
 public interface FlowNodeExecutor<T extends FlowNodeDefinition> {

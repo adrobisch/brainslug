@@ -3,10 +3,6 @@ package brainslug.flow.execution.instance;
 import brainslug.flow.definition.Identifier;
 import brainslug.flow.execution.property.store.PropertyStore;
 import brainslug.flow.execution.token.TokenStore;
-import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.FlowInstanceProperties;
-import brainslug.flow.instance.FlowInstanceProperty;
-import brainslug.flow.instance.FlowInstanceTokenList;
 
 public class DefaultFlowInstance implements FlowInstance {
     private final Identifier<?> id;

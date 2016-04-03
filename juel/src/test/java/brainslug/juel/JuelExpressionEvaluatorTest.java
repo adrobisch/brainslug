@@ -5,7 +5,7 @@ import brainslug.flow.context.Registry;
 import brainslug.flow.context.Trigger;
 import brainslug.flow.context.TriggerContext;
 import brainslug.flow.execution.expression.ExpressionEvaluator;
-import brainslug.flow.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstance;
 import org.junit.Test;
 
 import java.util.ServiceLoader;

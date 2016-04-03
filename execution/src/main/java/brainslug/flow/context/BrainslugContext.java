@@ -2,9 +2,9 @@ package brainslug.flow.context;
 
 import brainslug.flow.definition.FlowDefinition;
 import brainslug.flow.definition.Identifier;
-import brainslug.flow.instance.FlowInstance;
-import brainslug.flow.instance.FlowInstanceProperties;
-import brainslug.flow.instance.FlowInstanceSelector;
+import brainslug.flow.execution.instance.FlowInstance;
+import brainslug.flow.execution.instance.FlowInstanceProperties;
+import brainslug.flow.execution.instance.FlowInstanceSelector;
 import brainslug.flow.node.FlowNodeDefinition;
 
 import java.util.Collection;

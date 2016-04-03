@@ -3,7 +3,7 @@ package brainslug.example.spring;
 import brainslug.flow.builder.FlowBuilder;
 import brainslug.flow.context.BrainslugContext;
 import brainslug.flow.context.ExecutionContext;
-import brainslug.flow.node.task.Task;
+import brainslug.flow.execution.node.task.SimpleTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,7 @@ import static java.lang.String.format;
 public class ConfigurationExample {
 
   @Component
-  public static class SpringExampleTask implements Task {
+  public static class SpringExampleTask implements SimpleTask {
     Environment environment;
 
     @Autowired
