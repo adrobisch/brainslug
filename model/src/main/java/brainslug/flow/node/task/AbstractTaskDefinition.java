@@ -30,7 +30,7 @@ abstract public class AbstractTaskDefinition<SelfType extends AbstractTaskDefini
    * }
    * </pre>
    *
-   * @param delegateClass type of the delegate class for lookup in the {@link brainslug.flow.context.Registry}
+   * @param delegateClass type of the delegate class to lookup in the Registry
    * @return the task definition
    *
    */
