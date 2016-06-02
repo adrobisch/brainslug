@@ -538,7 +538,7 @@ table.CodeRay td.code>pre{padding:0}
     flowId(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task_flow</span><span class="delimiter">&quot;</span></span>));
 
     start(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Start</span><span class="delimiter">&quot;</span></span>))
-      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span>), <span class="keyword">new</span> Task() {
+      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span>), <span class="keyword">new</span> SimpleTask() {
         <span class="annotation">@Override</span>
         <span class="directive">public</span> <span class="type">void</span> execute(ExecutionContext ctx) {
           ctx.service(ExampleService.class).doSomething();
@@ -614,10 +614,12 @@ method you want be executed for a task:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">interface</span> <span class="class">TestService</span> {
-  <span class="directive">public</span> <span class="predefined-type">String</span> getString();
-  <span class="directive">public</span> <span class="predefined-type">String</span> echo(<span class="predefined-type">String</span> echo);
-  <span class="directive">public</span> <span class="predefined-type">String</span> multiEcho(<span class="predefined-type">String</span> echo, <span class="predefined-type">String</span> echo2);
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">TestService</span> {
+  <span class="predefined-type">String</span> getString();
+
+  <span class="predefined-type">String</span> echo(<span class="predefined-type">String</span> echo);
+
+  <span class="predefined-type">String</span> multiEcho(<span class="predefined-type">String</span> echo, <span class="predefined-type">String</span> echo2);
 }</code></pre>
 </div>
 </div>
@@ -652,7 +654,7 @@ This will be done using reflection on the instance of the service, which must be
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-06-25 22:38:39 CEST
+Last updated 2016-04-02 13:20:07 +02:00
 </div>
 </div>
 </body>

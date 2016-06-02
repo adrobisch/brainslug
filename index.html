@@ -506,7 +506,7 @@ table.CodeRay td.code>pre{padding:0}
 <h1>Brainslug Documentation</h1>
 <div class="details">
 <span id="author" class="author">A. Drobisch</span><br>
-<span id="revnumber">version 0.21-SNAPSHOT</span>
+<span id="revnumber">version 0.22-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -668,7 +668,7 @@ which can be transformed to different representations or be executed within a cu
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;dependencies&gt;</span>
 ...
   <span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>de.androbit<span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span>com.drobisch<span class="tag">&lt;/groupId&gt;</span>
     <span class="tag">&lt;artifactId&gt;</span>brainslug-core<span class="tag">&lt;/artifactId&gt;</span>
     <span class="tag">&lt;version&gt;</span>...<span class="tag">&lt;/version&gt;</span>
   <span class="tag">&lt;/dependency&gt;</span>
@@ -993,7 +993,7 @@ A token is produced for every outgoing edge.</p>
     flowId(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task_flow</span><span class="delimiter">&quot;</span></span>));
 
     start(event(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>)).display(<span class="string"><span class="delimiter">&quot;</span><span class="content">Start</span><span class="delimiter">&quot;</span></span>))
-      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span>), <span class="keyword">new</span> Task() {
+      .execute(task(id(<span class="string"><span class="delimiter">&quot;</span><span class="content">task</span><span class="delimiter">&quot;</span></span>), <span class="keyword">new</span> SimpleTask() {
         <span class="annotation">@Override</span>
         <span class="directive">public</span> <span class="type">void</span> execute(ExecutionContext ctx) {
           ctx.service(ExampleService.class).doSomething();
@@ -1069,10 +1069,12 @@ method you want be executed for a task:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">interface</span> <span class="class">TestService</span> {
-  <span class="directive">public</span> <span class="predefined-type">String</span> getString();
-  <span class="directive">public</span> <span class="predefined-type">String</span> echo(<span class="predefined-type">String</span> echo);
-  <span class="directive">public</span> <span class="predefined-type">String</span> multiEcho(<span class="predefined-type">String</span> echo, <span class="predefined-type">String</span> echo2);
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">TestService</span> {
+  <span class="predefined-type">String</span> getString();
+
+  <span class="predefined-type">String</span> echo(<span class="predefined-type">String</span> echo);
+
+  <span class="predefined-type">String</span> multiEcho(<span class="predefined-type">String</span> echo, <span class="predefined-type">String</span> echo2);
 }</code></pre>
 </div>
 </div>
@@ -1219,7 +1221,7 @@ To use it, you need to get the <a href="http://search.maven.org/#search%7Cga%7C1
 <span class="directive">public</span> <span class="type">class</span> <span class="class">ConfigurationExample</span> {
 
   <span class="annotation">@Component</span>
-  <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SpringExampleTask</span> <span class="directive">implements</span> Task {
+  <span class="directive">public</span> <span class="directive">static</span> <span class="type">class</span> <span class="class">SpringExampleTask</span> <span class="directive">implements</span> SimpleTask {
     Environment environment;
 
     <span class="annotation">@Autowired</span>
@@ -1455,8 +1457,8 @@ BPEL engines make most sense in WS-* environments.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.21-SNAPSHOT<br>
-Last updated 2015-03-10 23:15:36 CET
+Version 0.22-SNAPSHOT<br>
+Last updated 2016-04-02 13:20:07 +02:00
 </div>
 </div>
 </body>
