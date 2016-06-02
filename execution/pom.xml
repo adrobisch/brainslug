@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-      <groupId>de.androbit</groupId>
+      <groupId>com.drobisch</groupId>
       <artifactId>brainslug</artifactId>
       <version>0.22-SNAPSHOT</version>
     </parent>
@@ -12,7 +12,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>de.androbit</groupId>
+            <groupId>com.drobisch</groupId>
             <artifactId>brainslug-model</artifactId>
             <version>${project.version}</version>
         </dependency>
