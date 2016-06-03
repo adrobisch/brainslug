@@ -4,7 +4,7 @@
 
     <groupId>com.drobisch</groupId>
     <artifactId>brainslug</artifactId>
-    <version>0.22-SNAPSHOT</version>
+    <version>0.22</version>
     <packaging>pom</packaging>
     <name>brainslug root pom</name>
     <description>brainslug is a control flow abstraction and workflow library</description>
@@ -38,7 +38,7 @@
         <connection>scm:git:git://github.com/adrobisch/brainslug.git</connection>
         <developerConnection>scm:git:git@github.com:adrobisch/brainslug.git</developerConnection>
         <url>http://github.com/adrobisch/brainslug</url>
-      <tag>HEAD</tag>
+      <tag>brainslug-0.22</tag>
     </scm>
 
     <developers>
