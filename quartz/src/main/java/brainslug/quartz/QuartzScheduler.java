@@ -29,6 +29,11 @@ public class QuartzScheduler extends AbstractAsyncTriggerScheduler {
     }
   }
 
+  @Override
+  public void pollAndExecute() {
+    throw new UnsupportedOperationException("polling is not supported for quartz");
+  }
+
   class BrainslugContextJobFactory implements JobFactory {
     @Override
     public Job newJob(TriggerFiredBundle bundle, org.quartz.Scheduler scheduler) throws SchedulerException {

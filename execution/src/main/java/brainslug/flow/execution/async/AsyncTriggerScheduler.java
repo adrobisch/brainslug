@@ -6,4 +6,5 @@ public interface AsyncTriggerScheduler {
   void start(BrainslugContext brainslugContext, AsyncTriggerStore asyncTriggerStore, AsyncTriggerSchedulerOptions taskSchedulerOptions);
   void stop();
   void schedule(AsyncTrigger asyncTrigger);
+  void pollAndExecute();
 }

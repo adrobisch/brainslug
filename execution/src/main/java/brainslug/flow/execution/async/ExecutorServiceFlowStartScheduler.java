@@ -32,6 +32,10 @@ public class ExecutorServiceFlowStartScheduler implements AsyncFlowStartSchedule
   }
 
   private void startScheduler() {
+    if (schedulerOptions.isDisabled()) {
+      return;
+    }
+
     scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(new StartDueDefinitionsRunnable(),
       schedulerOptions.getScheduleDelay(),
       schedulerOptions.getSchedulePeriod(),

@@ -213,6 +213,25 @@ public class ExecutorServiceAsyncTriggerSchedulerTest extends AbstractExecutionT
     await().until(contextWasTriggered(contextMock, expectedTrigger, times(1)));
   }
 
+  @Test
+  public void allowsToPollAndExecuteExplicitly() {
+    // given
+    final ExecuteTasksCallable executeCallable = mock(ExecuteTasksCallable.class);
+
+    ExecutorServiceAsyncTriggerScheduler executorServiceScheduler = new ExecutorServiceAsyncTriggerScheduler() {
+      @Override
+      ExecuteTasksCallable createExecutionCallable() {
+        return executeCallable;
+      }
+    };
+
+    // when:
+    executorServiceScheduler.pollAndExecute();
+
+    // then:
+    verify(executeCallable, times(1)).call();
+  }
+
   ExecutorServiceAsyncTriggerScheduler schedulerWithContext(BrainslugContext context) {
     ExecutorServiceAsyncTriggerScheduler executorServiceScheduler = new ExecutorServiceAsyncTriggerScheduler();
 

@@ -19,20 +19,26 @@ public class ExecutorServiceAsyncTriggerScheduler extends AbstractAsyncTriggerSc
   protected void internalStart() {
     log.info("starting async job scheduling with options: " + options);
 
-    Runnable executeTasksRunnable = new Runnable() {
-      @Override
-      public void run() {
-        FutureTask<List<Future<AsyncTriggerExecutionResult>>> executeTasks =
-          new FutureTask<List<Future<AsyncTriggerExecutionResult>>>(new ExecuteTasksCallable(context, asyncTriggerStore, options, taskExecutorService, asyncTriggerExecutor));
-        executeTasks.run();
-      }
-    };
+    Runnable executeTasksRunnable = executeTasksRunnable();
 
     scheduledExecutorService.scheduleAtFixedRate(executeTasksRunnable,
       options.getScheduleDelay(),
       options.getSchedulePeriod(),
       options.getScheduleUnit()
     );
+  }
+
+  Runnable executeTasksRunnable() {
+    return new Runnable() {
+      @Override
+      public void run() {
+        new FutureTask<List<Future<AsyncTriggerExecutionResult>>>(createExecutionCallable()).run();
+      }
+    };
+  }
+
+  ExecuteTasksCallable createExecutionCallable() {
+    return new ExecuteTasksCallable(context, asyncTriggerStore, options, taskExecutorService, asyncTriggerExecutor);
   }
 
   public ScheduledExecutorService getScheduledExecutorService() {
@@ -60,5 +66,10 @@ public class ExecutorServiceAsyncTriggerScheduler extends AbstractAsyncTriggerSc
   public ExecutorServiceAsyncTriggerScheduler withAsyncTriggerExecutor(AsyncTriggerExecutor asyncTriggerExecutor) {
     this.asyncTriggerExecutor = asyncTriggerExecutor;
     return this;
+  }
+
+  @Override
+  public void pollAndExecute() {
+    executeTasksRunnable().run();
   }
 }
